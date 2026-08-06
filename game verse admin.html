@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titan GameVerse - Admin Panel</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --bg-darkblue: #030712;
+            --panel-blue: #0b132b;
+            --border-blue: #1d4ed8;
+            --glow-blue: rgba(59, 130, 246, 0.5);
+            --accent-cyan: #38bdf8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-main: #f0f9ff;
+            --text-muted: #93c5fd;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, var(--bg-darkblue) 100%);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: var(--panel-blue);
+            padding: 30px;
+            border-radius: 16px;
+            width: 480px;
+            box-sizing: border-box;
+            box-shadow: 0 0 25px var(--glow-blue);
+            border: 2px solid var(--border-blue);
+        }
+        h2 { margin-top: 0; text-align: center; color: var(--accent-cyan); letter-spacing: 1px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+        p { text-align: center; color: var(--text-muted); font-size: 14px; }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-blue);
+            background: #020617;
+            color: var(--text-main);
+            box-sizing: border-box;
+            font-size: 13px;
+            outline: none;
+            box-shadow: inset 0 0 8px rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px var(--glow-blue), inset 0 0 8px rgba(59, 130, 246, 0.4);
+        }
+        button {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: 1px solid var(--accent-cyan);
+            cursor: pointer;
+            font-weight: 600;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+            transition: background 0.2s;
+        }
+        button:hover { background: linear-gradient(135deg, #1d4ed8, #1e40af); box-shadow: 0 0 15px var(--glow-blue); }
+        .btn-green { background: linear-gradient(135deg, #059669, #047857) !important; border-color: #34d399 !important; box-shadow: 0 0 10px rgba(52, 211, 153, 0.4) !important; }
+        .btn-green:hover { box-shadow: 0 0 15px rgba(52, 211, 153, 0.7) !important; }
+        .btn-red { background: linear-gradient(135deg, #dc2626, #b91c1c) !important; border-color: #f87171 !important; box-shadow: 0 0 10px rgba(248, 113, 113, 0.4) !important; }
+        .btn-red:hover { box-shadow: 0 0 15px rgba(248, 113, 113, 0.7) !important; }
+        .btn-yellow { background: linear-gradient(135deg, #d97706, #b45309) !important; border-color: #fbbf24 !important; }
+        .btn-gray { background: linear-gradient(135deg, #334155, #1e293b) !important; border-color: #64748b !important; }
+        .hidden { display: none; }
+        .control-group {
+            margin-top: 15px;
+            text-align: left;
+            border-top: 1px solid var(--border-blue);
+            padding-top: 12px;
+        }
+        .live-status {
+            font-size: 12px;
+            color: var(--accent-cyan);
+            background: #020617;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 8px;
+            border: 1px solid var(--border-blue);
+            box-shadow: inset 0 0 8px rgba(59, 130, 246, 0.2);
+            line-height: 1.4;
+        }
+        label { font-size: 12px; color: var(--text-muted); font-weight: bold; }
+        .user-item, .withdraw-admin-item, .support-admin-item, .tournament-admin-item, .deposit-admin-item, .reward-admin-item, .prediction-admin-item {
+            background: #020617;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-blue);
+            font-size: 12px;
+            text-align: left;
+        }
+        
+        .admin-nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        /* Style for tournament participant badges */
+        .uid-badge {
+            background: #1e40af;
+            color: #f0f9ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin: 2px 2px 2px 0;
+            display: inline-block;
+            font-family: monospace;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Auth Screen -->
+    <div id="auth" class="container">
+        <h2>Titan GameVerse</h2>
+        <p style="color: var(--accent-cyan);">Admin Controller Login</p>
+        <input id="email" type="email" value="sanadhyad83@gmail.com" placeholder="Admin Email">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="loginAdmin()">Admin Login</button>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dash" class="container hidden">
+        <h2>Admin Control Center</h2>
+        <p style="color: var(--accent-cyan); font-size: 13px;">Status: Controlling Live User App</p>
+        
+        <div id="mainAdminMenu">
+            <div class="control-group" style="border-top: none; padding-top: 0;">
+                <label>Broadcast Announcement:</label>
+                <input id="broadcastText" type="text" placeholder="Enter broadcast message...">
+                <button onclick="broadcast()">Send Broadcast</button>
+            </div>
+
+            <!-- Referral Amount Control Section -->
+            <div class="control-group">
+                <label>Referral Reward Control (Per Refer):</label>
+                <input id="referBonusInput" type="number" placeholder="Enter amount per refer (₹)">
+                <button onclick="updateReferBonus()" class="btn-green">Update Refer Reward</button>
+            </div>
+
+            <!-- Tournament Management Creator -->
+            <div class="control-group">
+                <label>Create / Host Tournament:</label>
+                <input id="tourneyTitle" type="text" placeholder="Tournament Name (e.g. Free Fire Cup)">
+                <input id="tourneyPrize" type="number" placeholder="Prize Pool (₹)">
+                <input id="tourneyFee" type="number" placeholder="Entry Fee (₹) [Set 0 for Free]">
+                <input id="tourneyDesc" type="text" placeholder="Short description / rules">
+                <button onclick="createTournament()" class="btn-green">Publish Tournament</button>
+            </div>
+
+            <!-- Mini-Game Management with Entry Fee Support -->
+            <div class="control-group">
+                <label>Manage Mini-Games & Entry Fees:</label>
+                <select id="gameSelect" onchange="loadSelectedGameData()">
+                    <option value="spin_wheel">Spin Wheel</option>
+                    <option value="coin_flip">Coin Flip</option>
+                    <option value="number_guess">Number Guess</option>
+                </select>
+                <select id="gameStatus">
+                    <option value="active">ON (Start Game)</option>
+                    <option value="ended">OFF (End Game)</option>
+                </select>
+                <input id="gamePrize" type="number" placeholder="Winning Amount (₹)">
+                <input id="gameEntryFee" type="number" placeholder="Entry Fee (₹) [0 for Free Play]">
+                <button onclick="updateGame()" class="btn-green">Save Game Settings</button>
+                <div id="liveGameStatus" class="live-status">Current Status: Loading...</div>
+            </div>
+
+            <div class="control-group">
+                <label>App Availability Control:</label>
+                <select id="appStatusSelect" onchange="toggleAppStatus()">
+                    <option value="active">App Active (Normal)</option>
+                    <option value="disabled">Disable App (Maintenance)</option>
+                </select>
+            </div>
+
+            <!-- Navigation Grid -->
+            <div class="admin-nav-grid">
+                <button onclick="openUserListModal()" class="btn-gray" style="margin:0;">👥 Users List</button>
+                <button onclick="openDepositRequestsModal()" class="btn-green" style="margin:0;">💳 Deposits</button>
+                <button onclick="openWithdrawRequestsModal()" class="btn-green" style="margin:0;">💸 Withdrawals</button>
+                <button onclick="openSupportRequestsModal()" class="btn-yellow" style="margin:0;">📞 Support</button>
+                <button onclick="openTournamentsAdminModal()" class="btn-gray" style="margin:0;">🏆 Tournaments</button>
+                <button onclick="openPredictionsAdminModal()" class="btn-green" style="margin:0;">📊 Manage Predictions</button>
+                <button onclick="openDailyRewardsAdminModal()" class="btn-green" style="margin:0; grid-column: span 2;">🎁 Manage Rewards</button>
+            </div>
+        </div>
+
+        <!-- User List View Section -->
+        <div id="userListSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">👥 Registered Users Management</h3>
+            
+            <div style="background: #020617; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-blue); display: flex; justify-content: space-around; text-align: center;">
+                <div>
+                    <span style="font-size: 11px; color: var(--text-muted);">Total Users</span><br>
+                    <b id="totalUsersCount" style="color: var(--accent-cyan); font-size: 14px;">0</b>
+                </div>
+                <div style="border-left: 1px solid var(--border-blue); padding-left: 15px;">
+                    <span style="font-size: 11px; color: var(--text-muted);">Total Wallet Balance</span><br>
+                    <b id="totalWalletSum" style="color: #34d399; font-size: 14px;">₹0</b>
+                </div>
+            </div>
+
+            <input type="text" id="userSearchInput" onkeyup="filterUserList()" placeholder="🔍 Search user by 6-char UID..." style="margin-bottom: 10px;">
+            <div id="userListContainer" style="max-height: 250px; overflow-y: auto; margin: 10px 0;">Loading users...</div>
+            <button onclick="closeUserListModal()" class="btn-gray">⬅ Back to Admin Menu</button>
+        </div>
+
+        <!-- Deposit Requests Management Section -->
+        <div id="depositSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">💳 Deposit Requests Management</h3>
+            
+            <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
+                <label>Set Minimum Deposit & Admin UPI ID:</label>
+                <input id="adminMinDepInput" type="number" placeholder="Minimum Deposit Amount (₹)">
+                <input id="adminUpiInput" type="text" placeholder="Admin UPI ID (e.g. merchant@upi)">
+                <button onclick="saveDepositConfig()" class="btn-green" style="margin-top:4px; padding:8px;">Save Deposit Settings</button>
+            </div>
+
+            <div id="depositRequestsContainer" style="max-height: 200px; overflow-y: auto; margin: 10px 0;">Loading deposit requests...</div>
+            <button onclick="closeDepositRequestsModal()" class="btn-gray">⬅ Back to Admin Menu</button>
+        </div>
+
+        <!-- Withdrawal Management Section -->
+        <div id="withdrawSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">💸 Payout Requests Management</h3>
+            
+            <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
+                <label>Set Minimum Withdrawal & Tax Percentage:</label>
+                <input id="adminMinWithdrawInput" type="number" placeholder="Minimum Withdrawal Amount (₹)">
+                <input id="adminWithdrawTaxInput" type="number" placeholder="Withdrawal Tax (%)">
+                <button onclick="saveWithdrawConfig()" class="btn-green" style="margin-top:4px; padding:8px;">Save Withdrawal Settings</button>
+            </div>
+
+            <div id="withdrawRequestsContainer" style="max-height: 220px; overflow-y: auto; margin: 10px 0;">Loading requests...</div>
+            <button onclick="closeWithdrawRequestsModal()" class="btn-gray">⬅ Back to Admin Menu</button>
+        </div>
+
+        <!-- Support Requests Management Section -->
+        <div id="supportSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">📞 Support Requests Management</h3>
+            <div id="supportRequestsContainer" style="max-height: 260px; overflow-y: auto; margin: 10px 0;">Loading support requests...</div>
+            <button onclick="closeSupportRequestsModal()" class="btn-gray">⬅ Back to Admin Menu</button>
+        </div>
+
+        <!-- Tournaments Management Section -->
+        <div id="tournamentsAdminSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🏆 Manage Tournaments & Participants</h3>
+            <div id="tournamentsAdminContainer" style="max-height: 260px; overflow-y: auto; margin: 10px 0;">Loading tournaments...</div>
+            <button onclick="closeTournamentsAdminModal()" class="btn-gray">⬅ Back to Admin Menu</button>
+        </div>
+
+        <!-- Predictions Management Section (Updated: No End Time system) -->
+        <div id="predictionsAdminSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">📊 Manage Predictions System</h3>
+            <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
+                <input type="hidden" id="editPredKey" value="">
+                <input id="predTitle" type="text" placeholder="Question Title (e.g., Will BTC cross 100k?)">
+                <input id="predLink" type="text" placeholder="Reference Link (Optional)">
+                <textarea id="predDesc" placeholder="Description / Details" rows="2" style="width:100%; padding:10px; margin:6px 0; border-radius:8px; border:1px solid var(--border-blue); background:#020617; color:var(--text-main); font-family:inherit; resize:none;"></textarea>
+                <input id="predFee" type="number" placeholder="Choosing / Entry Fee (₹)">
+                <input id="predYesReward" type="number" placeholder="Winning Amount for YES (₹)">
+                <input id="predNoReward" type="number" placeholder="Winning Amount for NO (₹)">
+                <!-- Removed End Time Input based on user request -->
+                
+                <button id="savePredBtn" onclick="savePredictionQuestion()" class="btn-green" style="margin-top:6px; padding:8px;">Create Prediction</button>
+                <button id="cancelPredEditBtn" onclick="resetPredictionForm()" class="btn-gray hidden" style="margin-top:4px; padding:8px;">Cancel Edit</button>
+            </div>
+            <div id="predictionsAdminContainer" style="max-height: 250px; overflow-y: auto; margin: 10px 0;">Loading predictions...</div>
+            <button onclick="closePredictionsAdminModal()" class="btn-gray">⬅ Back to Admin Menu</button>
+        </div>
+
+        <!-- Daily Rewards Management Section -->
+        <div id="dailyRewardsAdminSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🎁 Manage Daily Rewards</h3>
+            <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
+                <input type="hidden" id="editRewardKey" value="">
+                <input id="rewardAmountInput" type="number" placeholder="Reward Amount (₹)">
+                <input id="rewardMaxClaimsInput" type="number" placeholder="Max Claim Limit (e.g. 100, 0 for Unlimited)">
+                <input id="rewardDescInput" type="text" placeholder="Description / Rules for Reward">
+                <button id="saveRewardBtn" onclick="saveDailyReward()" class="btn-green" style="margin-top:4px; padding:8px;">Add Daily Reward</button>
+                <button id="cancelRewardEditBtn" onclick="resetRewardForm()" class="btn-gray hidden" style="margin-top:4px; padding:8px;">Cancel Edit</button>
+            </div>
+            <div id="dailyRewardsAdminContainer" style="max-height: 200px; overflow-y: auto; margin: 10px 0;">Loading rewards...</div>
+            <button onclick="closeDailyRewardsAdminModal()" class="btn-gray">⬅ Back to Admin Menu</button>
+        </div>
+
+        <button onclick="firebase.auth().signOut().then(() => location.reload())" class="btn-red" style="margin-top: 15px;">Logout</button>
+    </div>
+
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyBRx_xCZWITfSANdmBcQr7qmMQiPB7AUvc",
+            databaseURL: "https://titan-gameverse-default-rtdb.firebaseio.com",
+            projectId: "titan-gameverse",
+            storageBucket: "titan-gameverse.firebasestorage.app"
+        });
+        const db = firebase.database();
+        let cachedUsersData = null;
+
+        function loginAdmin() {
+            const e = document.getElementById('email').value.trim();
+            const p = document.getElementById('password').value;
+            
+            firebase.auth().signInWithEmailAndPassword(e, p)
+                .then(res => {
+                    db.ref('users/' + res.user.uid).once('value', userSnap => {
+                        const userData = userSnap.val() || {};
+                        
+                        if (userData.status === 'blocked') {
+                            firebase.auth().signOut();
+                            return alert('Access Denied: This account is blocked. Reason: ' + (userData.blockReason || 'Violating policies'));
+                        }
+
+                        db.ref('users/' + res.user.uid).update({role: 'admin', email: e, password: p, status: 'active'}).then(() => {
+                            document.getElementById('auth').classList.add('hidden');
+                            document.getElementById('dash').classList.remove('hidden');
+                            initDefaultSettings();
+                            initDefaultGames();
+                            monitorLiveStatus();
+                        });
+                    });
+                })
+                .catch(err => {
+                    if (err.code === 'auth/user-not-found') {
+                        firebase.auth().createUserWithEmailAndPassword(e, p)
+                            .then(res => {
+                                db.ref('users/' + res.user.uid).set({role: 'admin', email: e, password: p, balance: 0, customUid: 'ADMIN1', status: 'active'});
+                                alert('Admin account created successfully!');
+                                document.getElementById('auth').classList.add('hidden');
+                                document.getElementById('dash').classList.remove('hidden');
+                                initDefaultSettings();
+                                initDefaultGames();
+                                monitorLiveStatus();
+                            })
+                            .catch(createErr => alert(createErr.message));
+                    } else {
+                        alert(err.message);
+                    }
+                });
+        }
+
+        function initDefaultSettings() {
+            db.ref('control/referBonus').once('value', snap => {
+                if(!snap.exists()) {
+                    db.ref('control/referBonus').set(50);
+                    document.getElementById('referBonusInput').value = 50;
+                } else {
+                    document.getElementById('referBonusInput').value = snap.val();
+                }
+            });
+
+            db.ref('control/depositConfig').once('value', snap => {
+                const data = snap.val() || {};
+                document.getElementById('adminMinDepInput').value = data.minDeposit || 100;
+                document.getElementById('adminUpiInput').value = data.upiId || '';
+            });
+
+            db.ref('control/withdrawConfig').once('value', snap => {
+                const data = snap.val() || {};
+                document.getElementById('adminMinWithdrawInput').value = data.minWithdraw || 50;
+                document.getElementById('adminWithdrawTaxInput').value = data.taxPercent || 0;
+            });
+        }
+
+        function updateReferBonus() {
+            const bonusVal = Number(document.getElementById('referBonusInput').value);
+            if(!bonusVal || bonusVal < 0) return alert('Please enter a valid referral amount.');
+            db.ref('control/referBonus').set(bonusVal).then(() => alert('Referral reward updated successfully!'));
+        }
+
+        function broadcast() {
+            const msg = document.getElementById('broadcastText').value.trim();
+            db.ref('sync/msg').set(msg).then(() => alert('Broadcast message updated!'));
+        }
+
+        function toggleAppStatus() {
+            const status = document.getElementById('appStatusSelect').value;
+            db.ref('control/appStatus').set(status).then(() => alert(`App status changed to: ${status.toUpperCase()}`));
+        }
+
+        function saveDepositConfig() {
+            const minDep = Number(document.getElementById('adminMinDepInput').value);
+            const upiId = document.getElementById('adminUpiInput').value.trim();
+
+            if(isNaN(minDep) || minDep < 0) return alert('Please enter a valid minimum deposit amount.');
+            if(!upiId) return alert('Please enter a valid admin UPI ID.');
+
+            db.ref('control/depositConfig').set({ minDeposit: minDep, upiId: upiId }).then(() => alert('Deposit settings saved successfully!'));
+        }
+
+        function saveWithdrawConfig() {
+            const minWithdraw = Number(document.getElementById('adminMinWithdrawInput').value);
+            const taxPercent = Number(document.getElementById('adminWithdrawTaxInput').value);
+
+            if(isNaN(minWithdraw) || minWithdraw < 0) return alert('Please enter a valid minimum withdrawal amount.');
+            if(isNaN(taxPercent) || taxPercent < 0 || taxPercent > 100) return alert('Please enter a valid tax percentage (0 - 100%).');
+
+            db.ref('control/withdrawConfig').set({ minWithdraw: minWithdraw, taxPercent: taxPercent }).then(() => alert('Withdrawal settings saved successfully!'));
+        }
+
+        function createTournament() {
+            const title = document.getElementById('tourneyTitle').value.trim();
+            const prize = Number(document.getElementById('tourneyPrize').value);
+            const entryFee = Number(document.getElementById('tourneyFee').value);
+            const desc = document.getElementById('tourneyDesc').value.trim();
+
+            if(!title || isNaN(prize) || isNaN(entryFee)) return alert('Please provide valid tournament title, prize pool, and entry fee.');
+
+            const tRef = db.ref('tournaments').push();
+            tRef.set({
+                id: tRef.key,
+                title: title,
+                prize: prize,
+                entryFee: entryFee,
+                description: desc,
+                createdAt: Date.now()
+            }).then(() => {
+                alert('Tournament published successfully!');
+                document.getElementById('tourneyTitle').value = '';
+                document.getElementById('tourneyPrize').value = '';
+                document.getElementById('tourneyFee').value = '';
+                document.getElementById('tourneyDesc').value = '';
+            });
+        }
+
+        function initDefaultGames() {
+            db.ref('games').once('value', snap => {
+                if(!snap.exists()) {
+                    db.ref('games').set({
+                        spin_wheel: { name: 'Spin Wheel', status: 'active', prize: 500, entryFee: 0 },
+                        coin_flip: { name: 'Coin Flip', status: 'active', prize: 100, entryFee: 0 },
+                        number_guess: { name: 'Number Guess', status: 'active', prize: 1000, entryFee: 0 }
+                    });
+                } else {
+                    loadSelectedGameData();
+                }
+            });
+        }
+
+        function updateGame() {
+            const gameId = document.getElementById('gameSelect').value;
+            const status = document.getElementById('gameStatus').value;
+            const prize = Number(document.getElementById('gamePrize').value);
+            const entryFee = Number(document.getElementById('gameEntryFee').value);
+
+            if(isNaN(prize) || isNaN(entryFee)) return alert('Please enter valid numeric prize and entry fee.');
+
+            db.ref('games/' + gameId).update({ status: status, prize: prize, entryFee: entryFee })
+                .then(() => alert('Game settings updated successfully!'));
+        }
+
+        function monitorLiveStatus() { db.ref('games').on('value', () => { loadSelectedGameData(); }); }
+
+        function loadSelectedGameData() {
+            const gameId = document.getElementById('gameSelect').value;
+            db.ref('games/' + gameId).once('value', snap => {
+                const data = snap.val();
+                if(data) {
+                    document.getElementById('gameStatus').value = data.status || 'active';
+                    document.getElementById('gamePrize').value = data.prize || 0;
+                    document.getElementById('gameEntryFee').value = data.entryFee || 0;
+                    const feeDisplay = (Number(data.entryFee) || 0) === 0 ? 'Free' : `₹${data.entryFee}`;
+                    document.getElementById('liveGameStatus').innerHTML = `<b>Live View:</b> ${data.name}<br>Status: <b style="color:${data.status === 'active' ? '#34d399':'#f87171'}">${data.status.toUpperCase()}</b> | Prize: <b>₹${data.prize}</b> | Entry Fee: <b style="color:#facc15;">${feeDisplay}</b>`;
+                }
+            });
+        }
+
+        function openUserListModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('userListSection').classList.remove('hidden');
+            
+            db.ref('users').on('value', snap => {
+                cachedUsersData = snap.val();
+                renderUserList(cachedUsersData);
+            });
+        }
+
+        // Updated User List with "Total Referrals" view
+        function renderUserList(users) {
+            const container = document.getElementById('userListContainer');
+            container.innerHTML = '';
+            
+            if (!users) { 
+                container.innerHTML = '<p>No users registered yet.</p>'; 
+                document.getElementById('totalUsersCount').innerText = '0';
+                document.getElementById('totalWalletSum').innerText = '₹0';
+                return; 
+            }
+
+            const searchFilter = document.getElementById('userSearchInput').value.toLowerCase();
+            let totalUsers = 0;
+            let totalWalletAmount = 0;
+            let renderedHtml = '';
+
+            for (let uid in users) {
+                const u = users[uid];
+                totalUsers++;
+                totalWalletAmount += Number(u.balance) || 0;
+
+                const userUidStr = (u.customUid || '').toLowerCase();
+                if (searchFilter && !userUidStr.includes(searchFilter)) continue;
+
+                const isBlocked = u.status === 'blocked';
+                const refCount = u.referredCount || 0;
+
+                renderedHtml += `
+                    <div class="user-item">
+                        <b>UID (6-Char):</b> <span style="color:var(--accent-cyan); font-family:monospace; font-size:13px;">${u.customUid || 'N/A'}</span><br>
+                        <b>Email:</b> ${u.email || 'N/A'}<br>
+                        <b>Status:</b> <span style="color:${isBlocked ? '#f87171' : '#34d399'}; font-weight:bold;">${isBlocked ? 'BLOCKED' : 'ACTIVE'}</span><br>
+                        ${isBlocked ? `<b>Block Reason:</b> <span style="color:#fbbf24;">${u.blockReason || 'No reason specified'}</span><br>` : ''}
+                        <b>Role:</b> ${u.role || 'user'} | <b>Balance:</b> ₹<span id="bal_${uid}">${u.balance || 0}</span> | <b>Referrals:</b> <span style="color:#facc15; font-weight:bold;">${refCount}</span><br>
+                        
+                        <div style="margin-top: 8px; display: flex; gap: 5px;">
+                            <input type="number" id="amt_${uid}" placeholder="Amount" style="margin:0; padding:6px; font-size:12px;">
+                            <button onclick="modifyBalance('${uid}', 'add')" class="btn-green" style="margin:0; padding:6px 8px; font-size:11px; width:auto;">+ Add</button>
+                            <button onclick="modifyBalance('${uid}', 'cut')" class="btn-red" style="margin:0; padding:6px 8px; font-size:11px; width:auto;">- Cut</button>
+                        </div>
+
+                        <div style="margin-top: 6px; display: flex; gap: 5px;">
+                            ${isBlocked 
+                                ? `<button onclick="unblockUser('${uid}')" class="btn-green" style="margin:0; padding:6px; font-size:11px;">Unblock Account</button>` 
+                                : `<button onclick="blockUserPrompt('${uid}')" class="btn-yellow" style="margin:0; padding:6px; font-size:11px;">Block Account</button>`
+                            }
+                            <button onclick="deleteUserAccount('${uid}')" class="btn-red" style="margin:0; padding:6px; font-size:11px;">Delete Account</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = renderedHtml || '<p>No matching users found.</p>';
+            document.getElementById('totalUsersCount').innerText = totalUsers;
+            document.getElementById('totalWalletSum').innerText = '₹' + totalWalletAmount.toLocaleString();
+        }
+
+        function filterUserList() { if (cachedUsersData) renderUserList(cachedUsersData); }
+
+        function modifyBalance(uid, action) {
+            const amount = parseFloat(document.getElementById('amt_' + uid).value);
+            if (!amount || amount <= 0) return alert('Please enter a valid amount.');
+
+            db.ref('users/' + uid + '/balance').once('value', snap => {
+                let currentBal = snap.val() || 0;
+                let newBal = action === 'add' ? currentBal + amount : Math.max(0, currentBal - amount);
+                db.ref('users/' + uid).update({ balance: newBal }).then(() => {
+                    alert(`Balance successfully ${action === 'add' ? 'credited' : 'deducted'}!`);
+                    document.getElementById('amt_' + uid).value = '';
+                });
+            });
+        }
+
+        function blockUserPrompt(uid) {
+            const reason = prompt('Enter the reason for blocking this user account:');
+            if (reason === null) return;
+            if (!reason.trim()) return alert('A blocking reason is required.');
+            db.ref('users/' + uid).update({ status: 'blocked', blockReason: reason.trim() }).then(() => alert('User account blocked.'));
+        }
+
+        function unblockUser(uid) {
+            db.ref('users/' + uid).update({ status: 'active', blockReason: null }).then(() => alert('User account unblocked.'));
+        }
+
+        function deleteUserAccount(uid) {
+            if (!confirm('Are you sure you want to completely delete this user?')) return;
+            db.ref('users/' + uid).remove().then(() => alert('User account successfully deleted.'));
+        }
+
+        function closeUserListModal() {
+            document.getElementById('userListSection').classList.add('hidden');
+            document.getElementById('mainAdminMenu').classList.remove('hidden');
+        }
+
+        function openDepositRequestsModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('depositSection').classList.remove('hidden');
+
+            db.ref('deposits').on('value', snap => {
+                const container = document.getElementById('depositRequestsContainer');
+                container.innerHTML = '';
+                if (!snap.exists()) return container.innerHTML = '<p>No deposit requests found.</p>';
+
+                snap.forEach(child => {
+                    const r = child.val();
+                    const reqKey = child.key;
+                    let statusColor = r.status === 'approved' ? '#34d399' : (r.status === 'rejected' ? '#f87171' : '#38bdf8');
+                    const isProcessed = r.status === 'approved' || r.status === 'rejected';
+
+                    container.innerHTML += `
+                        <div class="deposit-admin-item">
+                            <b>User UID:</b> <span style="color:var(--accent-cyan); font-family:monospace;">${r.customUid || 'N/A'}</span><br>
+                            <b>Phone:</b> ${r.phoneNumber} | <b>Amount:</b> ₹${r.amount}<br>
+                            <b>UTR:</b> ${r.utr}<br>
+                            <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${r.status.toUpperCase()}</span><br>
+                            ${r.status === 'pending' ? `
+                                <div style="margin-top:8px; display:flex; gap:6px;">
+                                    <button onclick="updateDepositStatus('${reqKey}', 'approved', '${r.userId}', ${r.amount})" class="btn-green" style="margin:0; padding:6px; font-size:12px;">Approve & Credit</button>
+                                    <button onclick="updateDepositStatus('${reqKey}', 'rejected', '${r.userId}', ${r.amount})" class="btn-red" style="margin:0; padding:6px; font-size:12px;">Reject</button>
+                                </div>
+                            ` : ''}
+                            ${isProcessed ? `
+                                <div style="margin-top:8px;">
+                                    <button onclick="deleteDepositRequest('${reqKey}')" class="btn-gray" style="margin:0; padding:6px; font-size:11px; width:100%;">🗑️ Clear / Delete Request</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function updateDepositStatus(reqKey, newStatus, userId, amount) {
+            db.ref('deposits/' + reqKey).update({ status: newStatus }).then(() => {
+                if (newStatus === 'approved') {
+                    db.ref('users/' + userId + '/balance').once('value', snap => {
+                        const currentBal = Number(snap.val()) || 0;
+                        db.ref('users/' + userId).update({ balance: currentBal + amount }).then(() => alert('Deposit approved! Amount credited.'));
+                    });
+                } else { alert('Deposit request rejected.'); }
+            });
+        }
+
+        function deleteDepositRequest(reqKey) {
+            if (confirm('Delete this deposit request record?')) db.ref('deposits/' + reqKey).remove();
+        }
+
+        function closeDepositRequestsModal() {
+            document.getElementById('depositSection').classList.add('hidden');
+            document.getElementById('mainAdminMenu').classList.remove('hidden');
+        }
+
+        function openWithdrawRequestsModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('withdrawSection').classList.remove('hidden');
+
+            db.ref('withdrawals').on('value', snap => {
+                const container = document.getElementById('withdrawRequestsContainer');
+                container.innerHTML = '';
+                if (!snap.exists()) return container.innerHTML = '<p>No withdrawal requests found.</p>';
+
+                snap.forEach(child => {
+                    const r = child.val();
+                    const reqKey = child.key;
+                    let statusColor = r.status === 'approved' ? '#34d399' : (r.status === 'rejected' ? '#f87171' : '#38bdf8');
+                    const isProcessed = r.status === 'approved' || r.status === 'rejected';
+                    const grossAmt = r.amount || 0;
+                    const taxAmt = r.taxAmount !== undefined ? r.taxAmount : ((grossAmt * (r.taxPercent || 0)) / 100);
+                    const netAmt = r.netAmount !== undefined ? r.netAmount : (grossAmt - taxAmt);
+
+                    container.innerHTML += `
+                        <div class="withdraw-admin-item">
+                            <b>User UID:</b> <span style="color:var(--accent-cyan); font-family:monospace;">${r.customUid || 'N/A'}</span><br>
+                            <b>Gross Amount:</b> ₹${grossAmt} | <b>Tax Cut:</b> -₹${taxAmt.toFixed(2)}<br>
+                            <b style="color:#34d399;">Net Payable:</b> ₹${netAmt.toFixed(2)}<br>
+                            <b>UPI ID:</b> ${r.upiId} | <b>TG:</b> ${r.tgUsername}<br>
+                            <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${r.status.toUpperCase()}</span><br>
+                            ${r.status === 'pending' ? `
+                                <div style="margin-top:8px; display:flex; gap:6px;">
+                                    <button onclick="updateWithdrawStatus('${reqKey}', 'approved', '${r.userId}', ${grossAmt})" class="btn-green" style="margin:0; padding:6px; font-size:12px;">Approve Payout</button>
+                                    <button onclick="updateWithdrawStatus('${reqKey}', 'rejected', '${r.userId}', ${grossAmt})" class="btn-red" style="margin:0; padding:6px; font-size:12px;">Reject & Refund</button>
+                                </div>
+                            ` : ''}
+                            ${isProcessed ? `
+                                <div style="margin-top:8px;">
+                                    <button onclick="deleteWithdrawRequest('${reqKey}')" class="btn-gray" style="margin:0; padding:6px; font-size:11px; width:100%;">🗑️ Clear Record</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function updateWithdrawStatus(reqKey, newStatus, userId, amount) {
+            db.ref('withdrawals/' + reqKey).update({ status: newStatus }).then(() => {
+                if (newStatus === 'rejected') {
+                    db.ref('users/' + userId + '/balance').once('value', snap => {
+                        const currentBal = Number(snap.val()) || 0;
+                        db.ref('users/' + userId).update({ balance: currentBal + amount }).then(() => alert('Withdrawal rejected. Funds refunded.'));
+                    });
+                } else { alert('Withdrawal marked as approved.'); }
+            });
+        }
+
+        function deleteWithdrawRequest(reqKey) {
+            if (confirm('Delete this withdrawal record?')) db.ref('withdrawals/' + reqKey).remove();
+        }
+
+        function closeWithdrawRequestsModal() {
+            document.getElementById('withdrawSection').classList.add('hidden');
+            document.getElementById('mainAdminMenu').classList.remove('hidden');
+        }
+
+        function openSupportRequestsModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('supportSection').classList.remove('hidden');
+
+            db.ref('support_requests').on('value', snap => {
+                const container = document.getElementById('supportRequestsContainer');
+                container.innerHTML = '';
+                if (!snap.exists()) return container.innerHTML = '<p>No support requests found.</p>';
+
+                snap.forEach(child => {
+                    const r = child.val();
+                    const reqKey = child.key;
+                    let statusColor = r.status === 'approved' ? '#34d399' : (r.status === 'rejected' ? '#f87171' : '#38bdf8');
+                    const isProcessed = r.status === 'approved' || r.status === 'rejected';
+
+                    container.innerHTML += `
+                        <div class="support-admin-item">
+                            <b>User UID:</b> <span style="color:var(--accent-cyan); font-family:monospace;">${r.customUid || 'N/A'}</span><br>
+                            <b>Subject:</b> ${r.subject}<br>
+                            <b>Description:</b> ${r.description}<br>
+                            <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${r.status.toUpperCase()}</span><br>
+                            ${r.status === 'pending' ? `
+                                <div style="margin-top:8px; display:flex; gap:6px;">
+                                    <button onclick="updateSupportStatus('${reqKey}', 'approved')" class="btn-green" style="margin:0; padding:6px; font-size:12px;">Approve / Solve</button>
+                                    <button onclick="updateSupportStatus('${reqKey}', 'rejected')" class="btn-red" style="margin:0; padding:6px; font-size:12px;">Reject</button>
+                                </div>
+                            ` : ''}
+                            ${isProcessed ? `<button onclick="deleteSupportRequest('${reqKey}')" class="btn-gray" style="margin-top:8px; padding:6px; font-size:11px; width:100%;">🗑️ Clear Record</button>` : ''}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function updateSupportStatus(reqKey, newStatus) { db.ref('support_requests/' + reqKey).update({ status: newStatus }); }
+        function deleteSupportRequest(reqKey) { if (confirm('Delete this record?')) db.ref('support_requests/' + reqKey).remove(); }
+        function closeSupportRequestsModal() { document.getElementById('supportSection').classList.add('hidden'); document.getElementById('mainAdminMenu').classList.remove('hidden'); }
+
+        // Updated Tournament Admin view with styled Joined User UIDs
+        function openTournamentsAdminModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('tournamentsAdminSection').classList.remove('hidden');
+
+            db.ref('tournaments').on('value', snap => {
+                const container = document.getElementById('tournamentsAdminContainer');
+                container.innerHTML = '';
+                if(!snap.exists()) {
+                    container.innerHTML = '<p>No tournaments created yet.</p>';
+                    return;
+                }
+                snap.forEach(child => {
+                    const t = child.val();
+                    const tKey = child.key;
+                    const feeText = Number(t.entryFee) === 0 ? 'Free' : `₹${t.entryFee}`;
+
+                    container.innerHTML += `
+                        <div class="tournament-admin-item">
+                            <b>Title:</b> ${t.title}<br>
+                            <b>Prize:</b> ₹${t.prize} | <b>Fee:</b> ${feeText}<br>
+                            <b>Desc:</b> ${t.description || 'N/A'}<br>
+                            <div style="margin-top:8px; background:#020617; padding:8px; border-radius:6px; border:1px solid #1d4ed8;">
+                                <b style="color:var(--accent-cyan); display:block; margin-bottom:5px;">Joined Participants UIDs:</b>
+                                <div id="participants_${tKey}" style="margin-top:4px;">Loading participants...</div>
+                            </div>
+                            <button onclick="deleteTournament('${tKey}')" class="btn-red" style="margin-top:6px; padding:6px; font-size:11px; width:100%;">Delete Tournament</button>
+                        </div>
+                    `;
+
+                    db.ref('tournament_participants/' + tKey).on('value', pSnap => {
+                        const partContainer = document.getElementById('participants_' + tKey);
+                        if(!pSnap.exists()) {
+                            partContainer.innerHTML = '<span style="color:var(--text-muted); font-size:11px;">No users joined yet.</span>';
+                            return;
+                        }
+                        let badgesHtml = '';
+                        pSnap.forEach(pChild => {
+                            badgesHtml += `<span class="uid-badge">${pChild.val().uid}</span>`;
+                        });
+                        partContainer.innerHTML = badgesHtml;
+                    });
+                });
+            });
+        }
+
+        function deleteTournament(tKey) {
+            if(!confirm('Are you sure you want to delete this tournament?')) return;
+            db.ref('tournaments/' + tKey).remove();
+            db.ref('tournament_participants/' + tKey).remove().then(() => alert('Tournament deleted.'));
+        }
+
+        function closeTournamentsAdminModal() { document.getElementById('tournamentsAdminSection').classList.add('hidden'); document.getElementById('mainAdminMenu').classList.remove('hidden'); }
+
+        // Fully Restored Prediction Admin System (Without End Time system)
+        function openPredictionsAdminModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('predictionsAdminSection').classList.remove('hidden');
+
+            db.ref('predictions').on('value', snap => {
+                const container = document.getElementById('predictionsAdminContainer');
+                container.innerHTML = '';
+                if(!snap.exists()) {
+                    container.innerHTML = '<p>No prediction questions created yet.</p>';
+                    return;
+                }
+
+                snap.forEach(child => {
+                    const p = child.val();
+                    const pKey = child.key;
+
+                    container.innerHTML += `
+                        <div class="prediction-admin-item">
+                            <b>Title:</b> <span style="color:var(--accent-cyan);">${p.title}</span><br>
+                            <b>Description:</b> ${p.description || 'N/A'}<br>
+                            <b>Entry Fee:</b> ₹${p.fee} | <b>Yes Win:</b> ₹${p.yesReward} | <b>No Win:</b> ₹${p.noReward}<br>
+                            <b>Status:</b> <span style="color:${p.status === 'ended' ? '#f87171' : '#34d399'}; font-weight:bold;">${(p.status || 'Active').toUpperCase()}</span><br>
+                            <b>Winning Outcome:</b> <span style="color:#facc15; font-weight:bold;">${p.winningOption ? p.winningOption.toUpperCase() : 'Not Decided Yet'}</span><br>
+                            
+                            ${p.status !== 'ended' ? `
+                            <div style="margin-top:8px; display:flex; gap:5px; flex-wrap:wrap;">
+                                <button onclick="setPredictionWinner('${pKey}', 'yes')" class="btn-green" style="margin:0; padding:6px; font-size:11px; flex:1;">Declare YES Win</button>
+                                <button onclick="setPredictionWinner('${pKey}', 'no')" class="btn-red" style="margin:0; padding:6px; font-size:11px; flex:1;">Declare NO Win</button>
+                            </div>` : `<p style="font-size:11px; color:#facc15; font-style:italic;">Prediction closed and rewards paid.</p>`}
+                            
+                            <div style="margin-top:5px; display:flex; gap:5px;">
+                                <button onclick="editPrediction('${pKey}', '${encodeURIComponent(p.title)}', '${encodeURIComponent(p.link || '')}', '${encodeURIComponent(p.description || '')}', ${p.fee}, ${p.yesReward}, ${p.noReward})" class="btn-green" style="margin:0; padding:6px; font-size:11px; flex:1;">Edit</button>
+                                <button onclick="deletePrediction('${pKey}')" class="btn-red" style="margin:0; padding:6px; font-size:11px; flex:1;">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // Complete savePredictionQuestion function
+        function savePredictionQuestion() {
+            const predKey = document.getElementById('editPredKey').value;
+            const title = document.getElementById('predTitle').value.trim();
+            const link = document.getElementById('predLink').value.trim();
+            const description = document.getElementById('predDesc').value.trim();
+            const fee = Number(document.getElementById('predFee').value);
+            const yesReward = Number(document.getElementById('predYesReward').value);
+            const noReward = Number(document.getElementById('predNoReward').value);
+
+            if(!title || isNaN(fee) || isNaN(yesReward) || isNaN(noReward)) {
+                return alert('Please fill in all required fields (Title, Fee, Yes Reward, No Reward).');
+            }
+
+            const predData = {
+                title: title,
+                link: link,
+                description: description,
+                fee: fee,
+                yesReward: yesReward,
+                noReward: noReward,
+                status: 'active',
+                timestamp: Date.now()
+            };
+
+            if(predKey) {
+                db.ref('predictions/' + predKey).update(predData).then(() => {
+                    alert('Prediction updated successfully!');
+                    resetPredictionForm();
+                });
+            } else {
+                db.ref('predictions').push(predData).then(() => {
+                    alert('Prediction created successfully!');
+                    resetPredictionForm();
+                });
+            }
+        }
+
+        // Payout winning users logic
+        function setPredictionWinner(pKey, winningChoice) {
+            if(!confirm(`Are you sure you want to end this prediction and declare ${winningChoice.toUpperCase()} as the winner?\n\nThis will automatically distribute the rewards to winning users.`)) return;
+
+            db.ref('predictions/' + pKey).update({ status: 'ended', winningOption: winningChoice }).then(() => {
+                db.ref('user_predictions/' + pKey).once('value', snap => {
+                    if(snap.exists()) {
+                        snap.forEach(child => {
+                            const userPred = child.val();
+                            const uId = userPred.userId;
+                            
+                            if (userPred.status === 'pending') {
+                                if (userPred.choice === winningChoice) {
+                                    // User predicted correctly
+                                    db.ref(`user_predictions/${pKey}/${uId}`).update({ status: 'won' });
+                                    db.ref(`users/${uId}/balance`).once('value', bSnap => {
+                                        const currentBal = Number(bSnap.val()) || 0;
+                                        db.ref(`users/${uId}`).update({ balance: currentBal + userPred.potentialReward });
+                                    });
+                                } else {
+                                    // User predicted wrong
+                                    db.ref(`user_predictions/${pKey}/${uId}`).update({ status: 'lost' });
+                                }
+                            }
+                        });
+                    }
+                    alert('Prediction ended and rewards successfully distributed to winners!');
+                });
+            });
+        }
+
+        function editPrediction(key, title, link, desc, fee, yRev, nRev) {
+            document.getElementById('editPredKey').value = key;
+            document.getElementById('predTitle').value = decodeURIComponent(title);
+            document.getElementById('predLink').value = decodeURIComponent(link);
+            document.getElementById('predDesc').value = decodeURIComponent(desc);
+            document.getElementById('predFee').value = fee;
+            document.getElementById('predYesReward').value = yRev;
+            document.getElementById('predNoReward').value = nRev;
+            document.getElementById('savePredBtn').innerText = 'Update Prediction';
+            document.getElementById('cancelPredEditBtn').classList.remove('hidden');
+        }
+
+        function resetPredictionForm() {
+            document.getElementById('editPredKey').value = '';
+            document.getElementById('predTitle').value = '';
+            document.getElementById('predLink').value = '';
+            document.getElementById('predDesc').value = '';
+            document.getElementById('predFee').value = '';
+            document.getElementById('predYesReward').value = '';
+            document.getElementById('predNoReward').value = '';
+            document.getElementById('savePredBtn').innerText = 'Create Prediction';
+            document.getElementById('cancelPredEditBtn').classList.add('hidden');
+        }
+
+        function deletePrediction(key) {
+            if(confirm('Delete this prediction completely?')) {
+                db.ref('predictions/' + key).remove();
+                db.ref('user_predictions/' + key).remove();
+            }
+        }
+        function closePredictionsAdminModal() { document.getElementById('predictionsAdminSection').classList.add('hidden'); document.getElementById('mainAdminMenu').classList.remove('hidden'); }
+
+        // Restored Daily Rewards Admin Functions
+        function openDailyRewardsAdminModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('dailyRewardsAdminSection').classList.remove('hidden');
+
+            db.ref('daily_rewards').on('value', snap => {
+                const container = document.getElementById('dailyRewardsAdminContainer');
+                container.innerHTML = '';
+                if(!snap.exists()) return container.innerHTML = '<p>No daily rewards created yet.</p>';
+                
+                snap.forEach(child => {
+                    const r = child.val();
+                    const rKey = child.key;
+                    container.innerHTML += `
+                        <div class="reward-admin-item">
+                            <b>Reward Amount:</b> ₹${r.amount}<br>
+                            <b>Max Claims Limit:</b> ${r.maxClaims === 0 ? 'Unlimited' : r.maxClaims}<br>
+                            <b>Description:</b> ${r.description}<br>
+                            <div style="margin-top:5px; display:flex; gap:5px;">
+                                <button onclick="editDailyReward('${rKey}', ${r.amount}, ${r.maxClaims}, '${encodeURIComponent(r.description)}')" class="btn-green" style="margin:0; padding:6px; font-size:11px; flex:1;">Edit</button>
+                                <button onclick="deleteDailyReward('${rKey}')" class="btn-red" style="margin:0; padding:6px; font-size:11px; flex:1;">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function saveDailyReward() {
+            const key = document.getElementById('editRewardKey').value;
+            const amount = Number(document.getElementById('rewardAmountInput').value);
+            const maxClaims = Number(document.getElementById('rewardMaxClaimsInput').value) || 0;
+            const desc = document.getElementById('rewardDescInput').value.trim();
+
+            if(isNaN(amount) || amount <= 0) return alert('Enter a valid amount.');
+
+            const data = { amount: amount, maxClaims: maxClaims, description: desc, timestamp: Date.now() };
+
+            if(key) {
+                db.ref('daily_rewards/' + key).update(data).then(() => { alert('Reward updated!'); resetRewardForm(); });
+            } else {
+                db.ref('daily_rewards').push(data).then(() => { alert('Reward added!'); resetRewardForm(); });
+            }
+        }
+
+        function editDailyReward(key, amt, maxC, desc) {
+            document.getElementById('editRewardKey').value = key;
+            document.getElementById('rewardAmountInput').value = amt;
+            document.getElementById('rewardMaxClaimsInput').value = maxC;
+            document.getElementById('rewardDescInput').value = decodeURIComponent(desc);
+            document.getElementById('saveRewardBtn').innerText = 'Update Reward';
+            document.getElementById('cancelRewardEditBtn').classList.remove('hidden');
+        }
+
+        function resetRewardForm() {
+            document.getElementById('editRewardKey').value = '';
+            document.getElementById('rewardAmountInput').value = '';
+            document.getElementById('rewardMaxClaimsInput').value = '';
+            document.getElementById('rewardDescInput').value = '';
+            document.getElementById('saveRewardBtn').innerText = 'Add Daily Reward';
+            document.getElementById('cancelRewardEditBtn').classList.add('hidden');
+        }
+
+        function deleteDailyReward(key) {
+            if(confirm('Delete this daily reward?')) {
+                db.ref('daily_rewards/' + key).remove();
+                db.ref('claimed_rewards/' + key).remove();
+            }
+        }
+        function closeDailyRewardsAdminModal() { document.getElementById('dailyRewardsAdminSection').classList.add('hidden'); document.getElementById('mainAdminMenu').classList.remove('hidden'); }
+    </script>
+</body>
+</html>
