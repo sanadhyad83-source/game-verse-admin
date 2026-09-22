@@ -286,6 +286,34 @@
         .global-game-control button{width:auto;min-width:150px;margin:0;padding:9px 12px;font-size:10px}
         @media(max-width:700px){.dash2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash2-control-grid{grid-template-columns:1fr}.global-game-control{align-items:stretch;flex-direction:column}.global-game-control button{width:100%}}
 
+        /* STAFF Management */
+        .staff-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0 14px;}
+        .staff-kpi{padding:12px;border:1px solid rgba(var(--accent-rgb),.18);border-radius:12px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(0,0,0,.22));}
+        .staff-kpi span{display:block;font-size:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:900;}
+        .staff-kpi b{display:block;margin-top:5px;font-size:19px;color:#fff;}
+        .staff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        .staff-card{padding:12px;border:1px solid rgba(var(--accent-rgb),.16);border-radius:13px;background:rgba(0,0,0,.22);}
+        .staff-card h4{margin:0 0 9px;color:#facc15;font-size:12px;}
+        .staff-table-wrap{overflow:auto;border:1px solid rgba(var(--accent-rgb),.14);border-radius:12px;}
+        .staff-table{width:100%;min-width:900px;border-collapse:collapse;font-size:10px;}
+        .staff-table th{padding:9px;text-align:left;color:#facc15;background:rgba(var(--accent-rgb),.07);border-bottom:1px solid rgba(var(--accent-rgb),.14);white-space:nowrap;}
+        .staff-table td{padding:9px;color:#fff;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:middle;}
+        .staff-role-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:8px;font-weight:900;color:#fde68a;background:rgba(250,204,21,.09);border:1px solid rgba(250,204,21,.25);white-space:nowrap;}
+        .staff-status-pill{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:8px;font-weight:900;}
+        .staff-status-pill.on{color:#34d399;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.22)}
+        .staff-status-pill.off{color:#f87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.22)}
+        .staff-user-box{padding:9px 10px;border:1px solid rgba(59,130,246,.2);border-radius:10px;background:rgba(59,130,246,.055);margin-top:7px;}
+        .staff-user-box b{color:#fff}.staff-user-box small{display:block;color:var(--text-muted);margin-top:2px;font-size:9px;}
+        .staff-downline{max-height:280px;overflow:auto;}
+        .staff-actions{display:flex;gap:6px;flex-wrap:wrap;}
+        .staff-actions button{width:auto!important;margin:0!important;padding:6px 9px!important;font-size:9px!important;}
+        .staff-fire-btn{background:linear-gradient(135deg,#dc2626,#991b1b)!important;color:#fff!important;border:1px solid rgba(255,120,120,.65)!important;font-weight:900!important;box-shadow:0 0 10px rgba(239,68,68,.25)!important;}
+        .staff-fire-btn:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 0 14px rgba(239,68,68,.45)!important;}
+        .staff-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+        .staff-filter-grid{display:grid;grid-template-columns:2fr 1fr 1.2fr 1.2fr;gap:7px;}
+        .staff-filter-grid input,.staff-filter-grid select{min-width:0;}
+        @media(max-width:800px){.staff-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.staff-grid{grid-template-columns:1fr;}.staff-form-grid{grid-template-columns:1fr;}.staff-filter-grid{grid-template-columns:1fr 1fr;}}
+        @media(max-width:520px){.staff-filter-grid{grid-template-columns:1fr;}}
         .hidden { display: none !important; }
         /* Compact User 360 list + Manage popup */
         .u360-list-wrap{width:100%;overflow-x:auto;border:1px solid rgba(var(--accent-rgb),.22);border-radius:12px;background:rgba(5,5,5,.72);}
@@ -721,6 +749,7 @@
 
             <div class="sidebar-group-label">MANAGEMENT</div>
             <div class="sidebar-nav-item" onclick="navTo('Users', openUserListModal, this)"><span class="icon">👥</span> Users</div>
+            <div class="sidebar-nav-item" onclick="navTo('STAFF', openStaffManagementModal, this)"><span class="icon">🧑‍💼</span> STAFF</div>
             <div class="sidebar-nav-item" onclick="navTo('Deposits', openDepositRequestsModal, this)"><span class="icon">💳</span> Deposits</div>
             <div class="sidebar-nav-item" onclick="navTo('Withdrawals', openWithdrawRequestsModal, this)"><span class="icon">💸</span> Withdrawals</div>
             <div class="sidebar-nav-item" onclick="navTo('Games Management', openGamesManagementAdminModal, this)"><span class="icon">🎮</span> Games Management</div>
@@ -1214,7 +1243,6 @@
                 <button onclick="updateGame()" class="btn-green" style="margin-top:10px;">💾 Save Game Settings</button>
                 <div id="liveGameStatus" class="live-status">Status: — | Mode: — | Fee: ₹0</div>
             </div>
-            <button onclick="closeGamesManagementAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Notifications Section (moved broadcast composer here) -->
@@ -1239,7 +1267,6 @@
 
             <label style="font-size:12px; color:var(--text-muted); margin: 10px 0 4px 2px; display:block;">Recent Broadcasts:</label>
             <div id="broadcastHistoryContainer" style="max-height: 220px; overflow-y: auto; margin-top: 4px;"><p style="font-size:12px; color:var(--text-muted);">No broadcasts sent yet.</p></div>
-            <button onclick="closeNotificationsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Settings Section (moved referral controls + app status here) -->
@@ -1444,7 +1471,6 @@
                 </div>
                 <p class="hint-text" id="lastClearedGameRounds">Last cleared: 3/9/2026, 1:59:41 pm (also resets the Overview chart &amp; Total Profit)</p>
             </div>
-            <button onclick="closeSettingsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Colour Clash Admin Section -->
@@ -1539,8 +1565,6 @@
                 </div>
                 <div id="ccAdminHistoryContainer" style="max-height:240px;overflow-y:auto;">Loading history...</div>
             </div>
-
-            <button onclick="closeColourClashAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- User Play History Digest Section -->
@@ -1569,7 +1593,6 @@
                 <button onclick="renderPlayHistoryDigest('rounds')" class="btn-gray" style="width:auto; margin:0; padding:8px 10px; font-size:11px;">Sort: Rounds Played</button>
             </div>
             <div id="playHistoryDigestContainer" style="max-height: 400px; overflow-y: auto;">Loading play history...</div>
-            <button onclick="closePlayHistoryDigestModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Investment Settings Section -->
@@ -1654,7 +1677,6 @@
                 <div class="cc-filter-tab" id="invFilterClosed" onclick="filterAdminInvestments('closed')">Closed</div>
             </div>
             <div id="userInvestmentsContainer" style="max-height: 320px; overflow-y: auto; margin: 10px 0;">Loading investments...</div>
-            <button onclick="closeInvestmentAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Mines Game Control Section -->
@@ -1698,7 +1720,6 @@
                 <button onclick="clearMinesRoundsHistory()" class="btn-red" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">🗑️ Clear History</button>
             </div>
             <div id="minesRoundsContainer" style="max-height: 220px; overflow-y: auto; margin: 10px 0;">Loading rounds...</div>
-            <button onclick="closeMinesAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Membership Management Section -->
@@ -1807,7 +1828,68 @@
 
             <h4 style="color:var(--accent-cyan); margin:12px 0 8px 0; font-size:14px;">📋 Available Membership Plans &amp; Subscribers</h4>
             <div id="membershipPlansAdminContainer" style="max-height: 280px; overflow-y: auto; margin: 10px 0;">Loading membership plans...</div>
-            <button onclick="closeMembershipAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
+        </div>
+
+        <!-- STAFF Management Section -->
+        <div id="staffManagementSection" class="hidden">
+            <div class="dash-panel" style="margin-bottom:12px;">
+                <div class="dash-panel-head"><h4>🧑‍💼 STAFF Management</h4><span class="view-all-link" onclick="loadStaffManagement()">Refresh →</span></div>
+                <div style="font-size:10px;color:var(--text-muted);line-height:1.5;">Assign organizational roles to users by UID. Staff roles do <b style="color:#facc15;">not</b> grant Admin App access. Admin can track each staff member, their assigned users/downline and work-related statistics.</div>
+            </div>
+            <div class="staff-kpi-grid">
+                <div class="staff-kpi"><span>Total Staff</span><b id="staffTotalCount">0</b></div>
+                <div class="staff-kpi"><span>Active Staff</span><b id="staffActiveCount">0</b></div>
+                <div class="staff-kpi"><span>Custom Roles</span><b id="staffCustomRoleCount">0</b></div>
+            </div>
+            <div class="staff-grid">
+                <div class="staff-card">
+                    <h4>➕ Assign / Create Staff</h4>
+                    <div class="staff-form-grid">
+                        <input id="staffNameInput" placeholder="Staff name">
+                        <input id="staffUidInput" placeholder="Staff UID / User UID">
+                        <select id="staffRoleInput" onchange="renderStaffRoleHint()"></select>
+                    </div>
+                    <input id="staffContactInput" placeholder="Contact / work reference (optional)" style="margin-top:7px;">
+                    <textarea id="staffNoteInput" rows="2" placeholder="Work notes / responsibilities (optional)" style="margin-top:7px;resize:vertical;"></textarea>
+                    <div id="staffRoleHint" style="font-size:9px;color:var(--text-muted);margin:7px 0;">Select a role.</div>
+                    <button onclick="saveStaffRecord()" class="btn-green">💾 Save Staff Record</button>
+                </div>
+                <div class="staff-card">
+                    <h4>⚙️ Create Custom Role</h4>
+                    <input id="staffCustomRoleName" placeholder="Custom role name">
+                    <input id="staffCustomRoleDesc" placeholder="Short description" style="margin-top:7px;">
+                    <button onclick="createStaffCustomRole()" class="btn-gray" style="margin-top:7px;">➕ Create Custom Role</button>
+                    <div id="staffRoleList" style="margin-top:9px;max-height:150px;overflow:auto;"></div>
+                </div>
+            </div>
+            <div class="staff-card" style="margin-top:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <h4 style="margin:0;">🔎 Staff Directory</h4>
+                    <div class="staff-actions">
+                        <button class="btn-gray" onclick="loadStaffManagement()">↻ Refresh Data</button>
+                        <button class="btn-gray" onclick="exportStaffDirectoryCSV()">⬇ Export CSV</button>
+                    </div>
+                </div>
+                <div class="staff-filter-grid" style="margin-top:9px;">
+                    <input id="staffSearchInput" oninput="renderStaffDirectory()" placeholder="Search name, role, UID, contact..." style="margin:0;">
+                    <select id="staffStatusFilter" onchange="renderStaffDirectory()" style="margin:0;">
+                        <option value="">All Status</option>
+                        <option value="active">🟢 Active</option>
+                        <option value="disabled">🔴 Disabled</option>
+                    </select>
+                    <select id="staffRoleFilter" onchange="renderStaffDirectory()" style="margin:0;">
+                        <option value="">All Roles</option>
+                    </select>
+                    <select id="staffSortMode" onchange="renderStaffDirectory()" style="margin:0;">
+                        <option value="name">Sort: Name</option>
+                        <option value="referrals">Sort: Referrals</option>
+                        <option value="newest">Sort: Newest</option>
+                    </select>
+                </div>
+                <div id="staffDirectorySummary" style="font-size:9px;color:var(--text-muted);margin-top:7px;"></div>
+                <div id="staffDirectoryContainer" class="staff-table-wrap" style="margin-top:9px;">Loading staff...</div>
+            </div>
+            <div id="staffDetailCard" class="staff-card hidden" style="margin-top:12px;"></div>
         </div>
 
         <!-- User List View Section -->
@@ -1848,7 +1930,6 @@
                 </select>
             </div>
             <div id="userListContainer" class="admin-scroll-list" style="max-height:420px;">Loading users...</div>
-            <button onclick="closeUserListModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- User 360 Manage Popup -->
@@ -1912,7 +1993,6 @@
             </div>
 
             <div id="missionsAdminList" class="admin-scroll-list missions-admin-list" style="max-height:none;margin-top:12px;">Loading missions...</div>
-            <button onclick="closeMissionsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
 <!-- Deposit Requests Management Section -->
@@ -1948,7 +2028,6 @@
                 <button onclick="clearAllDeposits()" class="btn-red" style="padding:8px; font-size:12px; margin:0;">🗑️ Clear All Deposit History</button>
             </div>
             <div id="depositRequestsContainer" class="admin-scroll-list">Loading deposit requests...</div>
-            <button onclick="closeDepositRequestsModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Withdrawal Management Section -->
@@ -1978,14 +2057,12 @@
                 <button onclick="clearAllWithdrawals()" class="btn-red" style="padding:8px; font-size:12px; margin:0;">🗑️ Clear All Payout History</button>
             </div>
             <div id="withdrawRequestsContainer" class="admin-scroll-list">Loading requests...</div>
-            <button onclick="closeWithdrawRequestsModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Support Requests Management Section -->
         <div id="supportSection" class="hidden">
             <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">📞 Support Requests Management</h3>
             <div id="supportRequestsContainer" style="max-height: 260px; overflow-y: auto; margin: 10px 0;">Loading support requests...</div>
-            <button onclick="closeSupportRequestsModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Tournaments Management Section -->
@@ -2001,7 +2078,6 @@
             </div>
             <label style="font-size:12px; color:var(--text-muted); margin: 10px 0 4px 2px; display:block;">Active &amp; Past Tournaments:</label>
             <div id="tournamentsAdminContainer" style="max-height: 260px; overflow-y: auto; margin: 10px 0;">Loading tournaments...</div>
-            <button onclick="closeTournamentsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Predictions Management Section -->
@@ -2034,7 +2110,6 @@
                 <button type="button" class="btn-gray" style="width:auto;padding:6px 12px;font-size:12px;" onclick="setAdminPredFilter('ended', this)">Ended</button>
             </div>
             <div id="predictionsAdminContainer" class="admin-scroll-list" style="max-height: 380px;">Loading predictions...</div>
-            <button onclick="closePredictionsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Events & Activity Management Section -->
@@ -2063,7 +2138,6 @@
                 <p class="hint-text">Tip: use a wide banner image (roughly 800×400px) for the best look on the user app.</p>
             </div>
             <div id="eventsAdminContainer" style="max-height: 280px; overflow-y: auto; margin: 10px 0;">Loading events...</div>
-            <button onclick="closeEventsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Daily Rewards Management Section -->
@@ -2100,8 +2174,6 @@
                 </div>
                 <div id="giftCodesHistoryContainer" class="hidden" style="max-height: 280px; overflow-y: auto; margin: 10px 0;">Loading history...</div>
             </div>
-
-            <button onclick="closeDailyRewardsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
         <!-- Transactions / Income Management Section -->
@@ -2184,7 +2256,6 @@
                 </div>
                 <div id="adminTransactionsContainer" style="max-height: 320px; overflow-y: auto;">Loading income records...</div>
             </div>
-            <button onclick="closeTransactionsAdminModal()" class="btn-gray" style="margin-top:12px;">⬅ Back to Admin Menu</button>
         </div>
 
             </div>
@@ -2650,7 +2721,7 @@ function formatAdminMoney(value){
         // flow), we must hide every section before opening a new one — otherwise
         // jumping straight from one section to another via the sidebar would leave
         // both visible at once.
-        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','dashboard20Section','colourClashAdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','tournamentsAdminSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection'];
+        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','dashboard20Section','colourClashAdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','tournamentsAdminSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
 
         function hideAllAdminSections() {
             ALL_ADMIN_SECTION_IDS.forEach(id => {
@@ -2853,6 +2924,7 @@ function formatAdminMoney(value){
                     return el && !el.classList.contains('hidden');
                 };
                 if (visible('userListSection') && typeof loadAllUsersForAdmin === 'function') loadAllUsersForAdmin();
+                if (visible('staffManagementSection') && typeof loadStaffManagement === 'function') loadStaffManagement();
                 if (visible('depositSection') && typeof loadDepositRequestsForAdmin === 'function') loadDepositRequestsForAdmin();
                 if (visible('withdrawSection') && typeof loadWithdrawRequestsForAdmin === 'function') loadWithdrawRequestsForAdmin();
                 if (visible('supportSection') && typeof loadSupportRequestsForAdmin === 'function') loadSupportRequestsForAdmin();
@@ -4068,6 +4140,253 @@ function formatAdminMoney(value){
                 </div>`;
             }).join('');
         }
+
+        let staffRecordsCache = {};
+        let staffRolesCache = {};
+        let openStaffDownlineId = null;
+        const DEFAULT_STAFF_ROLES = {
+            agent:{name:'Agent',description:'Assigned user support and work tracking.'},
+            head_agent:{name:'Head Agent',description:'Leads Agent work and coordination.'},
+            teacher:{name:'Teacher',description:'Training and assigned-user work tracking.'},
+            head_teacher:{name:'Head Teacher',description:'Leads Teacher work and training coordination.'},
+            manager:{name:'Manager',description:'Higher-level operational and team coordination role.'}
+        };
+        function staffRoleLabel(key){const r=staffRolesCache[key]||DEFAULT_STAFF_ROLES[key];return r&&r.name?r.name:String(key||'Custom Role');}
+        function staffEscape(v){return escapeHtml(String(v==null?'':v));}
+        function openStaffManagementModal(){document.getElementById('mainAdminMenu').classList.add('hidden');document.getElementById('staffManagementSection').classList.remove('hidden');loadStaffManagement();}
+        function closeStaffManagementModal(){document.getElementById('staffManagementSection').classList.add('hidden');document.getElementById('mainAdminMenu').classList.remove('hidden');}
+        async function ensureDefaultStaffRoles(){
+            const snap=await db.ref('staff_roles').once('value');
+            const current=snap.val()||{}; const updates={};
+            Object.keys(DEFAULT_STAFF_ROLES).forEach(k=>{if(!current[k]) updates[k]={...DEFAULT_STAFF_ROLES[k],type:'default',createdAt:Date.now()};});
+            if(Object.keys(updates).length) await db.ref('staff_roles').update(updates);
+        }
+        async function loadStaffManagement(){
+            try{
+                await ensureDefaultStaffRoles();
+                const [rs,ss,us]=await Promise.all([db.ref('staff_roles').once('value'),db.ref('staff').once('value'),db.ref('users').once('value')]);
+                staffRolesCache=rs.val()||{}; staffRecordsCache=ss.val()||{}; allUsersDataCache={};
+                us.forEach(ch=>{allUsersDataCache[ch.key]={...ch.val(),key:ch.key};});
+                renderStaffRoleSelects(); renderStaffRoleList(); renderStaffDirectoryFilters(); renderStaffDirectory(); updateStaffKpis();
+            }catch(e){const c=document.getElementById('staffDirectoryContainer');if(c)c.innerHTML='<p style="color:#f87171;padding:10px;">Could not load STAFF: '+staffEscape(e.message)+'</p>';}
+        }
+        function renderStaffRoleSelects(){
+            const sel=document.getElementById('staffRoleInput'); if(!sel)return;
+            const keys=Object.keys(staffRolesCache); sel.innerHTML='<option value="">Select role</option>'+keys.map(k=>`<option value="${staffEscape(k)}">${staffEscape(staffRoleLabel(k))}</option>`).join('');
+        }
+        function renderStaffRoleHint(){const k=document.getElementById('staffRoleInput')?.value;const el=document.getElementById('staffRoleHint');if(el)el.textContent=k?(staffRolesCache[k]?.description||'Custom organizational role.'):'Select a role.';}
+        function renderStaffRoleList(){
+            const c=document.getElementById('staffRoleList');
+            if(!c)return;
+            const customRoles=Object.entries(staffRolesCache||{}).filter(([k,r])=>r&&r.type==='custom');
+            c.innerHTML=customRoles.map(([k,r])=>`<div style="padding:7px;border-bottom:1px solid rgba(255,255,255,.06);font-size:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;"><div style="min-width:0;"><span class="staff-role-pill">${staffEscape(r.name||k)}</span> <span style="color:var(--text-muted);">Custom</span><div style="color:var(--text-muted);margin-top:3px;">${staffEscape(r.description||'')}</div></div><button type="button" onclick="deleteStaffCustomRole('${staffEscape(k)}')" title="Delete this custom role" style="border:1px solid rgba(248,113,113,.5);background:rgba(127,29,29,.35);color:#fca5a5;border-radius:7px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap;">🗑️ Delete</button></div>`).join('')||'<span style="font-size:9px;color:var(--text-muted);">No custom roles created yet.</span>';
+        }
+        async function createStaffCustomRole(){const name=String(document.getElementById('staffCustomRoleName')?.value||'').trim();const desc=String(document.getElementById('staffCustomRoleDesc')?.value||'').trim();if(!name)return alert('Enter a custom role name.');const key='custom_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')+'_'+Date.now().toString(36);await db.ref('staff_roles/'+key).set({name,description:desc,type:'custom',createdAt:Date.now()});document.getElementById('staffCustomRoleName').value='';document.getElementById('staffCustomRoleDesc').value='';await loadStaffManagement();alert('Custom staff role created.');}
+        async function deleteStaffCustomRole(roleKey){
+            const role=staffRolesCache[roleKey];
+            if(!role||role.type!=='custom')return alert('Only created custom roles can be deleted.');
+            const inUse=Object.values(staffRecordsCache||{}).filter(s=>s&&s.role===roleKey);
+            if(inUse.length){return alert(`Cannot delete "${role.name||roleKey}" because it is assigned to ${inUse.length} staff member${inUse.length===1?'':'s'}. Reassign those staff members to another role first, then delete this custom role.`);}
+            if(!confirm(`Delete custom role "${role.name||roleKey}"? This cannot be undone.`))return;
+            try{await db.ref('staff_roles/'+roleKey).remove();await loadStaffManagement();alert('Custom role deleted.');}catch(e){alert('Could not delete custom role: '+e.message);}
+        }
+        async function saveStaffRecord(){
+            const name=String(document.getElementById('staffNameInput')?.value||'').trim(); const uid=String(document.getElementById('staffUidInput')?.value||'').trim(); const role=String(document.getElementById('staffRoleInput')?.value||'').trim();
+            if(!name||!uid||!role)return alert('Enter staff name, UID and role.');
+            const id='staff_'+uid.replace(/[^a-zA-Z0-9_-]/g,'_'); const old=staffRecordsCache[id]||{};
+            const record={id,staffUid:uid,name,role,contact:String(document.getElementById('staffContactInput')?.value||'').trim(),notes:String(document.getElementById('staffNoteInput')?.value||'').trim(),status:old.status||'active',createdAt:old.createdAt||Date.now(),updatedAt:Date.now()};
+            await db.ref('staff/'+id).set(record);
+            // Store the role/assignment directly on the user profile so the User App can render it immediately.
+            const userSnap=await db.ref('users').orderByChild('customUid').equalTo(uid).once('value');
+            if(!userSnap.exists()){return alert('No User App account was found with UID '+uid+'. Please enter the exact Game Verse UID.');}
+            const updates={}; userSnap.forEach(ch=>{updates[ch.key+'/staffAssignment']={staffId:id,staffUid:uid,staffName:name,role,roleName:staffRoleLabel(role),assignedAt:Date.now()};});
+            await db.ref('users').update(updates);
+            clearStaffForm(); await loadStaffManagement(); alert('Staff record saved and role assigned to UID '+uid+'.');
+        }
+        function clearStaffForm(){['staffNameInput','staffUidInput','staffContactInput','staffNoteInput'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});const r=document.getElementById('staffRoleInput');if(r)r.value='';const h=document.getElementById('staffRoleHint');if(h)h.textContent='Select a role.';}
+        function updateStaffKpis(){
+            const rows=Object.values(staffRecordsCache||{});
+            const active=rows.filter(r=>r&&r.status!=='disabled').length;
+            const custom=Object.values(staffRolesCache||{}).filter(r=>r&&r.type==='custom').length;
+            [['staffTotalCount',rows.length],['staffActiveCount',active],['staffCustomRoleCount',custom]].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v;});
+        }
+        function renderStaffDirectoryFilters(){
+            const sel=document.getElementById('staffRoleFilter');
+            if(!sel)return;
+            const current=sel.value;
+            const roles=Object.entries(staffRolesCache||{}).sort((a,b)=>staffRoleLabel(a[0]).localeCompare(staffRoleLabel(b[0])));
+            sel.innerHTML='<option value="">All Roles</option>'+roles.map(([k])=>`<option value="${staffEscape(k)}">${staffEscape(staffRoleLabel(k))}</option>`).join('');
+            if(roles.some(([k])=>k===current))sel.value=current;
+        }
+        function getStaffAssignedUsers(id){
+            return Object.values(allUsersDataCache||{}).filter(u=>u&&u.staffAssignment&&u.staffAssignment.staffId===id);
+        }
+        function getStaffReferralCount(id){
+            const r=staffRecordsCache[id];
+            const uid=String(r?.staffUid||'').trim();
+            if(!uid)return 0;
+            return Object.values(allUsersDataCache||{}).filter(u=>String(u?.referredBy||'').trim()===uid&&u?.status!=='deleted'&&u?.status!=='blocked').length;
+        }
+        function renderStaffDirectory(){
+            const c=document.getElementById('staffDirectoryContainer');if(!c)return;
+            const q=String(document.getElementById('staffSearchInput')?.value||'').toLowerCase().trim();
+            const status=String(document.getElementById('staffStatusFilter')?.value||'');
+            const role=String(document.getElementById('staffRoleFilter')?.value||'');
+            const sort=String(document.getElementById('staffSortMode')?.value||'name');
+            let rows=Object.entries(staffRecordsCache||{}).filter(([id,r])=>{
+                const hay=[id,r.name,r.staffUid,staffRoleLabel(r.role),r.contact,r.notes].join(' ').toLowerCase();
+                return (!q||hay.includes(q))&&(!status||(r.status||'active')===status)&&(!role||r.role===role);
+            });
+            rows.sort(([idA,a],[idB,b])=>{
+                if(sort==='referrals')return getStaffReferralCount(idB)-getStaffReferralCount(idA);
+                if(sort==='newest')return (Number(b.createdAt)||0)-(Number(a.createdAt)||0);
+                return String(a.name||'').localeCompare(String(b.name||''));
+            });
+            const summary=document.getElementById('staffDirectorySummary');
+            if(summary)summary.textContent=`Showing ${rows.length} of ${Object.keys(staffRecordsCache||{}).length} staff members`;
+            if(!rows.length){c.innerHTML='<p style="padding:12px;color:var(--text-muted);">No staff records match the current filters.</p>';return;}
+            c.innerHTML=`<table class="staff-table"><thead><tr><th>Staff</th><th>Role</th><th>Staff UID</th><th>Status</th><th>Referrals</th><th>Action</th></tr></thead><tbody>${rows.map(([id,r])=>{
+                const refCount=getStaffReferralCount(id);
+                const isOpen=openStaffDownlineId===id;
+                return `<tr><td><b>${staffEscape(r.name||'—')}</b><br><span style="font-size:8px;color:var(--text-muted);">${staffEscape(r.contact||'No contact')}</span></td><td><span class="staff-role-pill">${staffEscape(staffRoleLabel(r.role))}</span></td><td style="color:#facc15;font-weight:800;">${staffEscape(r.staffUid||'—')}</td><td><span class="staff-status-pill ${r.status==='disabled'?'off':'on'}">${r.status==='disabled'?'Disabled':'Active'}</span></td><td>${refCount}</td><td><div class="staff-actions"><button class="btn-gray" onclick="toggleStaffReferralDownline('${staffEscape(id)}')">${isOpen?'Hide Downline':'View Downline'}</button><button class="btn-gray" onclick="toggleStaffStatus('${staffEscape(id)}')">${r.status==='disabled'?'Enable':'Disable'}</button><button class="staff-fire-btn" onclick="fireStaffMember('${staffEscape(id)}')" title="Remove this staff member from work">🔥 FIRE</button></div></td></tr>`;
+            }).join('')}</tbody></table>`;
+        }
+        async function toggleStaffReferralDownline(id){
+            if(openStaffDownlineId===id){
+                openStaffDownlineId=null;
+                const card=document.getElementById('staffDetailCard');
+                if(card){card.classList.add('hidden');card.replaceChildren();}
+                renderStaffDirectory();
+                return;
+            }
+            openStaffDownlineId=id;
+            await viewStaffReferralDownline(id);
+            renderStaffDirectory();
+        }
+        function exportStaffDirectoryCSV(){
+            const rows=Object.entries(staffRecordsCache||{}).map(([id,r])=>{const referrals=getStaffReferralCount(id);return [id,r.name||'',staffRoleLabel(r.role),r.staffUid||'',r.status||'active',referrals,r.contact||'',r.notes||'',r.createdAt?new Date(r.createdAt).toISOString():''];});
+            if(!rows.length){alert('No staff records to export.');return;}
+            const csv=[['Staff ID','Name','Role','Staff UID','Status','Referrals','Contact','Notes','Created At'],...rows].map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+            const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+            const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`game-verse-staff-${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);
+        }
+        async function viewStaffDetails(id){
+            return viewStaffReferralDownline(id);
+        }
+
+        async function viewStaffReferralDownline(id){
+            const r=staffRecordsCache[id];
+            const card=document.getElementById('staffDetailCard');
+            if(!r||!card)return;
+            card.classList.remove('hidden');
+            card.innerHTML=`<div class="staff-user-box"><b>⏳ Loading Refer & Earn Downline...</b><small>Loading the direct referral users for ${staffEscape(r.name||r.staffUid||'this staff member')}.</small></div>`;
+            card.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+            const uid=String(r.staffUid||'').trim();
+            if(!uid){
+                card.innerHTML='<div class="staff-user-box"><b>⚠️ Refer & Earn Downline</b><small>This staff member has no Game Verse UID, so their referral downline cannot be loaded.</small></div>';
+                return;
+            }
+
+            try{
+                const [usersSnap,depSnap,earnSnap]=await Promise.all([
+                    db.ref('users').once('value'),
+                    db.ref('deposits').orderByChild('status').equalTo('approved').once('value'),
+                    db.ref('referral_earnings').once('value')
+                ]);
+
+                // Match the User App Refer & Earn logic exactly.
+                // Every user whose referredBy equals this UID counts, except deleted/blocked users.
+                const downline=[];
+                if(usersSnap.exists()){
+                    usersSnap.forEach(ch=>{
+                        const v=ch.val()||{};
+                        if(String(v.referredBy||'').trim()===uid && v.status!=='deleted' && v.status!=='blocked'){
+                            downline.push({...v,key:ch.key});
+                        }
+                    });
+                }
+                downline.sort((a,b)=>(Number(b.joinedAt)||0)-(Number(a.joinedAt)||0));
+
+                const deposits={};
+                if(depSnap&&depSnap.exists()){
+                    depSnap.forEach(ch=>{
+                        const v=ch.val()||{};
+                        const childUid=String(v.customUid||'').trim();
+                        if(childUid) deposits[childUid]=(deposits[childUid]||0)+(Number(v.amount)||0);
+                    });
+                }
+
+                const earnings={};
+                let totalEarned=0;
+                if(earnSnap&&earnSnap.exists()){
+                    earnSnap.forEach(ch=>{
+                        const v=ch.val()||{};
+                        if(String(v.referrerCustomUid||'').trim()===uid){
+                            const fromUid=String(v.fromCustomUid||'').trim();
+                            const amount=Number(v.amount)||0;
+                            if(fromUid) earnings[fromUid]=(earnings[fromUid]||0)+amount;
+                            totalEarned+=amount;
+                        }
+                    });
+                }
+
+                const totalDeposited=downline.reduce((n,u)=>n+(Number(deposits[u.customUid])||0),0);
+
+                card.innerHTML=`
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <div>
+                            <h4 style="margin:0;color:#facc15;">🔗 Refer & Earn Downline — ${staffEscape(r.name||'Staff')}</h4>
+                            <div style="font-size:9px;color:var(--text-muted);margin-top:4px;">Staff UID: ${staffEscape(uid)} · Role: ${staffEscape(staffRoleLabel(r.role))} · Status: ${staffEscape(r.status||'active')}</div>
+                        </div>
+                        <div style="font-size:9px;color:#34d399;font-weight:800;">Refer &amp; Earn details</div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px;">
+                        <div class="staff-user-box"><b>👥 Referrals</b><small>${downline.length}</small></div>
+                        <div class="staff-user-box"><b>💳 Deposited</b><small>₹${totalDeposited.toFixed(2)}</small></div>
+                        <div class="staff-user-box"><b>💰 Earned</b><small>₹${totalEarned.toFixed(2)}</small></div>
+                    </div>
+                    <div style="margin-top:12px;font-size:10px;color:#facc15;font-weight:900;">REFER &amp; EARN DOWNLINE (${downline.length})</div>
+                    <div class="staff-downline" style="margin-top:6px;">${downline.length?`<table class="staff-table"><thead><tr><th>Downline User</th><th>UID</th><th>Joined</th><th>Status</th><th>Deposited</th><th>Earned</th></tr></thead><tbody>${downline.map(d=>{
+                        const deposited=Number(deposits[d.customUid])||0;
+                        const earned=Number(earnings[d.customUid])||0;
+                        return `<tr><td><b>${staffEscape(d.email||d.customUid||d.key)}</b></td><td style="color:#facc15;font-weight:800;">${staffEscape(d.customUid||'—')}</td><td>${d.joinedAt?new Date(d.joinedAt).toLocaleDateString():'—'}</td><td><span class="staff-status-pill ${d.status==='blocked'?'off':'on'}">${d.status==='blocked'?'Blocked':'Active'}</span></td><td>₹${deposited.toFixed(2)}</td><td style="color:#34d399;font-weight:800;">₹${earned.toFixed(2)}</td></tr>`;
+                    }).join('')}</tbody></table>`:'<div style="padding:10px 4px;color:var(--text-muted);font-size:9px;">No Refer &amp; Earn users found for this user.</div>'}</div>`;
+                card.scrollIntoView({behavior:'smooth',block:'nearest'});
+            }catch(e){
+                card.innerHTML=`<div class="staff-user-box"><b style="color:#f87171;">⚠️ Could not load referral downline</b><small>${staffEscape(e.message||e)}</small></div>`;
+            }
+        }
+
+        async function fireStaffMember(id){
+            const r=staffRecordsCache[id];
+            if(!r)return;
+            const label=r.name||r.staffUid||id;
+            if(!confirm('FIRE '+label+' from staff/work? This will remove the staff record and remove this staff assignment from all assigned users.'))return;
+            try{
+                if(!Object.keys(allUsersDataCache||{}).length){
+                    const us=await db.ref('users').once('value');
+                    allUsersDataCache={};
+                    us.forEach(ch=>allUsersDataCache[ch.key]={...ch.val(),key:ch.key});
+                }
+                const updates={};
+                Object.values(allUsersDataCache||{}).forEach(u=>{
+                    if(u&&u.staffAssignment&&u.staffAssignment.staffId===id&&u.key){
+                        updates[u.key+'/staffAssignment']=null;
+                    }
+                });
+                if(Object.keys(updates).length)await db.ref('users').update(updates);
+                await db.ref('staff/'+id).remove();
+                delete staffRecordsCache[id];
+                Object.values(allUsersDataCache||{}).forEach(u=>{if(u&&u.staffAssignment&&u.staffAssignment.staffId===id)delete u.staffAssignment;});
+                openStaffDownlineId=null;
+                const detail=document.getElementById('staffDetailCard');if(detail){detail.classList.add('hidden');detail.replaceChildren();}
+                await loadStaffManagement();
+                alert(label+' has been fired and removed from staff/work.');
+            }catch(e){alert('Could not fire staff member: '+e.message);}
+        }
+
+        async function toggleStaffStatus(id){const r=staffRecordsCache[id];if(!r)return;const disabled=r.status!=='disabled';await db.ref('staff/'+id).update({status:disabled?'disabled':'active',updatedAt:Date.now()});await loadStaffManagement();if(!disabled)alert('Staff enabled.');else alert('Staff disabled.');}
 
         function openUserListModal() {
             document.getElementById('mainAdminMenu').classList.add('hidden');
