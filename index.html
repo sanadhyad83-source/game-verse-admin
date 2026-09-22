@@ -1086,7 +1086,7 @@
                     <div class="d20-feature-card">
                         <div class="d20-fhead"><div class="d20-ftitle">🌟 Game Verse Spotlight</div><label class="dash2-switch"><input type="checkbox" id="d20SpotlightEnabled" onchange="saveExperienceControl('spotlightEnabled',this.checked)"> Enabled</label></div>
                         <div class="d20-fdesc">Feature one existing game on the User App home screen.</div>
-                        <select id="d20SpotlightGame"><option value="rocket-jump">Rocket Jump</option><option value="fortune-wheel">Fortune Wheel</option><option value="coin-flip">Coin Flip</option><option value="number-master">Number Master</option><option value="mines">Mines</option><option value="colour-clash">Colour Clash</option></select>
+                        <select id="d20SpotlightGame"><option value="rocket-jump">Rocket Jump</option><option value="high-card">High Card</option><option value="fortune-wheel">Fortune Wheel</option><option value="coin-flip">Coin Flip</option><option value="number-master">Number Master</option><option value="mines">Mines</option><option value="colour-clash">Colour Clash</option></select>
                         <input id="d20SpotlightTitle" type="text" placeholder="Spotlight title">
                         <input id="d20SpotlightSubtitle" type="text" placeholder="Short subtitle">
                     </div>
@@ -2412,6 +2412,7 @@ function formatAdminMoney(value){
         // ===== Dashboard 2.0 / Operations Center =====
         const DASH20_GAME_LIST = [
             {id:'rocket_jump',name:'🚀 Rocket Jump'},
+            {id:'high_card',name:'🃏 High Card'},
             {id:'spin_wheel',name:'🎡 Fortune Wheel'},
             {id:'coin_flip',name:'🪙 Coin Flip'},
             {id:'number_guess',name:'🎯 Number Master'},
