@@ -2556,11 +2556,35 @@ function formatAdminMoney(value){
         function saveDashboard20Threshold(key,id){const el=document.getElementById(id);const value=Math.max(0,Number(el&&el.value)||0);db.ref('control/dashboard20').update({[key]:value,updatedAt:Date.now()}).then(()=>{loadDashboard20();alert('Dashboard 2.0 '+key.replace(/([A-Z])/g,' $1')+' saved.');}).catch(err=>alert('Could not save setting: '+err.message));}
         function saveDashboard20Select(key,id){const el=document.getElementById(id);const value=String(el&&el.value||'standard');db.ref('control/dashboard20').update({[key]:value,updatedAt:Date.now()}).then(()=>{loadDashboard20();alert('Dashboard 2.0 display mode saved.');}).catch(err=>alert('Could not save display mode: '+err.message));}
 
+        function saveDashboard20Control(key,value){
+            const allowed=['depositsEnabled','withdrawalsEnabled','registrationEnabled','bannerEnabled'];
+            if(!allowed.includes(String(key))) return;
+            const normalized=!!value;
+            const payload={}; payload[key]=normalized; payload.updatedAt=Date.now();
+            const checkboxMap={depositsEnabled:'d20DepositsEnabled',withdrawalsEnabled:'d20WithdrawalsEnabled',registrationEnabled:'d20RegistrationEnabled',bannerEnabled:'d20BannerEnabled'};
+            const el=document.getElementById(checkboxMap[key]);
+            if(el) el.checked=normalized;
+            db.ref('control/dashboard20').update(payload).then(()=>{
+                window.__dashboard20Config=Object.assign({},window.__dashboard20Config||{},payload);
+                const serviceMap={depositsEnabled:'d20DepositService',withdrawalsEnabled:'d20WithdrawalService',registrationEnabled:'d20RegistrationService'};
+                const serviceEl=document.getElementById(serviceMap[key]);
+                if(serviceEl) serviceEl.textContent=normalized?'ON':'OFF';
+                if(key==='bannerEnabled') showDashboard20BannerPreviewState?.();
+                const label=key==='depositsEnabled'?'Deposits':key==='withdrawalsEnabled'?'Withdrawals':key==='registrationEnabled'?'New registrations':'User service banner';
+                alert(label+' '+(normalized?'enabled':'disabled')+'.');
+            }).catch(err=>{
+                if(el) el.checked=!normalized;
+                alert('Could not save '+key+': '+(err&&err.message?err.message:'Unknown error'));
+                loadDashboard20();
+            });
+        }
+
         function saveDashboard20Banner(){
-            const enabled=document.getElementById('d20BannerEnabled').checked;
-            const message=document.getElementById('d20BannerMessage').value.trim();
+            const enabled=!!document.getElementById('d20BannerEnabled')?.checked;
+            const message=(document.getElementById('d20BannerMessage')?.value||'').trim();
             db.ref('control/dashboard20').update({bannerEnabled:enabled,bannerMessage:message,updatedAt:Date.now()})
-                .then(()=>alert('User service banner saved.'));
+                .then(()=>{ window.__dashboard20Config=Object.assign({},window.__dashboard20Config||{},{bannerEnabled:enabled,bannerMessage:message,updatedAt:Date.now()}); alert('User service banner saved.'); })
+                .catch(err=>alert('Could not save banner: '+(err&&err.message?err.message:'Unknown error')));
         }
 
         function updateGlobalGamesButton(active){
