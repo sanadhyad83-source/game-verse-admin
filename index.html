@@ -370,6 +370,7 @@
         }
         label { font-size: 12px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 6px; }
         
+        @media(max-width:700px){#eventsAdminStats{grid-template-columns:repeat(2,minmax(0,1fr))!important;} }
         .user-item, .withdraw-admin-item, .support-admin-item, .tournament-admin-item, .deposit-admin-item, .reward-admin-item, .prediction-admin-item, .membership-admin-item, .transaction-admin-item, .event-admin-item {
             background: rgba(10, 10, 10, 0.85);
             padding: 15px;
@@ -401,7 +402,7 @@
         
         .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        /* Colour Clash: keep the complete entry-history list independently scrollable. */
+        /* WINGO: keep the complete entry-history list independently scrollable. */
         #ccAdminAllEntriesContainer.cc-all-entries-scroll {
             height: 360px !important;
             max-height: 360px !important;
@@ -499,18 +500,18 @@
         .kpi-clear-link { margin-top: 8px; font-size: 10.5px; font-weight: 700; color: #f87171; cursor: pointer; opacity: 0.85; }
         .kpi-clear-link:hover { opacity: 1; text-decoration: underline; }
 
-        /* Colour Clash redesign: colour-coded chips + segmented filter tabs */
+        /* WINGO redesign: colour-coded chips + segmented filter tabs */
         .cc-colour-chip { border-radius: 12px; padding: 12px 10px; text-align: center; border: 1px solid; }
         .cc-colour-chip .cc-chip-label { font-size: 11px; font-weight: 800; letter-spacing: 0.4px; }
         .cc-colour-chip .cc-chip-value { font-size: 16px; font-weight: 800; margin-top: 4px; }
         .cc-colour-chip.cc-red { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.35); color: #f87171; }
         .cc-colour-chip.cc-green { background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.35); color: #34d399; }
-        .cc-colour-chip.cc-blue { background: rgba(var(--accent-rgb),0.12); border-color: rgba(var(--accent-rgb),0.35); color: var(--accent-cyan); }
+        .cc-colour-chip.cc-violet { background: rgba(var(--accent-rgb),0.12); border-color: rgba(var(--accent-rgb),0.35); color: var(--accent-cyan); }
         .cc-colour-dot-lg{width:22px!important;height:22px!important;box-shadow:0 0 0 3px rgba(255,255,255,.12),0 0 18px rgba(255,255,255,.16);}
         .cc-colour-dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:4px;box-shadow:0 0 0 2px rgba(255,255,255,.10),0 0 8px rgba(255,255,255,.08);}
         .cc-dot-red{background:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.18),0 0 9px rgba(239,68,68,.25);}
         .cc-dot-green{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.18),0 0 9px rgba(34,197,94,.25);}
-        .cc-dot-blue{background:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.18),0 0 9px rgba(59,130,246,.28);}
+        .cc-dot-violet{background:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.18),0 0 9px rgba(59,130,246,.28);}
 
         .cc-filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px 0; }
         .cc-filter-tab { flex: 1 1 auto; min-width: 70px; text-align: center; padding: 8px 10px; border-radius: 9px; font-size: 11.5px; font-weight: 700; cursor: pointer; border: 1px solid rgba(var(--accent-rgb),0.18); background: rgba(10, 10, 10, 0.5); color: var(--text-muted); transition: all 0.2s ease; }
@@ -667,6 +668,8 @@
         .u360-kpi-item b { display:block; margin-top:3px; font-size:13px; color:var(--accent-cyan); }
         .u360-meta { font-size: 12px; color: var(--text-muted); line-height: 1.55; margin-bottom: 8px; }
         .u360-meta b { color: var(--text-main); }
+        .cc-num-split-red-violet{background:linear-gradient(90deg,#dc2626 0 50%,#8b5cf6 50% 100%)!important;color:#fff!important;}
+        .cc-num-split-green-violet{background:linear-gradient(90deg,#10b981 0 50%,#8b5cf6 50% 100%)!important;color:#fff!important;}
         .cc-num-green{background:linear-gradient(145deg,#047857,#10b981)!important;color:#fff!important;}
         .cc-num-red{background:linear-gradient(145deg,#991b1b,#dc2626)!important;color:#fff!important;}
         .cc-num-blue-split-red{background:linear-gradient(90deg,#dc2626 0 50%,#2563eb 50% 100%)!important;color:#fff!important;}
@@ -676,7 +679,7 @@
         .cc-admin-confirm-btn{width:100%;margin-top:10px;padding:12px 14px;border:1px solid rgba(52,211,153,.55);border-radius:12px;background:linear-gradient(145deg,#047857,#10b981);color:#fff;font-weight:900;letter-spacing:.4px;cursor:pointer;transition:.18s ease;}
         .cc-admin-confirm-btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4);}
         .cc-admin-confirm-btn:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 0 22px rgba(16,185,129,.35);}
-        .cc-num-green small,.cc-num-red small,.cc-num-blue-split-red small,.cc-num-blue-split-green small{color:#fff!important;}
+        .cc-num-green small,.cc-num-red small,.cc-num-split-red-violet small,.cc-num-split-green-violet small,.cc-num-blue-split-red small,.cc-num-blue-split-green small{color:#fff!important;}
 
         /* Premium G Badge */
         .admin-g-badge-card{position:relative;margin:8px 0;padding:10px 12px;border-radius:14px;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(255,215,64,.16),rgba(245,158,11,.07),rgba(255,255,255,.025));border:1px solid rgba(255,215,64,.58);box-shadow:0 6px 20px rgba(245,158,11,.12),inset 0 1px rgba(255,255,255,.06);overflow:hidden;}
@@ -715,7 +718,12 @@
 #colourClashAdminSection { max-height: calc(100vh - 90px); overflow-y: auto !important; overflow-x: hidden !important; padding-right: 8px; box-sizing: border-box; }
 #colourClashAdminSection .user-list, #colourClashAdminSection .entries-list, #colourClashAdminSection [id*="Entries"], #colourClashAdminSection [id*="History"] { max-height: 420px; overflow-y: auto !important; overflow-x: hidden !important; -webkit-overflow-scrolling: touch; }
 #ccAdminEntries, #ccAdminAllEntries, #ccAdminHistory { max-height: 420px !important; overflow-y: auto !important; overflow-x: hidden !important; display: block; }
-.cc-result-dots{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;} .cc-colour-dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;} .cc-dot-red{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.45);} .cc-dot-green{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.45);} .cc-dot-blue{background:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.45);}</style>
+.cc-result-dots{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;} .cc-colour-dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;} .cc-dot-red{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.45);} .cc-dot-green{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.45);} .cc-dot-violet{background:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,.45);}</style>
+
+<style id="gv-admin-medium-glow-v2">
+:root{--theme-glow-scale:.5 !important;}
+</style>
+
 </head>
 <body class="admin-shell-active">
 
@@ -753,7 +761,7 @@
             <div class="sidebar-nav-item" onclick="navTo('Deposits', openDepositRequestsModal, this)"><span class="icon">💳</span> Deposits</div>
             <div class="sidebar-nav-item" onclick="navTo('Withdrawals', openWithdrawRequestsModal, this)"><span class="icon">💸</span> Withdrawals</div>
             <div class="sidebar-nav-item" onclick="navTo('Games Management', openGamesManagementAdminModal, this)"><span class="icon">🎮</span> Games Management</div>
-            <div class="sidebar-nav-item" onclick="navTo('Colour Clash', openColourClashAdminModal, this)"><span class="icon">🎨</span> Colour Clash</div>
+            <div class="sidebar-nav-item" onclick="return gvOpenColourClashAdmin(this)"><span class="icon">🎨</span> WINGO</div>
             <div class="sidebar-nav-item" onclick="navTo('Mines Control', openMinesAdminModal, this)"><span class="icon">💣</span> Mines Control</div>
             <div class="sidebar-nav-item" onclick="navTo('Tournaments', openTournamentsAdminModal, this)"><span class="icon">🏆</span> Tournaments</div>
             <div class="sidebar-nav-item" onclick="navTo('Predictions', openPredictionsAdminModal, this)"><span class="icon">📊</span> Predictions</div>
@@ -846,7 +854,7 @@
                 </div>
                 <div style="overflow-x:auto;">
                     <table class="cc-table">
-                        <thead><tr><th>Game</th><th>Status</th><th>Players Today</th><th>Entries Today</th><th>INR Revenue Today</th><th>USDT Revenue Today</th></tr></thead>
+                        <thead><tr><th>Game</th><th>Status</th><th>Players Today</th><th>Entries Today</th><th>INR Amount Today</th><th>USDT Amount Today</th></tr></thead>
                         <tbody id="gameCommandCenterBody">
                         <tr>
                             <td>🚀 Rocket Jump <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">⚙️</span></td>
@@ -889,9 +897,9 @@
                         </tr>
                     
                     <tr>
-                        <td>🎨 Colour Clash <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="navTo('Colour Clash', openColourClashAdminModal, null)">⚙️</span></td>
+                        <td>🎨 WINGO <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="return gvOpenColourClashAdmin(null)">⚙️</span></td>
                         <td><span class="cc-status-pill " style="">● PAUSED</span></td>
-                        <td colspan="4" style="color:var(--text-muted); font-size:11px;">Tracked live in Colour Clash → Round Audit Logs</td>
+                        <td colspan="4" style="color:var(--text-muted); font-size:11px;">Tracked live in WINGO → Round Audit Logs</td>
                     </tr>
                 </tbody>
                     </table>
@@ -985,10 +993,10 @@
                     <p>Per-user play history digest — total wagered, won and net across all games.</p>
                     <div class="qa-link">View Analytics →</div>
                 </div>
-                <div class="quick-action-card" onclick="navTo('Colour Clash', openColourClashAdminModal, null)">
+                <div class="quick-action-card" onclick="return gvOpenColourClashAdmin(null)">
                     <div class="qa-icon" style="background:rgba(var(--accent-rgb),0.2);">📄</div>
                     <b>Round Audit Logs</b>
-                    <p>View live Colour Clash round activity, entries, results and history.</p>
+                    <p>View live WINGO round activity, entries, results and history.</p>
                     <div class="qa-link">Open Logs →</div>
                 </div>
                 <div class="quick-action-card" onclick="navTo('Settings', openSettingsAdminModal, null)">
@@ -1115,7 +1123,7 @@
                     <div class="d20-feature-card">
                         <div class="d20-fhead"><div class="d20-ftitle">🌟 Game Verse Spotlight</div><label class="dash2-switch"><input type="checkbox" id="d20SpotlightEnabled" onchange="saveExperienceControl('spotlightEnabled',this.checked)"> Enabled</label></div>
                         <div class="d20-fdesc">Feature one existing game on the User App home screen.</div>
-                        <select id="d20SpotlightGame"><option value="rocket-jump">Rocket Jump</option><option value="high-card">High Card</option><option value="fortune-wheel">Fortune Wheel</option><option value="coin-flip">Coin Flip</option><option value="number-master">Number Master</option><option value="mines">Mines</option><option value="colour-clash">Colour Clash</option></select>
+                        <select id="d20SpotlightGame"><option value="rocket-jump">Rocket Jump</option><option value="high-card">High Card</option><option value="fortune-wheel">Fortune Wheel</option><option value="coin-flip">Coin Flip</option><option value="number-master">Number Master</option><option value="mines">Mines</option><option value="colour-clash">WINGO</option></select>
                         <input id="d20SpotlightTitle" type="text" placeholder="Spotlight title">
                         <input id="d20SpotlightSubtitle" type="text" placeholder="Short subtitle">
                     </div>
@@ -1337,7 +1345,7 @@
                     <div><label>Other Bonus Expiry (days) · 0 = never</label><input id="bonusExpiry" type="number" min="0" step="1" placeholder="0"></div>
                 </div>
                 <label class="restriction-toggle"><input id="bonusWithdrawalLock" type="checkbox" checked> Block withdrawal while bonus/gift turnover is incomplete</label>
-                <p class="hint-text">Bonus turnover is calculated from qualifying Game Rounds and Colour Clash bets recorded after the bonus credit. The user receives a warning popup when a restriction is triggered.</p>
+                <p class="hint-text">Bonus turnover is calculated from qualifying Game Rounds and WINGO bets recorded after the bonus credit. The user receives a warning popup when a restriction is triggered.</p>
                 <button onclick="saveBonusRestrictions()" class="btn-green" style="margin-top:8px;">💾 Save Bonus Rules</button>
             </div>
 
@@ -1389,7 +1397,7 @@
                     <div class="manual-filter-row">
                         <input id="manualRestrictedSearch" type="text" placeholder="Search UID or email..." oninput="renderManualRestrictedUsers(window._manualRestrictedSnapshot)">
                         <select id="manualRestrictedFilter" onchange="renderManualRestrictedUsers(window._manualRestrictedSnapshot)">
-                            <option value="all">All restricted users</option><option value="freeze">🧊 Frozen</option><option value="betting">🎮 Betting blocked</option><option value="deposits">💰 Deposits blocked</option><option value="withdrawals">💸 Withdrawals blocked</option><option value="gift">🎟️ Gift codes blocked</option><option value="colourClash">🎨 Colour Clash blocked</option><option value="rewards">🎁 Rewards blocked</option><option value="missions">🎯 Missions blocked</option>
+                            <option value="all">All restricted users</option><option value="freeze">🧊 Frozen</option><option value="betting">🎮 Betting blocked</option><option value="deposits">💰 Deposits blocked</option><option value="withdrawals">💸 Withdrawals blocked</option><option value="gift">🎟️ Gift codes blocked</option><option value="colourClash">🎨 WINGO blocked</option><option value="rewards">🎁 Rewards blocked</option><option value="missions">🎯 Missions blocked</option>
                         </select>
                     </div>
                     <div id="manualRestrictedUsersList"><div class="manual-restricted-empty">Loading restricted users...</div></div>
@@ -1405,7 +1413,7 @@
 
             <div class="restriction-admin-card">
                 <h4>ℹ️ Behaviour</h4>
-                <p class="hint-text">The first-withdrawal fee is charged from the user's wallet together with the requested amount; it is not a hidden payment page. Rejected withdrawal requests refund the full amount including the fee. The betting requirement counts qualifying bets from Game Rounds and Colour Clash.</p>
+                <p class="hint-text">The first-withdrawal fee is charged from the user's wallet together with the requested amount; it is not a hidden payment page. Rejected withdrawal requests refund the full amount including the fee. The betting requirement counts qualifying bets from Game Rounds and WINGO.</p>
             </div>
             <button onclick="saveWithdrawalRestrictions()" class="btn-green" style="margin-top:12px;">💾 Save Restriction Rules</button>
             <button onclick="closeRestrictionsAdminModal()" class="btn-gray" style="margin-top:8px;">⬅ Back to Dashboard</button>
@@ -1448,13 +1456,6 @@
             </div>
 
             <div class="control-group">
-                <label>✨ Theme Glow Strength: <b id="themeGlowValue">50%</b></label>
-                <input id="themeGlowRange" type="range" min="0" max="100" step="5" value="50" oninput="previewThemeGlow(this.value)">
-                <p class="hint-text">0% = no glow · 50% = original · 100% = very strong. Changes are shared instantly with the User App.</p>
-                <button onclick="saveThemeGlow()" class="btn-green">💾 Save Glow Setting</button>
-            </div>
-
-            <div class="control-group">
                 <label style="color:#f87171;">⚠️ Dashboard Data &amp; Records Management — these permanently delete the underlying records behind the Dashboard stats. This cannot be undone.</label>
                 <div class="action-row" style="margin-top:10px;">
                     <button onclick="clearAllDeposits()" class="btn-red">🗑️ Clear Total Deposits Records</button>
@@ -1473,9 +1474,9 @@
             </div>
         </div>
 
-        <!-- Colour Clash Admin Section -->
+        <!-- WINGO Admin Section -->
         <div id="colourClashAdminSection" class="hidden">
-            <h3 style="color:var(--accent-cyan);margin-top:0;font-size:16px;">🎨 Colour Clash Settings &amp; Live Entries</h3>
+            <h3 style="color:var(--accent-cyan);margin-top:0;font-size:16px;">🎨 WINGO Settings &amp; Live Entries</h3>
 
             <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom:14px;">
                 <div class="kpi-card kpi-blue"><div class="kpi-label">🎲 CURRENT ROUND</div><div class="kpi-value" id="ccAdminRound" style="font-size:18px;">—</div></div>
@@ -1503,13 +1504,13 @@
                     </div>
                     <div class="two-cols">
                         <input id="ccAdminMultiplier" type="number" min="1" step="0.01" placeholder="Standard Colour Win Multiplier">
-                        <input id="ccAdminBlueMultiplier" type="number" min="1" step="0.01" placeholder="Special Colour Win Multiplier">
+                        <input id="ccAdminVioletMultiplier" type="number" min="1" step="0.01" placeholder="Violet Win Multiplier">
                         <input id="ccAdminNumberMultiplier" type="number" min="1" step="0.01" placeholder="Number (0-9) Win Multiplier">
                         <input id="ccAdminSizeMultiplier" type="number" min="1" step="0.01" placeholder="BIG/SMALL Win Multiplier">
                     </div>
                     <select id="ccAdminAuto"><option value="true">Automatic Result: ON</option><option value="false">Automatic Result: OFF</option></select>
                     <select id="ccAdminRandomized"><option value="true">Secure Random Results: ON • No Consecutive Repeat</option><option value="false">Secure Random Results: OFF • Deterministic (testing only)</option></select>
-                    <button onclick="saveColourClashConfig()" class="btn-green">💾 Save Colour Clash Settings</button>
+                    <button onclick="saveColourClashConfig()" class="btn-green">💾 Save WINGO Settings</button>
                 </div>
             </div>
 
@@ -1528,7 +1529,7 @@
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
                     <div class="cc-colour-chip cc-red"><div class="cc-chip-label"><span class="cc-colour-dot cc-dot-red cc-colour-dot-lg"></span></div><div class="cc-chip-value" id="ccAdminRedAmount">₹0</div></div>
                     <div class="cc-colour-chip cc-green"><div class="cc-chip-label"><span class="cc-colour-dot cc-dot-green cc-colour-dot-lg"></span></div><div class="cc-chip-value" id="ccAdminGreenAmount">₹0</div></div>
-                    <div class="cc-colour-chip cc-blue"><div class="cc-chip-label"><span class="cc-colour-dot cc-dot-blue cc-colour-dot-lg"></span></div><div class="cc-chip-value" id="ccAdminBlueAmount">₹0</div></div>
+                    <div class="cc-colour-chip cc-violet"><div class="cc-chip-label"><span class="cc-colour-dot cc-dot-violet cc-colour-dot-lg"></span></div><div class="cc-chip-value" id="ccAdminVioletAmount">₹0</div></div>
                 </div>
                 <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px;font-size:11px;text-align:center;" id="ccAdminNumberAmountGrid"></div>
                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;font-size:11px;text-align:center;" id="ccAdminSizeAmountGrid">
@@ -1573,7 +1574,7 @@
                 <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">📊 User Play History Digest</h3>
                 <button onclick="clearPlayHistoryDigest()" class="btn-red" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">🗑️ Clear Records</button>
             </div>
-            <p style="color:var(--text-muted); font-size:12px; margin-top:-6px;">Total wagered, total won, and net position per user across all games (Mines, Rocket Jump, Fortune Wheel, Coin Flip, Number Master). Colour Clash has its own dedicated stats panel and isn't included here.</p>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:-6px;">Total wagered, total won, and net position per user across all games (Mines, Rocket Jump, Fortune Wheel, Coin Flip, Number Master). WINGO has its own dedicated stats panel and isn't included here.</p>
 
             <div class="stats-grid" style="margin: 10px 0;">
                 <div class="stat-card"><span>Total Rounds</span><b id="phdTotalRounds">—</b></div>
@@ -1713,6 +1714,10 @@
                 <p class="hint-text">Mine positions are always generated randomly and can't be seen or set by admin. RTP% only scales the payout multiplier curve — lower RTP means a bigger house edge, higher RTP means more generous payouts.</p>
 
                 <button onclick="saveMinesConfig()" class="btn-green" style="margin-top:8px;">Save Mines Settings</button>
+                <div class="gv-admin-game-ui-note" style="margin-top:10px;padding:10px;border:1px solid rgba(96,165,250,.22);border-radius:12px;background:linear-gradient(145deg,rgba(59,130,246,.08),rgba(168,85,247,.05));">
+                    <b style="font-size:11px;color:#93c5fd;">🎨 User App UI Sync</b>
+                    <div style="font-size:9px;color:var(--text-muted);margin-top:4px;line-height:1.45;">Mines now uses the refreshed 5×5 tile board, clearer multiplier/potential-win display and the same currency/bet limits configured above. No separate UI setting is required.</div>
+                </div>
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; margin:16px 0 8px 0;">
@@ -2114,30 +2119,47 @@
 
         <!-- Events & Activity Management Section -->
         <div id="eventsAdminSection" class="hidden">
-            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🎉 Manage Events &amp; Activity</h3>
-            <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size:16px;">🎉 Events & Activity Control Center</h3>
+            <p class="hint-text">Create scheduled events, feature important campaigns, control visibility, set priority, and give users a clear live/upcoming countdown.</p>
+            <div id="eventsAdminStats" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0;">
+                <div class="admin-section-card" style="padding:9px;margin:0;text-align:center;"><span style="font-size:9px;color:var(--text-muted);">TOTAL</span><b id="eventStatTotal" style="display:block;font-size:18px;color:var(--accent-cyan);">0</b></div>
+                <div class="admin-section-card" style="padding:9px;margin:0;text-align:center;"><span style="font-size:9px;color:var(--text-muted);">LIVE</span><b id="eventStatLive" style="display:block;font-size:18px;color:#34d399;">0</b></div>
+                <div class="admin-section-card" style="padding:9px;margin:0;text-align:center;"><span style="font-size:9px;color:var(--text-muted);">UPCOMING</span><b id="eventStatUpcoming" style="display:block;font-size:18px;color:#facc15;">0</b></div>
+                <div class="admin-section-card" style="padding:9px;margin:0;text-align:center;"><span style="font-size:9px;color:var(--text-muted);">FEATURED</span><b id="eventStatFeatured" style="display:block;font-size:18px;color:#c084fc;">0</b></div>
+            </div>
+            <div class="control-group" style="margin-top:0;margin-bottom:10px;padding-top:4px;">
                 <input type="hidden" id="editEventKey" value="">
-                <input id="eventImageUrl" type="text" placeholder="Banner Image URL (e.g. https://example.com/banner.jpg)">
+                <input id="eventImageUrl" type="text" placeholder="Banner Image URL (wide image recommended)">
                 <input id="eventTitle" type="text" placeholder="Event Title (e.g. Diwali Bonanza)">
-                <input id="eventLink" type="text" placeholder="Reference Link (Optional)">
-                <textarea id="eventDesc" placeholder="About this event..." rows="3" style="width:100%; padding:10px; margin:6px 0; border-radius:8px; border:1px solid rgba(82, 82, 91, 0.4); background:rgba(10, 10, 10, 0.8); color:var(--text-main); font-family:inherit; resize:none;"></textarea>
-                <label style="margin-top:8px;">Pin to top of Events page:</label>
-                <select id="eventPinned">
-                    <option value="no">Normal (sorted by newest)</option>
-                    <option value="yes">📌 Pinned to top</option>
-                </select>
-                <label style="margin-top:8px;">Status:</label>
-                <select id="eventStatus">
-                    <option value="active">Active (visible to users)</option>
-                    <option value="inactive">Inactive (hidden from users)</option>
-                </select>
+                <div class="two-cols">
+                    <input id="eventCategory" type="text" placeholder="Category (e.g. Tournament, Bonus, Announcement)">
+                    <input id="eventPriority" type="number" placeholder="Priority (higher = higher)" min="0" max="9999" value="0">
+                </div>
+                <input id="eventLink" type="text" placeholder="Reference / Event Link (Optional)">
+                <input id="eventCtaText" type="text" placeholder="Button text (e.g. Join Now, View Details)" maxlength="24" value="View Event">
+                <textarea id="eventDesc" placeholder="About this event..." rows="3" style="width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid rgba(82,82,91,.4);background:rgba(10,10,10,.8);color:var(--text-main);font-family:inherit;resize:none;"></textarea>
+                <div class="two-cols">
+                    <div><label>Starts</label><input id="eventStartAt" type="datetime-local"></div>
+                    <div><label>Ends</label><input id="eventEndAt" type="datetime-local"></div>
+                </div>
+                <div class="two-cols">
+                    <div><label>Pin</label><select id="eventPinned"><option value="no">Normal</option><option value="yes">📌 Pinned to top</option></select></div>
+                    <div><label>Featured</label><select id="eventFeatured"><option value="no">Normal Event</option><option value="yes">⭐ Featured on top</option></select></div>
+                </div>
+                <label style="margin-top:8px;">Visibility</label>
+                <select id="eventStatus"><option value="active">Active (visible to users)</option><option value="inactive">Inactive (hidden from users)</option></select>
                 <div class="btn-group">
                     <button id="saveEventBtn" onclick="saveEvent()" class="btn-green">Publish Event</button>
                     <button id="cancelEventEditBtn" onclick="resetEventForm()" class="btn-gray hidden">Cancel Edit</button>
                 </div>
-                <p class="hint-text">Tip: use a wide banner image (roughly 800×400px) for the best look on the user app.</p>
+                <p class="hint-text">Schedule is optional. If set, the user app automatically shows LIVE / UPCOMING / ENDED status and a countdown.</p>
             </div>
-            <div id="eventsAdminContainer" style="max-height: 280px; overflow-y: auto; margin: 10px 0;">Loading events...</div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px;margin:10px 0;">
+                <input id="eventAdminSearch" type="text" placeholder="🔍 Search title, category or description..." oninput="renderEventsAdminList()" style="margin:0;">
+                <select id="eventAdminFilter" onchange="renderEventsAdminList()" style="margin:0;"><option value="all">All</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="live">Live</option><option value="upcoming">Upcoming</option><option value="ended">Ended</option><option value="featured">Featured</option></select>
+                <select id="eventAdminSort" onchange="renderEventsAdminList()" style="margin:0;"><option value="newest">Newest</option><option value="priority">Priority</option><option value="start">Start time</option></select>
+            </div>
+            <div id="eventsAdminContainer" style="max-height:360px;overflow-y:auto;margin:10px 0;">Loading events...</div>
         </div>
 
         <!-- Daily Rewards Management Section -->
@@ -2271,12 +2293,25 @@ function formatAdminMoney(value){
     return '₹'+(Number.isFinite(n)?n:0).toFixed(2);
 }
 
-        firebase.initializeApp({
-            apiKey: "AIzaSyBRx_xCZWITfSANdmBcQr7qmMQiPB7AUvc",
-            databaseURL: "https://titan-gameverse-default-rtdb.firebaseio.com",
-            projectId: "titan-gameverse"
-        });
-        const db = firebase.database();
+        // Firebase bootstrap: guard against duplicate initialization / partial reloads.
+        // A duplicate initializeApp call can surface in the browser as the generic "Script error.".
+        var db;
+        try {
+            if (!firebase.apps || !firebase.apps.length) {
+                firebase.initializeApp({
+                    apiKey: "AIzaSyBRx_xCZWITfSANdmBcQr7qmMQiPB7AUvc",
+                    databaseURL: "https://titan-gameverse-default-rtdb.firebaseio.com",
+                    projectId: "titan-gameverse"
+                });
+            }
+            db = firebase.database();
+            window.gvAdminDb = db;
+        } catch (firebaseInitError) {
+            console.error('Game Verse Firebase initialization failed:', firebaseInitError);
+            // Keep the page alive so a transient/duplicate Firebase bootstrap does not
+            // terminate the rest of the Admin App script chain.
+            db = null;
+        }
 
         // ---- App Theme presets — controls both Admin Panel & User App ----
         const THEME_PRESETS = {
@@ -2379,14 +2414,14 @@ function formatAdminMoney(value){
             const blur=Math.round(4+safe*14), alpha=Math.min(0.38,safe*0.38);
             adminGlowOverrideStyle.textContent=safe<=0?'':`button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 ${blur}px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) ${Math.round(alpha*100)}%, transparent)); }`;
         }
-        let adminThemeGlowScale = 50;
+        let adminThemeGlowScale = 100;
         db.ref('control/appTheme').on('value', snap => {
             const t=snap.val()||'black'; applyTheme(t); updateThemeButtons(t);
-            setTimeout(()=>applyAdminThemeGlow(adminThemeGlowScale),0);
+            setTimeout(()=>applyAdminThemeGlow(50),0);
         });
         db.ref('control/themeGlowScale').on('value', snap => {
-            const n=Number(snap.val());
-            applyAdminThemeGlow(snap.val()===null||snap.val()===undefined?50:(n<=1?n*100:n));
+            // Theme Glow Strength control removed — all themes always use full glow.
+            applyAdminThemeGlow(50);
         });
         function updateThemeButtons(themeName) {
             const ids = ['themeBlackBtn','themeDarkBlueBtn','themeGoldenBtn','themeNeonBtn','themeRedBtn','themeColorfulBtn','themeSkyBlueBtn','themeBloodMoonBtn','themeEmeraldBtn','themeAuroraBtn'];
@@ -2419,7 +2454,7 @@ function formatAdminMoney(value){
             const pct=Math.max(0,Math.min(100,Number(value)||0));
             adminThemeGlowScale=pct;
             document.documentElement.style.setProperty('--theme-glow-scale',String(pct/100));
-            applyAdminGlowScale(pct/100);
+            applyAdminGlowScale(0.5);
             const range=document.getElementById('themeGlowRange'), label=document.getElementById('themeGlowValue');
             if(range) range.value=pct;
             if(label) label.textContent=pct+'%';
@@ -2488,7 +2523,7 @@ function formatAdminMoney(value){
             {id:'coin_flip',name:'🪙 Coin Flip'},
             {id:'number_guess',name:'🎯 Number Master'},
             {id:'mines',name:'💣 Mines'},
-            {id:'colour_clash',name:'🎨 Colour Clash'}
+            {id:'colour_clash',name:'🎨 WINGO'}
         ];
 
         function openDashboard20(){
@@ -2738,11 +2773,26 @@ function formatAdminMoney(value){
         }
 
         function navTo(label, openFn, el) {
-            hideAllAdminSections();
-            openFn();
-            setActiveSidebar(el);
-            document.getElementById('topbarTitle').innerText = label;
-            document.getElementById('topbarBreadcrumb').innerHTML = 'Home &gt; ' + label;
+            try {
+                // Keep BOTH hiding and opening inside the same guard. A failure in a section
+                // helper must never bubble up as the browser's generic "Script error.".
+                try{if(typeof hideAllAdminSections==='function') hideAllAdminSections();}catch(navErr){console.warn('[WINGO] sidebar cleanup skipped:',navErr);}
+                if (typeof openFn !== 'function') throw new Error('Admin section handler is unavailable: '+label);
+                openFn();
+            } catch (err) {
+                console.error('[Game Verse] Navigation error:', label, err);
+                try {
+                    const section=document.getElementById('colourClashAdminSection');
+                    if(label==='WINGO' && section){
+                        section.classList.remove('hidden');
+                        const box=document.getElementById('ccAdminResultStatus');
+                        if(box) box.innerHTML='<span style="color:#fca5a5">WINGO settings could not be loaded. The page is still active; refresh only if needed.</span>';
+                    }
+                } catch(uiErr){ console.error('[Game Verse] Navigation recovery failed:',uiErr); }
+            }
+            try { setActiveSidebar(el); } catch(e) { console.error('[Game Verse] Sidebar update failed:',e); }
+            try { const title=document.getElementById('topbarTitle'); if(title) title.innerText = label; } catch(e) {}
+            try { const crumb=document.getElementById('topbarBreadcrumb'); if(crumb) crumb.innerHTML = 'Home &gt; ' + label; } catch(e) {}
         }
 
         function goToDashboardHome(el) {
@@ -2755,12 +2805,12 @@ function formatAdminMoney(value){
         }
 
         // Keep the global game switch synchronized in every admin view, including after navigation.
-        db.ref('users').on('value', snap => {
+        if (db) db.ref('users').on('value', snap => {
             if(typeof refreshLivePresenceFromFirebase==='function') refreshLivePresenceFromFirebase();
             if(typeof loadDashboardKpisAndAlerts==='function' && !document.getElementById('mainAdminMenu')?.classList.contains('hidden')) loadDashboardKpisAndAlerts();
         });
 
-        db.ref('control/globalGamesStatus').on('value', snap => {
+        if (db) db.ref('control/globalGamesStatus').on('value', snap => {
             const active = snap.val() !== 'paused';
             window.__globalGamesState = active ? 'active' : 'paused';
             window.__globalGamesPending = null;
@@ -2871,7 +2921,7 @@ function formatAdminMoney(value){
         }
 
         function loadDashboardStats() {
-            db.ref('users').on('value', snap => {
+            if (db) db.ref('users').on('value', snap => {
                 let count = 0, inr = 0, usdt = 0;
                 if(snap.exists()) snap.forEach(child => { const u=child.val()||{}; count++; inr += Number(u.balance)||0; usdt += Number(u.usdtBalance)||0; });
                 const usersEl=document.getElementById('kpiTotalUsers'), subEl=document.getElementById('kpiTotalUsersSub');
@@ -2888,7 +2938,7 @@ function formatAdminMoney(value){
             { id: 'coin_flip', name: '🪙 Coin Flip' },
             { id: 'number_guess', name: '🎯 Number Master' },
             { id: 'mines', name: '💣 Mines' },
-            { id: 'colour_clash', name: '🎨 Colour Clash' }
+            { id: 'colour_clash', name: '🎨 WINGO' }
         ];
 
         function loadDashboardHome() {
@@ -2983,8 +3033,8 @@ function formatAdminMoney(value){
 
                 // House P&L + active-today.
                 // game_rounds contains settled rounds for the regular games (including Mines).
-                // Colour Clash stores its settled bets separately under colour_clash/entries,
-                // so include those too. Pending/unsettled Colour Clash entries are excluded.
+                // WINGO stores its settled bets separately under colour_clash/entries,
+                // so include those too. Pending/unsettled WINGO entries are excluded.
                 // Do NOT read mines_rounds here because settled Mines rounds are already logged
                 // into game_rounds; reading both would double-count Mines P&L.
                 let totalProfit = 0, totalProfitUsdt = 0;
@@ -3090,72 +3140,117 @@ function formatAdminMoney(value){
 
         function loadGameCommandCenter() {
             const tbody = document.getElementById('gameCommandCenterBody');
-            if (!tbody) return;
+            if (!tbody || !db) return;
 
-            const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+            const todayStart = new Date();
+            todayStart.setHours(0,0,0,0);
             const todayStartMs = todayStart.getTime();
+
             const read = path => db.ref(path).once('value').catch(err => {
-                console.error('Game Command Center read failed:', path, err);
+                console.warn('Game Command Center read skipped:', path, err && err.message ? err.message : err);
                 return null;
             });
 
-            // game_rounds is the canonical round ledger for Rocket Jump, High Card,
-            // Fortune Wheel, Coin Flip and Number Master. Mines/Colour Clash have
-            // separate ledgers, so those are merged below.
+            // All settled rounds are counted from game_rounds. WINGO keeps its
+            // own entry ledger, so it is merged separately. Mines also writes to
+            // the legacy mines_rounds ledger, but that ledger is NOT added here
+            // because the same settled Mines round is already logged in
+            // game_rounds. Counting both would make every Mines wager appear 2x.
             Promise.all([
                 read('games'),
                 read('control/minesConfig'),
                 read('control/colourClashConfig'),
                 read('control/globalGamesStatus'),
                 read('game_rounds'),
-                read('mines_rounds'),
                 read('colour_clash/entries')
-            ]).then(([gamesSnap,minesCfgSnap,ccCfgSnap,globalSnap,roundsSnap,minesSnap,ccSnap]) => {
+            ]).then(([gamesSnap,minesCfgSnap,ccCfgSnap,globalSnap,roundsSnap,ccSnap]) => {
                 const gamesData = (gamesSnap && gamesSnap.val()) || {};
                 const globalActive = !globalSnap || globalSnap.val() !== 'paused';
                 const perGame = {};
                 DASH_GAME_LIST.forEach(g => perGame[g.id] = {
-                    players:new Set(), entries:0, wageredINR:0, wonINR:0, revenueINR:0,
-                    wageredUSDT:0, wonUSDT:0, revenueUSDT:0
+                    players:new Set(), entries:0, wageredINR:0, wonINR:0,
+                    wageredUSDT:0, wonUSDT:0, seenKeys:new Set()
                 });
 
-                const add = (id,r,bet,win,uid,ts,curr) => {
-                    if (!perGame[id]) return;
+                const normalizeGameId = r => {
+                    const raw = String(r && r.gameId || '').trim();
+                    if (perGame[raw]) return raw;
+                    const name = String(r && r.gameName || '').trim().toLowerCase();
+                    const byName = {
+                        'rocket jump':'rocket_jump',
+                        'high card':'high_card',
+                        'fortune wheel':'spin_wheel',
+                        'coin flip':'coin_flip',
+                        'lucky coin flip':'coin_flip',
+                        'number master':'number_guess',
+                        'mines':'mines',
+                        'wingo':'colour_clash'
+                    };
+                    return byName[name] || '';
+                };
+
+                const add = (id, r, bet, win, uid, ts, curr, uniqueKey) => {
+                    if (!perGame[id]) return false;
                     const time = normalizeRoundTimestamp(ts);
-                    if (!time || time < todayStartMs) return;
+                    if (!time || time < todayStartMs) return false;
                     const c = String(curr || 'INR').trim().toUpperCase() === 'USDT' ? 'USDT' : 'INR';
                     const wagered = Math.max(0, Number(bet) || 0);
                     const won = Math.max(0, Number(win) || 0);
+                    const key = uniqueKey || String(r && (r.roundId || r.id || r.key || r.timestamp || ''));
                     const st = perGame[id];
+                    if (key && st.seenKeys.has(String(key))) return false;
+                    if (key) st.seenKeys.add(String(key));
                     st.entries++;
                     if (c === 'USDT') {
-                        st.wageredUSDT += wagered; st.wonUSDT += won; st.revenueUSDT += wagered - won;
+                        st.wageredUSDT += wagered;
+                        st.wonUSDT += won;
                     } else {
-                        st.wageredINR += wagered; st.wonINR += won; st.revenueINR += wagered - won;
+                        st.wageredINR += wagered;
+                        st.wonINR += won;
                     }
                     const player = uid || r?.userId || r?.uid || r?.customUid;
                     if (player) st.players.add(String(player));
+                    return true;
                 };
 
+                // Primary source for Rocket Jump, High Card, Fortune Wheel,
+                // Coin Flip, Number Master and Mines.
+                // Mines is intentionally counted ONLY from game_rounds here so a
+                // single Mines wager is never duplicated by mines_rounds.
                 if (roundsSnap && roundsSnap.exists()) {
                     roundsSnap.forEach(ch => {
                         const r = ch.val() || {};
-                        const id = String(r.gameId || '').trim();
-                        if (!perGame[id]) return;
-                        add(id, r, r.betAmount ?? r.amount, r.winAmount ?? r.payout, r.customUid || r.userId || r.uid,
-                            r.timestamp ?? r.createdAt ?? r.time, r.currency);
+                        const id = normalizeGameId(r);
+                        if (!id) return;
+                        const key = String(r.roundId || r.round || ch.key || r.timestamp || '');
+                        add(
+                            id,
+                            r,
+                            r.betAmount ?? r.amount ?? r.fee,
+                            r.winAmount ?? r.payout ?? 0,
+                            r.customUid || r.userId || r.uid,
+                            r.timestamp ?? r.createdAt ?? r.time,
+                            r.currency,
+                            id + ':' + key
+                        );
                     });
                 }
-                if (minesSnap && minesSnap.exists()) minesSnap.forEach(ch => {
-                    const r = ch.val() || {};
-                    if (String(r.status || '').toLowerCase() === 'active') return;
-                    add('mines', r, r.betAmount ?? r.amount, r.payout ?? r.winAmount,
-                        r.customUid || r.userId || r.uid, r.timestamp ?? r.createdAt ?? r.time, r.currency);
-                });
+
+                // WINGO has its own entry ledger. Each entry is a distinct bet;
+                // therefore group/deduplicate only by Firebase record key.
                 if (ccSnap && ccSnap.exists()) ccSnap.forEach(ch => {
                     const r = ch.val() || {};
-                    add('colour_clash', r, r.amount ?? r.betAmount, r.winAmount ?? r.payout,
-                        r.customUid || r.userId || r.uid, r.timestamp ?? r.createdAt ?? r.time, r.currency);
+                    const key = 'wingo:' + String(ch.key || r.id || r.roundId || r.timestamp || '');
+                    add(
+                        'colour_clash',
+                        r,
+                        r.amount ?? r.betAmount ?? r.fee,
+                        r.winAmount ?? r.payout ?? 0,
+                        r.customUid || r.userId || r.uid,
+                        r.timestamp ?? r.createdAt ?? r.time,
+                        r.currency,
+                        key
+                    );
                 });
 
                 const globalLabel = document.getElementById('dashboardGlobalGameState');
@@ -3177,8 +3272,8 @@ function formatAdminMoney(value){
                         <td><span class="cc-status-pill ${status==='active'?'cc-status-active':'cc-status-paused'}">● ${status.toUpperCase()}</span></td>
                         <td>${st.players.size}</td>
                         <td>${st.entries}</td>
-                        <td style="color:${st.revenueINR>=0?'#34d399':'#f87171'}">${money(st.revenueINR,'INR')}</td>
-                        <td style="color:${st.revenueUSDT>=0?'#34d399':'#f87171'}">${money(st.revenueUSDT,'USDT')}</td>
+                        <td style="color:#34d399">${money(st.wageredINR,'INR')}</td>
+                        <td style="color:#34d399">${money(st.wageredUSDT,'USDT')}</td>
                     </tr>`;
                 }).join('');
             }).catch(err => {
@@ -4102,7 +4197,7 @@ function formatAdminMoney(value){
                 const rows=[]; const add=(r,gameId,gameName,bet,win)=>{ if(!r)return; rows.push({userId:r.userId||'unknown',customUid:r.customUid||'---',gameId,gameName,bet:Number(bet)||0,win:Number(win)||0,currency:String(r.currency||'INR').trim().toUpperCase()==='USDT'?'USDT':'INR',result:r.result}); };
                 if(a&&a.exists())a.forEach(ch=>add(ch.val(),ch.val().gameId||'unknown',ch.val().gameName||ch.val().gameId,ch.val().betAmount,ch.val().winAmount));
                 if(b&&b.exists())b.forEach(ch=>{const r=ch.val()||{}; if(String(r.status||'').toLowerCase()!=='active') add(r,'mines','Mines',r.betAmount,r.payout);});
-                if(c&&c.exists())c.forEach(ch=>{const r=ch.val()||{}; add(r,'colour_clash','Colour Clash',r.amount,r.winAmount??r.payout);});
+                if(c&&c.exists())c.forEach(ch=>{const r=ch.val()||{}; add(r,'colour_clash','WINGO',r.amount,r.winAmount??r.payout);});
                 const byUser={},byGame={}; rows.forEach(r=>{const key=r.userId; if(!byUser[key])byUser[key]={userId:key,customUid:r.customUid,rounds:0,wins:0,totalWageredINR:0,totalWonINR:0,totalWageredUSDT:0,totalWonUSDT:0}; const u=byUser[key]; u.rounds++; if(r.result==='win')u.wins++; if(r.currency==='USDT'){u.totalWageredUSDT+=r.bet;u.totalWonUSDT+=r.win;}else{u.totalWageredINR+=r.bet;u.totalWonINR+=r.win;} const gkey=r.gameId+'_'+r.currency; if(!byGame[gkey])byGame[gkey]={gameId:r.gameId,gameName:r.gameName,currency:r.currency,wagered:0,won:0,rounds:0}; byGame[gkey].wagered+=r.bet;byGame[gkey].won+=r.win;byGame[gkey].rounds++;});
                 playHistoryDigestData=Object.values(byUser).map(u=>({...u,netINR:u.totalWonINR-u.totalWageredINR,netUSDT:u.totalWonUSDT-u.totalWageredUSDT}));
                 playHistoryDigestGameBreakdown=Object.values(byGame).map(g=>({...g,profit:g.wagered-g.won})).sort((x,y)=>y.profit-x.profit);
@@ -4405,7 +4500,7 @@ function formatAdminMoney(value){
 
         function loadAllUsersForAdmin() {
             const container = document.getElementById('userListContainer');
-            db.ref('users').on('value', snap => {
+            if (db) db.ref('users').on('value', snap => {
                 allUsersDataCache = {};
                 referralCountCache = {}; // Reset count cache
                 if (!snap.exists()) {
@@ -4629,7 +4724,7 @@ function formatAdminMoney(value){
                             <div class="manual-preview-item"><span>💰 Deposits</span><b>${u.manualRestrictions && u.manualRestrictions.blockDeposits ? 'BLOCKED' : 'ALLOWED'}</b></div>
                             <div class="manual-preview-item"><span>💸 Withdrawals</span><b>${u.manualRestrictions && u.manualRestrictions.blockWithdrawals ? 'BLOCKED' : 'ALLOWED'}</b></div>
                             <div class="manual-preview-item"><span>🎟️ Gift codes</span><b>${u.manualRestrictions && u.manualRestrictions.blockGiftCodes ? 'BLOCKED' : 'ALLOWED'}</b></div>
-                            <div class="manual-preview-item"><span>🎨 Colour Clash</span><b>${u.manualRestrictions && u.manualRestrictions.blockColourClash ? 'BLOCKED' : 'ALLOWED'}</b></div>
+                            <div class="manual-preview-item"><span>🎨 WINGO</span><b>${u.manualRestrictions && u.manualRestrictions.blockColourClash ? 'BLOCKED' : 'ALLOWED'}</b></div>
                             <div class="manual-preview-item"><span>🎁 Rewards</span><b>${u.manualRestrictions && u.manualRestrictions.blockRewards ? 'BLOCKED' : 'ALLOWED'}</b></div>
                             <div class="manual-preview-item"><span>🎯 Missions</span><b>${u.manualRestrictions && u.manualRestrictions.blockMissions ? 'BLOCKED' : 'ALLOWED'}</b></div>
                         </div>
@@ -4638,7 +4733,7 @@ function formatAdminMoney(value){
                         <label class="restriction-toggle"><input id="manualDep_${uKey}" type="checkbox" ${u.manualRestrictions && u.manualRestrictions.blockDeposits ? 'checked' : ''}> Block deposits</label>
                         <label class="restriction-toggle"><input id="manualWd_${uKey}" type="checkbox" ${u.manualRestrictions && u.manualRestrictions.blockWithdrawals ? 'checked' : ''}> Block withdrawals</label>
                         <label class="restriction-toggle"><input id="manualGift_${uKey}" type="checkbox" ${u.manualRestrictions && u.manualRestrictions.blockGiftCodes ? 'checked' : ''}> Block gift codes</label>
-                        <label class="restriction-toggle"><input id="manualCC_${uKey}" type="checkbox" ${u.manualRestrictions && u.manualRestrictions.blockColourClash ? 'checked' : ''}> Block Colour Clash</label>
+                        <label class="restriction-toggle"><input id="manualCC_${uKey}" type="checkbox" ${u.manualRestrictions && u.manualRestrictions.blockColourClash ? 'checked' : ''}> Block WINGO</label>
                         <label class="restriction-toggle"><input id="manualRewards_${uKey}" type="checkbox" ${u.manualRestrictions && u.manualRestrictions.blockRewards ? 'checked' : ''}> Block daily rewards / bonuses</label>
                         <label class="restriction-toggle"><input id="manualMissions_${uKey}" type="checkbox" ${u.manualRestrictions && u.manualRestrictions.blockMissions ? 'checked' : ''}> Block missions / mission rewards</label>
                         <label class="manual-field-label">📝 Restriction reason</label>
@@ -4678,7 +4773,7 @@ function formatAdminMoney(value){
             if (r.blockDeposits) labels.push('💰 Block deposits');
             if (r.blockWithdrawals) labels.push('💸 Block withdrawals');
             if (r.blockGiftCodes) labels.push('🎟️ Block gift codes');
-            if (r.blockColourClash) labels.push('🎨 Block Colour Clash');
+            if (r.blockColourClash) labels.push('🎨 Block WINGO');
             if (r.blockRewards) labels.push('🎁 Block rewards');
             if (r.blockMissions) labels.push('🎯 Block missions');
             return labels;
@@ -4707,7 +4802,7 @@ function formatAdminMoney(value){
             restricted.sort((a,b)=>(Number(b.user.manualRestrictions?.updatedAt)||0)-(Number(a.user.manualRestrictions?.updatedAt)||0));
             const q=(document.getElementById('manualRestrictedSearch')?.value||'').trim().toLowerCase(),filter=document.getElementById('manualRestrictedFilter')?.value||'all';
             const stats=getManualRestrictionStats(restricted),statsEl=document.getElementById('manualRestrictionStats');
-            if(statsEl)statsEl.innerHTML=`<div class="manual-stat"><span>All Restricted</span><b>${stats.total}</b></div><div class="manual-stat"><span>🧊 Frozen</span><b>${stats.freeze}</b></div><div class="manual-stat"><span>🎮 Betting</span><b>${stats.betting}</b></div><div class="manual-stat"><span>💰 Deposits</span><b>${stats.deposits}</b></div><div class="manual-stat"><span>💸 Withdrawals</span><b>${stats.withdrawals}</b></div><div class="manual-stat"><span>🎟️ Gifts</span><b>${stats.gift}</b></div><div class="manual-stat"><span>🎨 Colour Clash</span><b>${stats.colourClash}</b></div><div class="manual-stat"><span>🎁 Rewards</span><b>${stats.rewards}</b></div><div class="manual-stat"><span>🎯 Missions</span><b>${stats.missions}</b></div>`;
+            if(statsEl)statsEl.innerHTML=`<div class="manual-stat"><span>All Restricted</span><b>${stats.total}</b></div><div class="manual-stat"><span>🧊 Frozen</span><b>${stats.freeze}</b></div><div class="manual-stat"><span>🎮 Betting</span><b>${stats.betting}</b></div><div class="manual-stat"><span>💰 Deposits</span><b>${stats.deposits}</b></div><div class="manual-stat"><span>💸 Withdrawals</span><b>${stats.withdrawals}</b></div><div class="manual-stat"><span>🎟️ Gifts</span><b>${stats.gift}</b></div><div class="manual-stat"><span>🎨 WINGO</span><b>${stats.colourClash}</b></div><div class="manual-stat"><span>🎁 Rewards</span><b>${stats.rewards}</b></div><div class="manual-stat"><span>🎯 Missions</span><b>${stats.missions}</b></div>`;
             const filtered=restricted.filter(item=>{const u=item.user||{},text=((u.email||'')+' '+(u.customUid||'')).toLowerCase();const r=u.manualRestrictions||{};const filterOk=filter==='all'||(filter==='freeze'&&r.freeze)||(filter==='betting'&&r.blockBetting)||(filter==='deposits'&&r.blockDeposits)||(filter==='withdrawals'&&r.blockWithdrawals)||(filter==='gift'&&r.blockGiftCodes)||(filter==='colourClash'&&r.blockColourClash)||(filter==='rewards'&&r.blockRewards)||(filter==='missions'&&r.blockMissions);return filterOk&&(!q||text.includes(q));});
             if(countEl)countEl.textContent=String(filtered.length)+(filtered.length!==restricted.length?' / '+restricted.length:'');
             if(!filtered.length){container.innerHTML='<div class="manual-restricted-empty">'+(restricted.length?'🔎 No restricted users match this search/filter.':'✅ No users are currently restricted by Manual User Controls.')+'</div>';return;}
@@ -5795,122 +5890,98 @@ function formatAdminMoney(value){
             document.getElementById('mainAdminMenu').classList.remove('hidden');
         }
 
-        function saveEvent() {
-            const editKey = document.getElementById('editEventKey').value;
-            const imageUrl = document.getElementById('eventImageUrl').value.trim();
-            const title = document.getElementById('eventTitle').value.trim();
-            const link = document.getElementById('eventLink').value.trim();
-            const description = document.getElementById('eventDesc').value.trim();
-            const pinned = document.getElementById('eventPinned').value === 'yes';
-            const status = document.getElementById('eventStatus').value;
-
-            if(!imageUrl) return alert('Please enter the banner image URL.');
-            if(!title) return alert('Please enter an event title.');
-
-            const eventData = {
-                imageUrl: imageUrl,
-                title: title,
-                link: link,
-                description: description,
-                pinned: pinned,
-                status: status,
-                timestamp: editKey ? undefined : Date.now()
-            };
-            // Never overwrite the original publish time on an edit.
-            Object.keys(eventData).forEach(k => eventData[k] === undefined && delete eventData[k]);
-
-            if(editKey) {
-                db.ref('events/' + editKey).update(eventData).then(() => {
-                    alert('Event updated successfully!');
-                    resetEventForm();
-                });
-            } else {
-                const newRef = db.ref('events').push();
-                newRef.set(eventData).then(() => {
-                    alert('Event published successfully!');
-                    resetEventForm();
-                });
-            }
+        function eventAdminTimeValue(v){
+            if(v===undefined||v===null||v==='') return 0;
+            const n=Number(v); if(Number.isFinite(n)&&n>0)return n;
+            const t=Date.parse(v); return Number.isFinite(t)?t:0;
         }
-
-        function resetEventForm() {
-            document.getElementById('editEventKey').value = '';
-            document.getElementById('eventImageUrl').value = '';
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventLink').value = '';
-            document.getElementById('eventDesc').value = '';
-            document.getElementById('eventPinned').value = 'no';
-            document.getElementById('eventStatus').value = 'active';
-            document.getElementById('saveEventBtn').innerText = 'Publish Event';
-            document.getElementById('cancelEventEditBtn').classList.add('hidden');
+        function eventAdminEscape(v){
+            return String(v==null?'':v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
         }
-
-        function editEvent(eKey, imageUrl, title, link, description, pinned, status) {
-            document.getElementById('editEventKey').value = eKey;
-            document.getElementById('eventImageUrl').value = imageUrl;
-            document.getElementById('eventTitle').value = title;
-            document.getElementById('eventLink').value = link;
-            document.getElementById('eventDesc').value = description;
-            document.getElementById('eventPinned').value = pinned ? 'yes' : 'no';
-            document.getElementById('eventStatus').value = status;
-            document.getElementById('saveEventBtn').innerText = 'Update Event';
-            document.getElementById('cancelEventEditBtn').classList.remove('hidden');
-            document.getElementById('eventsAdminSection').scrollTop = 0;
+        function eventAdminState(ev){
+            const now=Date.now(), start=eventAdminTimeValue(ev.startAt), end=eventAdminTimeValue(ev.endAt);
+            if(end&&now>=end)return 'ended'; if(start&&now<start)return 'upcoming'; return 'live';
         }
-
-        function toggleEventStatus(eKey, currentStatus) {
-            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-            db.ref('events/' + eKey).update({ status: newStatus });
+        function eventAdminDateValue(v){
+            const t=eventAdminTimeValue(v); if(!t)return '';
+            const d=new Date(t); const pad=n=>String(n).padStart(2,'0');
+            return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
         }
-
-        function deleteEvent(eKey) {
-            if(confirm('Are you sure you want to delete this event?')) {
-                db.ref('events/' + eKey).remove().then(() => alert('Event deleted successfully!'));
-            }
+        function saveEvent(){
+            const editKey=document.getElementById('editEventKey').value;
+            const imageUrl=document.getElementById('eventImageUrl').value.trim();
+            const title=document.getElementById('eventTitle').value.trim();
+            const link=document.getElementById('eventLink').value.trim();
+            const description=document.getElementById('eventDesc').value.trim();
+            const category=document.getElementById('eventCategory').value.trim();
+            const ctaText=document.getElementById('eventCtaText').value.trim()||'View Event';
+            const priority=Math.max(0,Number(document.getElementById('eventPriority').value)||0);
+            const pinned=document.getElementById('eventPinned').value==='yes';
+            const featured=document.getElementById('eventFeatured').value==='yes';
+            const status=document.getElementById('eventStatus').value;
+            const startRaw=document.getElementById('eventStartAt').value;
+            const endRaw=document.getElementById('eventEndAt').value;
+            const startAt=startRaw?new Date(startRaw).getTime():0, endAt=endRaw?new Date(endRaw).getTime():0;
+            if(!imageUrl)return alert('Please enter the banner image URL.');
+            if(!title)return alert('Please enter an event title.');
+            if(startAt&&endAt&&endAt<=startAt)return alert('End time must be later than start time.');
+            const eventData={imageUrl,title,link,description,category,ctaText,priority,pinned,featured,status};
+            if(startAt)eventData.startAt=startAt; else if(editKey)eventData.startAt=null;
+            if(endAt)eventData.endAt=endAt; else if(editKey)eventData.endAt=null;
+            if(!editKey)eventData.timestamp=Date.now();
+            const ref=editKey?db.ref('events/'+editKey):db.ref('events').push();
+            const task=editKey?ref.update(eventData):ref.set(eventData);
+            task.then(()=>{alert(editKey?'Event updated successfully!':'Event published successfully!');resetEventForm();}).catch(err=>alert('Event save failed: '+err.message));
         }
-
-        function loadEventsAdminList() {
-            const container = document.getElementById('eventsAdminContainer');
-            db.ref('events').on('value', snap => {
-                container.innerHTML = '';
-                if(!snap.exists()) {
-                    container.innerHTML = '<p>No events published yet.</p>';
-                    return;
+        function resetEventForm(){
+            ['editEventKey','eventImageUrl','eventTitle','eventCategory','eventLink','eventDesc','eventStartAt','eventEndAt'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+            document.getElementById('eventPriority').value='0';document.getElementById('eventCtaText').value='View Event';document.getElementById('eventPinned').value='no';document.getElementById('eventFeatured').value='no';document.getElementById('eventStatus').value='active';
+            document.getElementById('saveEventBtn').innerText='Publish Event';document.getElementById('cancelEventEditBtn').classList.add('hidden');
+        }
+        function editEventByKey(eKey){
+            db.ref('events/'+eKey).once('value').then(snap=>{const e=snap.val();if(!e)return;document.getElementById('editEventKey').value=eKey;document.getElementById('eventImageUrl').value=e.imageUrl||'';document.getElementById('eventTitle').value=e.title||'';document.getElementById('eventCategory').value=e.category||'';document.getElementById('eventLink').value=e.link||'';document.getElementById('eventCtaText').value=e.ctaText||'View Event';document.getElementById('eventDesc').value=e.description||'';document.getElementById('eventPriority').value=Number(e.priority)||0;document.getElementById('eventStartAt').value=eventAdminDateValue(e.startAt);document.getElementById('eventEndAt').value=eventAdminDateValue(e.endAt);document.getElementById('eventPinned').value=e.pinned?'yes':'no';document.getElementById('eventFeatured').value=e.featured?'yes':'no';document.getElementById('eventStatus').value=e.status||'active';document.getElementById('saveEventBtn').innerText='Update Event';document.getElementById('cancelEventEditBtn').classList.remove('hidden');document.getElementById('eventsAdminSection').scrollTop=0;});
+        }
+        function toggleEventStatus(eKey,currentStatus){db.ref('events/'+eKey).update({status:currentStatus==='active'?'inactive':'active'});}
+        function deleteEvent(eKey){if(confirm('Are you sure you want to delete this event?'))db.ref('events/'+eKey).remove().then(()=>alert('Event deleted successfully!'));}
+        let eventsAdminCache=[];
+        function loadEventsAdminList(){
+            const container=document.getElementById('eventsAdminContainer'); if(!container)return;
+            db.ref('events').on('value',snap=>{
+                try{
+                    eventsAdminCache=[];
+                    if(snap.exists())snap.forEach(child=>eventsAdminCache.push({eKey:child.key,e:(child.val()&&typeof child.val()==='object')?child.val():{}}));
+                    updateEventAdminStats();
+                    renderEventsAdminList();
+                }catch(err){
+                    console.error('[Events] Render error:',err);
+                    container.innerHTML='<p style="padding:12px;color:#f87171;">Could not render events. Please refresh the admin panel.</p>';
                 }
-
-                const events = [];
-                snap.forEach(child => events.push({ eKey: child.key, e: child.val() }));
-                events.sort((a, b) => (b.e.timestamp || 0) - (a.e.timestamp || 0));
-
-                container.innerHTML = events.map(({ eKey, e }) => {
-                    const safeTitle = (e.title || '').replace(/'/g, "\\'");
-                    const safeDesc = (e.description || '').replace(/'/g, "\\'");
-                    const safeLink = (e.link || '').replace(/'/g, "\\'");
-                    const safeImg = (e.imageUrl || '').replace(/'/g, "\\'");
-                    return `
-                        <div class="event-admin-item">
-                            ${e.pinned ? '<span style="color:var(--accent-gold); font-weight:bold; font-size:11px;">📌 PINNED</span><br>' : ''}
-                            <b style="color:var(--accent-cyan); font-size:14px;">🎉 ${e.title}</b><br>
-                            <img src="${e.imageUrl}" style="width:100%; max-height:110px; object-fit:cover; border-radius:8px; margin:6px 0;" onerror="this.style.display='none'">
-                            <p style="margin:5px 0; font-size:12px; color:var(--text-muted);">${e.description || ''}</p>
-                            ${e.link ? `<p style="margin:5px 0; font-size:11px; word-break:break-all;">🔗 ${e.link}</p>` : ''}
-                            <b>Status:</b> <span style="color:${e.status === 'active' ? '#34d399' : '#f87171'}; font-weight:bold;">${(e.status || 'active').toUpperCase()}</span>
-                            <div class="action-row">
-                                <button onclick="toggleEventStatus('${eKey}', '${e.status || 'active'}')" class="btn-yellow">${e.status === 'active' ? 'Set Inactive' : 'Set Active'}</button>
-                                <button onclick="editEvent('${eKey}', '${safeImg}', '${safeTitle}', '${safeLink}', '${safeDesc}', ${!!e.pinned}, '${e.status || 'active'}')" class="btn-yellow">Edit</button>
-                                <button onclick="deleteEvent('${eKey}')" class="btn-red">Delete</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+            },err=>{
+                console.error('[Events] Firebase error:',err);
+                container.innerHTML='<p style="padding:12px;color:#f87171;">Could not load events. Please check Firebase access.</p>';
             });
+        }
+        function updateEventAdminStats(){
+            const total=eventsAdminCache.length,live=eventsAdminCache.filter(x=>eventAdminState(x.e)==='live'&&(x.e.status||'active')==='active').length,upcoming=eventsAdminCache.filter(x=>eventAdminState(x.e)==='upcoming'&&(x.e.status||'active')==='active').length,featured=eventsAdminCache.filter(x=>x.e.featured&&(x.e.status||'active')==='active').length;
+            [['eventStatTotal',total],['eventStatLive',live],['eventStatUpcoming',upcoming],['eventStatFeatured',featured]].forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=v;});
+        }
+        function renderEventsAdminList(){
+            const container=document.getElementById('eventsAdminContainer');if(!container)return;
+            const q=(document.getElementById('eventAdminSearch')?.value||'').trim().toLowerCase(),filter=document.getElementById('eventAdminFilter')?.value||'all',sort=document.getElementById('eventAdminSort')?.value||'newest';
+            let rows=eventsAdminCache.slice().map(x=>Object.assign(x,{state:eventAdminState(x.e)}));
+            if(q)rows=rows.filter(x=>[x.e.title,x.e.category,x.e.description].join(' ').toLowerCase().includes(q));
+            if(filter==='active'||filter==='inactive')rows=rows.filter(x=>(x.e.status||'active')===filter);else if(filter==='featured')rows=rows.filter(x=>x.e.featured);else if(['live','upcoming','ended'].includes(filter))rows=rows.filter(x=>x.state===filter);
+            rows.sort((a,b)=>sort==='priority'?((Number(b.e.priority)||0)-(Number(a.e.priority)||0)):sort==='start'?(eventAdminTimeValue(a.e.startAt||a.e.timestamp)-eventAdminTimeValue(b.e.startAt||b.e.timestamp)):eventAdminTimeValue(b.e.timestamp)-eventAdminTimeValue(a.e.timestamp));
+            if(!rows.length){container.innerHTML='<p style="padding:12px;color:var(--text-muted);">No events match the current filters.</p>';return;}
+            const esc=eventAdminEscape;
+            container.innerHTML=rows.map(({eKey,e,state})=>{const active=(e.status||'active')==='active';return `<div class="event-admin-item"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><div><b style="color:var(--accent-cyan);font-size:14px;">🎉 ${esc(e.title||'Untitled Event')}</b><div style="font-size:9px;color:var(--text-muted);margin-top:3px;">${esc(e.category||'General')} • Priority ${Number(e.priority)||0}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;"><span style="font-size:9px;font-weight:900;color:${state==='live'?'#34d399':state==='upcoming'?'#facc15':'#94a3b8'};">${state.toUpperCase()}</span>${e.featured?'<span style="font-size:9px;color:#c084fc;font-weight:900;">⭐ FEATURED</span>':''}</div></div>${e.imageUrl?`<img src="${esc(e.imageUrl)}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin:7px 0;" onerror="this.style.display='none'">`:''}<p style="margin:5px 0;font-size:12px;color:var(--text-muted);white-space:pre-wrap;">${esc(e.description||'')}</p><div style="font-size:10px;color:var(--text-muted);">${e.startAt?'🗓️ Start: '+new Date(eventAdminTimeValue(e.startAt)).toLocaleString():''}${e.endAt?' &nbsp; ⏱️ End: '+new Date(eventAdminTimeValue(e.endAt)).toLocaleString():''}</div><div style="font-size:10px;margin-top:5px;">Status: <b style="color:${active?'#34d399':'#f87171'}">${active?'ACTIVE':'INACTIVE'}</b>${e.pinned?' • 📌 PINNED':''}${e.link?' • 🔗 Link set':''}</div><div class="action-row"><button onclick="toggleEventStatus('${eKey}','${active?'active':'inactive'}')" class="btn-yellow">${active?'Set Inactive':'Set Active'}</button><button onclick="editEventByKey('${eKey}')" class="btn-yellow">Edit</button><button onclick="deleteEvent('${eKey}')" class="btn-red">Delete</button></div></div>`;}).join('');
         }
 
         let ccAdminTimer=null, ccAdminEntriesListener=null, ccAdminHistoryListener=null, ccAdminAllEntriesListener=null;
         // Single source of truth for round/timer math — synced from the DB, same as the user app's colourClashConfig.
         // Round timing must NEVER be derived from the live (possibly unsaved/mid-edit) input fields below,
         // or the admin panel's round number & countdown will drift out of sync with what users see.
-        let ccAdminConfig = { enabled:true, entrySeconds:30, cooldownSeconds:5, minBet:10, maxBet:5000, minBetUsdt:0.1, maxBetUsdt:5000, multiplier:2, blueMultiplier:3, numberMultiplier:9, sizeMultiplier:2, autoResult:true, randomizedResult:true, noConsecutiveRepeat:true };
+        let ccAdminConfig = { enabled:true, entrySeconds:30, cooldownSeconds:5, minBet:10, maxBet:5000, minBetUsdt:0.1, maxBetUsdt:5000, multiplier:2, violetMultiplier:3, numberMultiplier:9, sizeMultiplier:2, autoResult:true, randomizedResult:true, noConsecutiveRepeat:true };
         let ccAdminConfigReady = false;
         function ccAdminCycleMs(){
             const entry=Math.max(5,Number(ccAdminConfig.entrySeconds)||30);
@@ -5918,16 +5989,16 @@ function formatAdminMoney(value){
             return (entry+cooldown)*1000;
         }
 
-        // --- Colour Clash: config tracking + continuous round-resolution engine ---
+        // --- WINGO: config tracking + continuous round-resolution engine ---
         // This listener (and the engine below) are started once, unconditionally, as soon as the
-        // admin panel loads — NOT only while the Colour Clash section happens to be open. Previously
+        // admin panel loads — NOT only while the WINGO section happens to be open. Previously
         // the admin panel had no round-resolving engine of its own at all: results only ever got
         // written when a user had the user app open. That meant that after an admin cleared/deleted
         // round or entry history, the history views could stay empty indefinitely if no player
         // happened to be online — looking like a bug ("history not showing after delete") in both
         // apps. Running the same deterministic engine here too guarantees round + entry history keep
         // advancing non-stop whenever the game is ON and this admin panel is open, even if nobody is
-        // actively viewing or playing Colour Clash, and it recovers immediately after any delete.
+        // actively viewing or playing WINGO, and it recovers immediately after any delete.
         function ccApplyAdminConfig(d){
             ccAdminConfig = {
                 enabled: d.enabled !== false,
@@ -5938,7 +6009,7 @@ function formatAdminMoney(value){
                 minBetUsdt: Math.max(0.0001, Number(d.minBetUsdt) || 0.1),
                 maxBetUsdt: Math.max(0.0001, Number(d.maxBetUsdt) || Number(d.maxBet) || 5000),
                 multiplier: Math.max(1, Number(d.multiplier) || 2),
-                blueMultiplier: Math.max(1, Number(d.blueMultiplier) || 3),
+                violetMultiplier: Math.max(1, Number(d.violetMultiplier !== undefined && d.violetMultiplier !== null ? d.violetMultiplier : d.blueMultiplier) || 3),
                 numberMultiplier: Math.max(1, Number(d.numberMultiplier) || 9),
                 sizeMultiplier: Math.max(1, Number(d.sizeMultiplier) || 2),
                 autoResult: d.autoResult !== false,
@@ -5947,7 +6018,7 @@ function formatAdminMoney(value){
             };
             // These input fields are ONLY for editing/saving settings — they no longer feed the timer.
             // The elements always exist in the DOM (the section is only CSS-hidden), so it's safe to
-            // keep them in sync even while the admin hasn't opened the Colour Clash section.
+            // keep them in sync even while the admin hasn't opened the WINGO section.
             const enabledEl=document.getElementById('ccAdminEnabled'); if(enabledEl) enabledEl.value=d.enabled===false?'false':'true';
             const esEl=document.getElementById('ccAdminEntrySeconds'); if(esEl) esEl.value=Number(d.entrySeconds)||30;
             const csEl=document.getElementById('ccAdminCooldownSeconds'); if(csEl) csEl.value=Number(d.cooldownSeconds)||5;
@@ -5956,35 +6027,44 @@ function formatAdminMoney(value){
             const minUsdtEl=document.getElementById('ccAdminMinBetUsdt'); if(minUsdtEl) minUsdtEl.value=Number(d.minBetUsdt)||0.1;
             const maxUsdtEl=document.getElementById('ccAdminMaxBetUsdt'); if(maxUsdtEl) maxUsdtEl.value=Number(d.maxBetUsdt)||Number(d.maxBet)||5000;
             const mulEl=document.getElementById('ccAdminMultiplier'); if(mulEl) mulEl.value=Number(d.multiplier)||2;
-            const blueMulEl=document.getElementById('ccAdminBlueMultiplier'); if(blueMulEl) blueMulEl.value=Number(d.blueMultiplier)||3;
+            const blueMulEl=document.getElementById('ccAdminVioletMultiplier'); if(blueMulEl) blueMulEl.value=Number(d.violetMultiplier)||3;
             const numMulEl=document.getElementById('ccAdminNumberMultiplier'); if(numMulEl) numMulEl.value=Number(d.numberMultiplier)||9;
             const sizeMulEl=document.getElementById('ccAdminSizeMultiplier'); if(sizeMulEl) sizeMulEl.value=Number(d.sizeMultiplier)||2;
             const autoEl=document.getElementById('ccAdminAuto'); if(autoEl) autoEl.value=d.autoResult===false?'false':'true';
             const randomEl=document.getElementById('ccAdminRandomized'); if(randomEl) randomEl.value=d.randomizedResult===false?'false':'true';
             ccAdminConfigReady = true;
         }
-        db.ref('control/colourClashConfig').on('value', snap=>{ ccApplyAdminConfig(snap.val()||{}); });
+        // Firebase may still be unavailable during a partial/CDN startup. Never let the
+        // WINGO listener throw at script-load time, otherwise the functions below
+        // (including the section opener) are never registered and the sidebar reports
+        // the browser's generic "Script error.".
+        if(db){
+            db.ref('control/colourClashConfig').on('value', snap=>{
+                try{ ccApplyAdminConfig((snap&&snap.val&&snap.val())||{}); }
+                catch(err){ console.error('[WINGO] Config render error:',err); }
+            }, err=>console.error('[WINGO] Config listener error:',err));
+        }
 
         // Deterministic result functions — identical to the user app's, so every client (or this
         // admin engine) computes the exact same outcome for a given round id.
         function ccHash(str){ let h=2166136261; const s=String(str); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
-        // Colour Clash number classification is shared by User + Admin.
-        // 0 and 5 are displayed as blue results; their number buttons retain the split visual.
+        // WINGO number classification is shared by User + Admin.
+        // 0 and 5 are displayed as violet results; their number buttons retain the split visual.
         function ccNumberColour(n){
             n=Number(n);
-            if(n===0 || n===5) return 'BLUE';
+            if(n===0 || n===5) return 'VIOLET';
             return [1,3,7,9].includes(n) ? 'GREEN' : 'RED';
         }
         function ccNumberSize(n){ return Number(n) <= 4 ? 'SMALL' : 'BIG'; }
         function ccNumberCssClass(n){
             n=Number(n);
-            if(n===0) return 'cc-num-blue-split-red';
-            if(n===5) return 'cc-num-blue-split-green';
+            if(n===0) return 'cc-num-split-red-violet';
+            if(n===5) return 'cc-num-split-green-violet';
             return ccNumberColour(n)==='GREEN' ? 'cc-num-green' : 'cc-num-red';
         }
         function ccColourDot(colour){
             const c=String(colour||'').toUpperCase();
-            const cls=c==='RED'?'cc-dot-red':c==='GREEN'?'cc-dot-green':'cc-dot-blue';
+            const cls=c==='RED'?'cc-dot-red':c==='GREEN'?'cc-dot-green':'cc-dot-violet';
             return `<span class="cc-colour-dot ${cls}" aria-label="${c}"></span>`;
         }
         function ccColourDots(colours){
@@ -5993,16 +6073,6 @@ function formatAdminMoney(value){
         
         // Secure automatic result generation: use browser CSPRNG entropy and,
         // by default, reject the immediately previous resolved number.
-        function ccSecureRandomInt(max){
-            max=Math.max(1,Number(max)||1);
-            if(window.crypto&&window.crypto.getRandomValues){
-                const limit=Math.floor(0x100000000/max)*max;
-                const buf=new Uint32Array(1);
-                do{window.crypto.getRandomValues(buf);}while(buf[0]>=limit);
-                return buf[0]%max;
-            }
-            return Math.floor(Math.random()*max);
-        }
         function ccSecureRandomInt(max){
             max=Math.max(1,Number(max)||1);
             if(window.crypto&&window.crypto.getRandomValues){
@@ -6102,26 +6172,67 @@ function formatAdminMoney(value){
             }catch(e){ /* ignore */ }
         }
         // Start immediately on page load — independent of whether the admin ever opens the
-        // Colour Clash section, and independent of any player being online.
+        // WINGO section, and independent of any player being online.
         ensureColourClashAdminEngine();
 
+        function ensureGameVerseAdminDb(){
+            if(db) return db;
+            try{
+                if(typeof firebase==='undefined' || !firebase) throw new Error('Firebase SDK is unavailable.');
+                if(!firebase.apps || !firebase.apps.length){
+                    firebase.initializeApp({
+                        apiKey: "AIzaSyBRx_xCZWITfSANdmBcQr7qmMQiPB7AUvc",
+                        databaseURL: "https://titan-gameverse-default-rtdb.firebaseio.com",
+                        projectId: "titan-gameverse"
+                    });
+                }
+                db=firebase.database();
+                window.gvAdminDb=db;
+                return db;
+            }catch(e){
+                console.error('[Game Verse] Firebase recovery failed:',e);
+                db=null;
+                return null;
+            }
+        }
+
         function openColourClashAdminModal(){
-            document.getElementById('mainAdminMenu').classList.add('hidden');
-            document.getElementById('colourClashAdminSection').classList.remove('hidden');
-            const btnBox=document.getElementById('ccAdminNumberButtons');
-            if(btnBox && !btnBox.dataset.built){
-                btnBox.innerHTML=[0,1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="selectColourClashAdminNumber(${n})" class="btn-gray ${ccNumberCssClass(n)}" data-number="${n}" style="padding:10px 4px;">${n}<small style="display:block;font-size:9px;opacity:.9;">${ccNumberSize(n)}</small></button>`).join('');
-                btnBox.dataset.built='1';
+            try {
+                // Always reveal the panel first. A Firebase/CDN hiccup must not block the UI
+                // or turn a normal sidebar click into the browser's generic "Script error.".
+                const main=document.getElementById('mainAdminMenu'); if(main) main.classList.add('hidden');
+                const section=document.getElementById('colourClashAdminSection'); if(section) section.classList.remove('hidden');
+                if(typeof ccAdminConfig !== 'object' || !ccAdminConfig) {
+                    ccAdminConfig = {enabled:true,entrySeconds:30,cooldownSeconds:5,minBet:10,maxBet:5000,minBetUsdt:0.1,maxBetUsdt:5000,multiplier:2,violetMultiplier:3,numberMultiplier:9,sizeMultiplier:2,autoResult:true,randomizedResult:true,noConsecutiveRepeat:true};
+                }
+                const database=ensureGameVerseAdminDb();
+                const btnBox=document.getElementById('ccAdminNumberButtons');
+                if(btnBox && !btnBox.dataset.built){
+                    const numberClass = (typeof ccNumberCssClass==='function')
+                        ? ccNumberCssClass
+                        : (n=>Number(n)===0?'cc-num-split-red-violet':Number(n)===5?'cc-num-split-green-violet':([1,3,7,9].includes(Number(n))?'cc-num-green':'cc-num-red'));
+                    const numberSize = (typeof ccNumberSize==='function') ? ccNumberSize : (n=>Number(n)<=4?'SMALL':'BIG');
+                    btnBox.innerHTML=[0,1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" onclick="selectColourClashAdminNumber(${n})" class="btn-gray ${numberClass(n)}" data-number="${n}" style="padding:10px 4px;">${n}<small style="display:block;font-size:9px;opacity:.9;">${numberSize(n)}</small></button>`).join('');
+                    btnBox.dataset.built='1';
+                }
+                const amtGrid=document.getElementById('ccAdminNumberAmountGrid');
+                if(amtGrid && !amtGrid.dataset.built){
+                    amtGrid.innerHTML=[0,1,2,3,4,5,6,7,8,9].map(n=>`<div class="stat-card"><span>${n}</span><b id="ccAdminNum${n}Amount">${ccAdminMoney(0,ccAdminCurrency)}</b></div>`).join('');
+                    amtGrid.dataset.built='1';
+                }
+                ccAdminEntriesFilter='all';
+                const searchEl=document.getElementById('ccEntriesSearchUid'); if(searchEl) searchEl.value='';
+                ['All','Win','Loss','Pending'].forEach(k=>{const b=document.getElementById('ccEntriesFilter'+k); if(b) b.style.opacity=(k==='All')?'1':'.55';});
+                if(database && typeof loadColourClashAdmin==='function') loadColourClashAdmin();
+                else {
+                    const status=document.getElementById('ccAdminResultStatus');
+                    if(status) status.innerHTML='<span style="color:#fca5a5">WINGO settings opened, but Firebase is currently unavailable. Reload the Admin App to reconnect.</span>';
+                }
+            } catch(err) {
+                console.error('[WINGO] Open error:', err);
+                const status=document.getElementById('ccAdminResultStatus');
+                if(status) status.innerHTML='<span style="color:#fca5a5">WINGO settings opened with a limited UI. Check the browser console for the exact error.</span>';
             }
-            const amtGrid=document.getElementById('ccAdminNumberAmountGrid');
-            if(amtGrid && !amtGrid.dataset.built){
-                amtGrid.innerHTML=[0,1,2,3,4,5,6,7,8,9].map(n=>`<div class="stat-card"><span>${n}</span><b id="ccAdminNum${n}Amount">${ccAdminMoney(0,ccAdminCurrency)}</b></div>`).join('');
-                amtGrid.dataset.built='1';
-            }
-            ccAdminEntriesFilter='all';
-            const searchEl=document.getElementById('ccEntriesSearchUid'); if(searchEl) searchEl.value='';
-            ['All','Win','Loss','Pending'].forEach(k=>{const b=document.getElementById('ccEntriesFilter'+k); if(b) b.style.opacity=(k==='All')?'1':'.55';});
-            loadColourClashAdmin();
         }
         function closeColourClashAdminModal(){
             document.getElementById('colourClashAdminSection').classList.add('hidden');
@@ -6130,18 +6241,43 @@ function formatAdminMoney(value){
             // Note: the colourClashConfig listener and the background round-resolution engine are
             // intentionally NOT stopped here — they run for the lifetime of the admin panel so that
             // round history keeps advancing non-stop while the game is on, even with this section closed.
-            if(ccAdminEntriesListener)db.ref('colour_clash/entries').off('value',ccAdminEntriesListener);
-            if(ccAdminHistoryListener)db.ref('colour_clash/rounds').off('value',ccAdminHistoryListener);
-            if(ccAdminAllEntriesListener)db.ref('colour_clash/entries').off('value',ccAdminAllEntriesListener);
+            if(db){
+                if(ccAdminEntriesListener)db.ref('colour_clash/entries').off('value',ccAdminEntriesListener);
+                if(ccAdminHistoryListener)db.ref('colour_clash/rounds').off('value',ccAdminHistoryListener);
+                if(ccAdminAllEntriesListener)db.ref('colour_clash/entries').off('value',ccAdminAllEntriesListener);
+            }
         }
         function loadColourClashAdmin(){
-            // Config is already tracked globally (see ccApplyAdminConfig above) as soon as the page
-            // loads, so ccAdminConfig here is always current — no need to (re)attach a listener.
-            const tick=()=>{const entry=ccAdminConfig.entrySeconds,cool=ccAdminConfig.cooldownSeconds,cycle=ccAdminCycleMs(),idx=Math.floor(Date.now()/cycle),roundId=String(idx+1),start=idx*cycle,elapsed=Date.now()-start,phase=elapsed<entry*1000?'open':'cooldown',end=phase==='open'?start+entry*1000:start+cycle;document.getElementById('ccAdminRound').innerText=roundId;document.getElementById('ccAdminPhase').innerText=phase.toUpperCase()+' • '+Math.max(0,Math.ceil((end-Date.now())/1000))+'s';loadColourClashAdminEntries(roundId);loadColourClashAdminResult(roundId);loadColourClashAdminNumberResult(roundId);};
-            if(ccAdminTimer)clearInterval(ccAdminTimer);ccAdminTimer=setInterval(tick,500);tick();loadColourClashAdminHistory();loadColourClashAllEntriesHistory();
+            if(!db) return;
+            const tick=()=>{
+                try{
+                    const entry=Math.max(5,Number(ccAdminConfig.entrySeconds)||30),cycle=ccAdminCycleMs(),idx=Math.floor(Date.now()/cycle),roundId=String(idx+1),start=idx*cycle,elapsed=Date.now()-start,phase=elapsed<entry*1000?'open':'cooldown',end=phase==='open'?start+entry*1000:start+cycle;
+                    const roundEl=document.getElementById('ccAdminRound'); if(roundEl) roundEl.innerText=roundId;
+                    const phaseEl=document.getElementById('ccAdminPhase'); if(phaseEl) phaseEl.innerText=phase.toUpperCase()+' • '+Math.max(0,Math.ceil((end-Date.now())/1000))+'s';
+                    if(typeof loadColourClashAdminEntries==='function') loadColourClashAdminEntries(roundId);
+                    if(typeof loadColourClashAdminResult==='function') loadColourClashAdminResult(roundId);
+                    if(typeof loadColourClashAdminNumberResult==='function') loadColourClashAdminNumberResult(roundId);
+                }catch(err){ console.error('[WINGO] Admin tick error:',err); }
+            };
+            if(ccAdminTimer)clearInterval(ccAdminTimer);ccAdminTimer=setInterval(tick,500);tick();
+            if(typeof loadColourClashAdminHistory==='function') loadColourClashAdminHistory();
+            if(typeof loadColourClashAllEntriesHistory==='function') loadColourClashAllEntriesHistory();
         }
         function saveColourClashConfig(){
-            const data={enabled:document.getElementById('ccAdminEnabled').value==='true',entrySeconds:Math.max(5,Number(document.getElementById('ccAdminEntrySeconds').value)||30),cooldownSeconds:Math.max(2,Number(document.getElementById('ccAdminCooldownSeconds').value)||5),minBet:Math.max(1,Number(document.getElementById('ccAdminMinBet').value)||10),maxBet:Math.max(1,Number(document.getElementById('ccAdminMaxBet').value)||5000),minBetUsdt:Math.max(0.0001,Number(document.getElementById('ccAdminMinBetUsdt').value)||0.1),maxBetUsdt:Math.max(0.0001,Number(document.getElementById('ccAdminMaxBetUsdt').value)||5000),multiplier:Math.max(1,Number(document.getElementById('ccAdminMultiplier').value)||2),blueMultiplier:Math.max(1,Number(document.getElementById('ccAdminBlueMultiplier').value)||3),numberMultiplier:Math.max(1,Number(document.getElementById('ccAdminNumberMultiplier').value)||9),sizeMultiplier:Math.max(1,Number(document.getElementById('ccAdminSizeMultiplier').value)||2),autoResult:document.getElementById('ccAdminAuto').value==='true',randomizedResult:document.getElementById('ccAdminRandomized').value==='true',noConsecutiveRepeat:true,avoidSequentialPattern:true,avoidRepeatingWindow:10};if(data.maxBet<data.minBet)return alert('Maximum INR bet must be greater than or equal to minimum INR bet.'); if(data.maxBetUsdt<data.minBetUsdt)return alert('Maximum USDT bet must be greater than or equal to minimum USDT bet.');db.ref('control/colourClashConfig').set(data).then(()=>alert('Colour Clash settings saved.')).catch(e=>alert('Could not save settings: '+e.message));
+            try{
+                const ids=['ccAdminEnabled','ccAdminEntrySeconds','ccAdminCooldownSeconds','ccAdminMinBet','ccAdminMaxBet','ccAdminMinBetUsdt','ccAdminMaxBetUsdt','ccAdminMultiplier','ccAdminVioletMultiplier','ccAdminNumberMultiplier','ccAdminSizeMultiplier','ccAdminAuto','ccAdminRandomized'];
+                const els=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
+                if(Object.values(els).some(x=>!x)) return alert('WINGO settings UI is incomplete. Please reload the Admin App.');
+                const database=ensureGameVerseAdminDb();
+                if(!database) return alert('Firebase is unavailable. Please reload the Admin App and try again.');
+                const data={enabled:els.ccAdminEnabled.value==='true',entrySeconds:Math.max(5,Number(els.ccAdminEntrySeconds.value)||30),cooldownSeconds:Math.max(2,Number(els.ccAdminCooldownSeconds.value)||5),minBet:Math.max(1,Number(els.ccAdminMinBet.value)||10),maxBet:Math.max(1,Number(els.ccAdminMaxBet.value)||5000),minBetUsdt:Math.max(0.0001,Number(els.ccAdminMinBetUsdt.value)||0.1),maxBetUsdt:Math.max(0.0001,Number(els.ccAdminMaxBetUsdt.value)||5000),multiplier:Math.max(1,Number(els.ccAdminMultiplier.value)||2),violetMultiplier:Math.max(1,Number(els.ccAdminVioletMultiplier.value)||3),numberMultiplier:Math.max(1,Number(els.ccAdminNumberMultiplier.value)||9),sizeMultiplier:Math.max(1,Number(els.ccAdminSizeMultiplier.value)||2),autoResult:els.ccAdminAuto.value==='true',randomizedResult:els.ccAdminRandomized.value==='true',noConsecutiveRepeat:true,avoidSequentialPattern:true,avoidRepeatingWindow:10};
+                if(data.maxBet<data.minBet)return alert('Maximum INR bet must be greater than or equal to minimum INR bet.');
+                if(data.maxBetUsdt<data.minBetUsdt)return alert('Maximum USDT bet must be greater than or equal to minimum USDT bet.');
+                database.ref('control/colourClashConfig').set(data).then(()=>alert('WINGO settings saved.')).catch(e=>alert('Could not save settings: '+e.message));
+            }catch(e){
+                console.error('[WINGO] Save error:',e);
+                alert('Could not save WINGO settings. Please reload the Admin App.');
+            }
         }
         function getAdminColourClashRound(){const entry=ccAdminConfig.entrySeconds,cycle=ccAdminCycleMs(),idx=Math.floor(Date.now()/cycle),roundId=String(idx+1),start=idx*cycle,elapsed=Date.now()-start,phase=elapsed<entry*1000?'open':'cooldown';return {roundId,phase};}
         let ccAdminCurrency = 'INR';
@@ -6163,7 +6299,7 @@ function formatAdminMoney(value){
             const ref=db.ref('colour_clash/entries');
             if(ccAdminEntriesListener)ref.off('value',ccAdminEntriesListener);
             ccAdminEntriesListener=snap=>{
-                const rows=[];let total=0,red=0,green=0,blue=0,small=0,big=0;const numTotals=[0,0,0,0,0,0,0,0,0,0];
+                const rows=[];let total=0,red=0,green=0,violet=0,small=0,big=0;const numTotals=[0,0,0,0,0,0,0,0,0,0];
                 snap.forEach(ch=>{
                     const e=ch.val();if(e.roundId!==roundId)return;
                     const entryCurrency=String(e.currency||'INR').toUpperCase()==='USDT'?'USDT':'INR';
@@ -6177,7 +6313,7 @@ function formatAdminMoney(value){
                     } else {
                         if(e.colour==='RED')red+=Number(e.amount)||0;
                         if(e.colour==='GREEN')green+=Number(e.amount)||0;
-                        if(e.colour==='BLUE')blue+=Number(e.amount)||0;
+                        if(e.colour==='VIOLET'||e.colour==='VIOLET')violet+=Number(e.amount)||0;
                     }
                 });
                 const money=v=>ccAdminMoney(v,ccAdminCurrency);
@@ -6185,7 +6321,7 @@ function formatAdminMoney(value){
                 document.getElementById('ccAdminTotalAmount').innerText=money(total);
                 document.getElementById('ccAdminRedAmount').innerText=money(red);
                 document.getElementById('ccAdminGreenAmount').innerText=money(green);
-                document.getElementById('ccAdminBlueAmount').innerText=money(blue);
+                document.getElementById('ccAdminVioletAmount').innerText=money(violet);
                 document.getElementById('ccAdminSmallAmount').innerText=money(small);
                 document.getElementById('ccAdminBigAmount').innerText=money(big);
                 for(let n=0;n<=9;n++){ const el=document.getElementById('ccAdminNum'+n+'Amount'); if(el) el.innerText=money(numTotals[n]); }
@@ -6250,15 +6386,16 @@ function formatAdminMoney(value){
         // per-entry Firebase transaction, so repeated/concurrent settle calls can never double-pay.
         function ccNumberColours(n){
             n=Number(n);
-            if(n===0) return ['RED','BLUE'];
-            if(n===5) return ['GREEN','BLUE'];
+            if(n===0) return ['RED','VIOLET'];
+            if(n===5) return ['GREEN','VIOLET'];
             return [ccNumberColour(n)];
         }
         function ccColourWinForNumber(chosen,n){
-            return ccNumberColours(n).includes(String(chosen||'').toUpperCase());
+            const raw=String(chosen||'').toUpperCase(); const c=(raw==='BLUE'||raw==='VIOLET')?'VIOLET':raw;
+            return ccNumberColours(n).includes(c);
         }
         function ccColourMultiplier(colour){
-            return String(colour||'').toUpperCase()==='BLUE' ? ccAdminConfig.blueMultiplier : ccAdminConfig.multiplier;
+            return ['BLUE','VIOLET'].includes(String(colour||'').toUpperCase()) ? ccAdminConfig.violetMultiplier : ccAdminConfig.multiplier;
         }
         function ccAdminWalletField(currency){
             return String(currency||'INR').toUpperCase()==='USDT' ? 'usdtBalance' : 'balance';
@@ -6327,14 +6464,14 @@ function formatAdminMoney(value){
 ?`<span style="display:inline-flex;align-items:center;gap:7px;font-weight:900;"><strong>${d.resultNumber}</strong><span style="color:var(--text-muted);">${ccNumberSize(d.resultNumber)}</span><span class="cc-result-dots">${ccColourDots(ccNumberColours(d.resultNumber))}</span></span>`
 :'<span style="color:var(--text-muted);">—</span>';return `<div class="user-item"><b>Round #${d.roundId||d.id}</b><br>Result: ${numberPart}</div>`;}).join(''):'No completed rounds yet.';};ref.on('value',ccAdminHistoryListener);}
         function clearColourClashRoundHistory(){
-            if(!confirm('Delete ALL Colour Clash round result history? This does not delete users\' entries — use "Delete All Entries" for that.'))return;
+            if(!confirm('Delete ALL WINGO round result history? This does not delete users\' entries — use "Delete All Entries" for that.'))return;
             db.ref('colour_clash/rounds').remove()
               .then(()=>{
                   // The round history listener will pick this up automatically, but refresh explicitly
                   // too. The background engine (always running while the game is ON) will immediately
                   // start writing fresh round results again, so history keeps growing right away.
                   const el=document.getElementById('ccAdminHistoryContainer'); if(el) el.innerHTML='No completed rounds yet.';
-                  alert('Colour Clash round history cleared.');
+                  alert('WINGO round history cleared.');
               })
               .catch(e=>alert('Could not clear history: '+e.message));
         }
@@ -6398,7 +6535,7 @@ function formatAdminMoney(value){
               .catch(e=>alert('Could not delete entry: '+e.message));
         }
         function clearColourClashEntriesHistory(){
-            if(!confirm('Delete ALL Colour Clash entries for ALL users (past and present)? This cannot be undone.')) return;
+            if(!confirm('Delete ALL WINGO entries for ALL users (past and present)? This cannot be undone.')) return;
             db.ref('colour_clash/entries').remove()
               .then(()=>{ ccAdminAllEntriesRows=[]; renderColourClashEntriesHistory(); alert('All entries deleted.'); })
               .catch(e=>alert('Could not delete entries: '+e.message));
@@ -7210,7 +7347,7 @@ function saveSafetyRestrictions(){
 }
 function loadSafetyRestrictions(){db.ref('control/safetyRestrictions').once('value',snap=>{const d=snap.val()||{},set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v==null?'':v;},ck=(id,v)=>{const e=document.getElementById(id);if(e)e.checked=!!v;};
 set('bonusMinDepositCount',d.minApprovedDepositCount||0);set('bonusMinDepositPerTxn',d.minApprovedDepositPerTxn||0);set('bonusMaxDepositsDay',d.maxDepositsPerDay||0);set('bonusMaxDepositAmountDay',d.maxDepositAmountPerDay||0);set('bonusMaxDepositPerTxn',d.maxDepositPerTxn||0);set('bonusDepositCooldown',d.depositCooldownMinutes||0);set('bonusMaxLifetimeGift',d.maxLifetimeGiftMoney||0);set('bonusMaxBetsDay',d.maxBetsPerDay||0);set('bonusDailyLossLimit',d.dailyLossLimit||0);set('bonusDailyProfitLimit',d.dailyProfitLimit||0);set('bonusMaxWithdrawalsDay',d.maxWithdrawalsPerDay||0);set('bonusWithdrawalWaitHours',d.withdrawalWaitHours||0);set('bonusLargeWithdrawalAmount',d.largeWithdrawalApprovalAmount||0);set('bonusMaxWithdrawalWeek',d.maxWithdrawalPerWeek||0);ck('bonusRequireFirstDepositWithdrawal',d.requireFirstDepositBeforeWithdrawal);ck('bonusNetDepositWithdrawal',d.netDepositWithdrawal);});}
-loadSafetyRestrictions();
+if(typeof db!=='undefined' && db) loadSafetyRestrictions();
 function saveBonusRestrictions(){
   const n=id=>Math.max(0,Number(document.getElementById(id).value)||0),c={
     giftCodesBlocked:document.getElementById('bonusGiftBlocked').checked,
@@ -7223,6 +7360,64 @@ function saveBonusRestrictions(){
   db.ref('control/bonusRestrictions').set(c).then(()=>alert('Bonus / Gift Code restriction rules saved successfully.')).catch(e=>alert('Could not save bonus rules: '+e.message));
 }
 function loadBonusRestrictions(){db.ref('control/bonusRestrictions').once('value',snap=>{const d=snap.val()||{},set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v==null?'':v;},ck=(id,v)=>{const e=document.getElementById(id);if(e)e.checked=!!v;};ck('bonusGiftBlocked',d.giftCodesBlocked);set('bonusGiftBlockMessage',d.giftCodeBlockMessage||'Gift codes are temporarily unavailable. Please try again later.');set('bonusMaxGiftAmount',d.maxGiftAmountPerClaim||0);set('bonusMaxGiftClaimsDay',d.maxGiftClaimsPerDay||0);set('bonusMaxGiftAmountDay',d.maxGiftAmountPerDay||0);set('bonusGiftCooldown',d.giftCooldownMinutes||0);ck('bonusRequireDepositGift',d.requireDepositForGift);set('bonusMinimumDepositGift',d.minimumDepositForGift||0);set('bonusGiftTurnover',d.giftTurnoverMultiplier||0);set('bonusTurnover',d.bonusTurnoverMultiplier||0);set('bonusGiftExpiry',d.giftBonusExpiryDays||0);set('bonusExpiry',d.bonusExpiryDays||0);ck('bonusWithdrawalLock',d.bonusWithdrawalLock!==false);});}
-loadBonusRestrictions();
+if(typeof db!=='undefined' && db) loadBonusRestrictions();
+</script>
+
+<style id="gv-admin-medium-glow-final">
+:root{--theme-glow-scale:.5 !important;}
+button,.btn,.neon-btn,.card,.glass-card,.panel,.game-card,.mission-card,.action-card,.stat-card,input,select,textarea,.modal,.modal-content{
+ box-shadow:0 0 8px color-mix(in srgb,rgb(var(--accent-rgb,56,189,248)) 13%,transparent),inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+</style>
+
+
+<style id="gv-colour-clash-violet-admin-ui-v1">
+#ccAdminVioletMultiplier{border-color:rgba(139,92,246,.38)!important;}
+</style>
+
+<style id="gv-admin-colour-clash-violet-final">
+.cc-violet{border-color:rgba(167,139,250,.38)!important;background:linear-gradient(145deg,rgba(139,92,246,.14),rgba(76,29,149,.08))!important;}
+.cc-dot-violet{background:#8b5cf6!important;box-shadow:0 0 8px rgba(139,92,246,.45)!important;}
+#ccAdminVioletMultiplier{border-color:rgba(167,139,250,.45)!important;}
+</style>
+
+<script id="gv-admin-runtime-guard-final">
+(function(){
+  window.addEventListener('error', function(ev){
+    if (ev && ev.error) console.error('Game Verse Admin runtime error:', ev.error);
+  });
+  window.addEventListener('unhandledrejection', function(ev){
+    if (ev && ev.reason) console.error('Game Verse Admin promise error:', ev.reason);
+  });
+})();
+</script>
+
+<script id="gv-admin-colour-clash-open-safe-final">
+(function(){
+  window.openColourClashAdminModalSafe=function(){try{
+  if(typeof window.gvOpenColourClashAdmin==='function') return window.gvOpenColourClashAdmin(null);
+  if(typeof openColourClashAdminModal==='function') return openColourClashAdminModal();
+}catch(e){console.error('[WINGO] safe open failed',e);} return false;};
+})();
+</script>
+<script id="gv-colour-clash-hard-safe-open-v2">
+(function(){
+  window.gvOpenColourClashAdmin=function(el){
+    try{
+      if(typeof hideAllAdminSections==='function') hideAllAdminSections();
+      var fn=window.openColourClashAdminModal;
+      if(typeof fn!=='function') throw new Error('WINGO opener is unavailable');
+      fn();
+      try{setActiveSidebar(el||null);}catch(e){}
+      var t=document.getElementById('topbarTitle'); if(t)t.innerText='WINGO';
+      var c=document.getElementById('topbarBreadcrumb'); if(c)c.innerHTML='Home &gt; WINGO';
+    }catch(e){
+      console.error('[WINGO] hard-safe open failed:',e);
+      var sec=document.getElementById('colourClashAdminSection'); if(sec)sec.classList.remove('hidden');
+      var st=document.getElementById('ccAdminResultStatus'); if(st)st.innerHTML='<span style="color:#fca5a5">WINGO settings are protected from script failures. Please reload the Admin App if the panel is empty.</span>';
+    }
+    return false;
+  };
+})();
 </script>
 </body></html>
