@@ -6400,6 +6400,29 @@ function formatAdminMoney(value){
         function ccAdminWalletField(currency){
             return String(currency||'INR').toUpperCase()==='USDT' ? 'usdtBalance' : 'balance';
         }
+        // WINGO payout guard: atomically credit a winning entry only once.
+        // This protects against duplicate settlement when the user app and admin panel
+        // are both online and attempting to settle the same round.
+        function creditColourClashAdminPayoutOnce(entryId,userId,currency,payout){
+            const amount=Number(payout)||0;
+            if(!entryId||!userId||amount<=0) return Promise.resolve(false);
+            const field=ccAdminWalletField(currency||'INR');
+            const userRef=db.ref('users/'+userId);
+            return userRef.transaction(user=>{
+                if(!user) return user;
+                const guards=(user.wingoPayouts && typeof user.wingoPayouts==='object') ? user.wingoPayouts : {};
+                if(guards[entryId]) return user;
+                const next=Object.assign({},user);
+                next[field]=Number((Number(user[field])||0)+amount).toFixed(field==='usdtBalance'?4:2);
+                next.wingoPayouts=Object.assign({},guards,{[entryId]:{
+                    amount:Number(amount.toFixed(field==='usdtBalance'?4:2)),
+                    currency:String(currency||'INR').toUpperCase(),
+                    creditedAt:Date.now()
+                }});
+                return next;
+            });
+        }
+
         function settleColourClashAdminRound(roundId,result){
             db.ref('colour_clash/rounds/'+roundId).once('value').then(rs=>{
                 const rd=rs.val()||{}; const resultNumber=rd.resultNumber;
@@ -6416,7 +6439,7 @@ function formatAdminMoney(value){
                             if(!cur) return cur;
                             if(cur.status==='win'||cur.status==='loss'||cur.status==='settled') return;
                             return Object.assign({},cur,{status:win?'win':'loss',winAmount:payout,result:winningColours.join(' + '),resultColours:winningColours,timestampResolved:Date.now()});
-                        }).then(res=>res.committed?db.ref('users/'+e.userId+'/'+ccAdminWalletField(e.currency)).transaction(b=>Number(b||0)+payout):null).catch(()=>{}));
+                        }).then(res=>res.committed?creditColourClashAdminPayoutOnce(ch.key,e.userId,e.currency,payout):false).catch(()=>false));
                     });
                     return Promise.all(jobs);
                 });
@@ -6433,7 +6456,7 @@ function formatAdminMoney(value){
                     jobs.push(ch.ref.transaction(cur=>{
                         if(!cur || cur.status==='win'||cur.status==='loss'||cur.status==='settled') return cur;
                         return Object.assign({},cur,{status:win?'win':'loss',winAmount:payout,resultNumber,resultSize,timestampResolved:Date.now()});
-                    }).then(res=>res.committed?db.ref('users/'+e.userId+'/'+ccAdminWalletField(e.currency)).transaction(b=>Number(b||0)+payout):null).catch(()=>{}));
+                    }).then(res=>res.committed?creditColourClashAdminPayoutOnce(ch.key,e.userId,e.currency,payout):false).catch(()=>false));
                 });
                 return Promise.all(jobs);
             }).catch(()=>{});
@@ -6452,9 +6475,9 @@ function formatAdminMoney(value){
                             if(cur.status==='win'||cur.status==='loss'||cur.status==='settled') return;
                             return Object.assign({},cur,{status:win?'win':'loss',winAmount:payout,resultNumber,timestampResolved:Date.now()});
                         }).then(res=>{
-                            if(!res.committed) return;
-                            return db.ref('users/'+e.userId+'/'+ccAdminWalletField(e.currency)).transaction(b=>Number(b||0)+payout);
-                        }).catch(()=>{})
+                            if(!res.committed) return false;
+                            return creditColourClashAdminPayoutOnce(ch.key,e.userId,e.currency,payout);
+                        }).catch(()=>false)
                     );
                 });
                 return Promise.all(jobs);
