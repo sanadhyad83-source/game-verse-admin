@@ -5291,17 +5291,124 @@ function formatAdminMoney(value){
             }).join('');
         }
 
+        // Referral deposit commission: credit a referrer once for each approved
+        // deposit. The marker and wallet update are done in one Firebase transaction,
+        // so repeated/concurrent approval calls cannot pay the same commission twice.
+        function creditReferralDepositCommissionOnce(reqKey, childUserId, depositAmount, currency) {
+            const amount = Number(depositAmount) || 0;
+            const c = String(currency || 'INR').toUpperCase() === 'USDT' ? 'USDT' : 'INR';
+            if (!reqKey || !childUserId || amount <= 0) return Promise.resolve(false);
+
+            return Promise.all([
+                db.ref('users/' + childUserId).once('value'),
+                db.ref('control/referDepositCommissionPercent').once('value')
+            ]).then(([childSnap, pctSnap]) => {
+                const child = childSnap.val() || {};
+                const referrerCustomUid = String(child.referredBy || '').trim();
+                const pct = Math.min(100, Math.max(0, Number(pctSnap.val()) || 0));
+
+                if (!referrerCustomUid || referrerCustomUid.toUpperCase() === 'ADMIN' || pct <= 0) {
+                    return false;
+                }
+
+                const commission = Number((amount * pct / 100).toFixed(c === 'USDT' ? 4 : 2));
+                if (commission <= 0) return false;
+
+                return db.ref('users').orderByChild('customUid').equalTo(referrerCustomUid).once('value')
+                    .then(refSnap => {
+                        if (!refSnap.exists()) return false;
+
+                        let referrerKey = null;
+                        refSnap.forEach(ch => { if (!referrerKey) referrerKey = ch.key; });
+                        if (!referrerKey) return false;
+
+                        const field = c === 'USDT' ? 'usdtBalance' : 'balance';
+                        const token = 'depcomm_' + reqKey + '_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+                        const referrerRef = db.ref('users/' + referrerKey);
+
+                        return referrerRef.transaction(user => {
+                            if (!user) return user;
+
+                            const ledger = (user.depositCommissionCredits && typeof user.depositCommissionCredits === 'object')
+                                ? user.depositCommissionCredits : {};
+
+                            if (ledger[reqKey]) return user;
+
+                            const next = Object.assign({}, user);
+                            next[field] = Number((Number(user[field]) || 0) + commission).toFixed(c === 'USDT' ? 4 : 2);
+                            next.depositCommissionCredits = Object.assign({}, ledger, {
+                                [reqKey]: {
+                                    amount: commission,
+                                    currency: c,
+                                    sourceDepositId: reqKey,
+                                    fromCustomUid: child.customUid || '',
+                                    token: token,
+                                    creditedAt: Date.now()
+                                }
+                            });
+                            return next;
+                        }).then(res => {
+                            const finalUser = res.snapshot && res.snapshot.val ? (res.snapshot.val() || {}) : {};
+                            const marker = finalUser.depositCommissionCredits && finalUser.depositCommissionCredits[reqKey];
+                            const creditedByThisCall = !!marker && marker.token === token;
+
+                            if (!creditedByThisCall) return false;
+
+                            return db.ref('referral_earnings').push({
+                                referrerUid: referrerKey,
+                                referrerCustomUid: referrerCustomUid,
+                                fromCustomUid: child.customUid || '',
+                                type: 'deposit_commission',
+                                depositId: reqKey,
+                                depositAmount: amount,
+                                commissionPercent: pct,
+                                amount: commission,
+                                currency: c,
+                                timestamp: Date.now()
+                            }).then(() => true);
+                        });
+                    });
+            });
+        }
+
         function approveDeposit(reqKey, userId, amount) {
             const note=(prompt('Optional admin note:','')||'').trim();
+
             db.ref('deposits/'+reqKey).once('value').then(rs=>{
-                const r=rs.val()||{}; if((r.status||'pending')!=='pending') return alert('This deposit has already been processed.');
-                const currency=String(r.currency||'INR').toUpperCase()==='USDT'?'USDT':'INR', field=currency==='USDT'?'usdtBalance':'balance', depositAmount=Number(amount)||0;
-                return db.ref('users/'+userId+'/'+field).transaction(v=>(Number(v)||0)+depositAmount).then(res=>{
+                const r=rs.val()||{};
+                if((r.status||'pending')!=='pending') return alert('This deposit has already been processed.');
+
+                const currency=String(r.currency||'INR').toUpperCase()==='USDT'?'USDT':'INR';
+                const field=currency==='USDT'?'usdtBalance':'balance';
+                const depositAmount=Number(amount)||0;
+
+                return db.ref('users/'+userId+'/'+field).transaction(v=>
+                    Number((Number(v)||0)+depositAmount).toFixed(currency==='USDT'?4:2)
+                ).then(res=>{
                     if(!res.committed) throw new Error('Could not credit user wallet.');
-                    return db.ref('deposits/'+reqKey).update({status:'approved',adminNote:note,decidedAt:Date.now(),currency});
-                }).then(()=>alert(`Deposit approved: ${currency==='USDT'?'USDT '+depositAmount.toFixed(4):'₹'+depositAmount.toFixed(2)} credited.`));
+
+                    return db.ref('deposits/'+reqKey).update({
+                        status:'approved',
+                        adminNote:note,
+                        decidedAt:Date.now(),
+                        currency:currency
+                    });
+                }).then(()=>{
+                    // The commission is calculated from the approved deposit amount
+                    // using the current Admin > Referral Deposit Commission setting.
+                    return creditReferralDepositCommissionOnce(
+                        reqKey,
+                        userId,
+                        depositAmount,
+                        currency
+                    );
+                }).then(commissionPaid=>{
+                    const baseMsg = `Deposit approved: ${currency==='USDT'?'USDT '+depositAmount.toFixed(4):'₹'+depositAmount.toFixed(2)} credited.`;
+                    alert(baseMsg + (commissionPaid ? ' Referral deposit commission credited to the referrer.' : ''));
+                });
             }).catch(e=>alert('Could not approve deposit: '+e.message));
         }
+
         function deleteDepositRequest(reqKey){ if(!confirm('Delete this deposit record? This does not credit or refund any wallet.')) return; db.ref('deposits/'+reqKey).remove().then(()=>alert('Deposit record deleted.')); }
 
         function rejectDeposit(reqKey) {
