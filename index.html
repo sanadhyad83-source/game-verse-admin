@@ -1,5 +1,4 @@
-<!-- GAME VERSE ADMIN PANEL LIVE FIX v2.1 - Live global switch, profit, presence, Dashboard 2.0 -->
-<html lang="en" style="--bg-darkblue: #050505; --panel-blue: #121212; --border-blue: #a1a1aa; --glow-blue: rgba(212, 212, 216, 0.4); --accent-cyan: #e4e4e7; --accent-gold: #facc15; --text-muted: #9ca3af; --accent-rgb: 212, 212, 216;"><head>
+<html lang="en" style="--bg-darkblue: #041018; --panel-blue: #0a222c; --border-blue: #38bdf8; --glow-blue: rgba(56, 189, 248, 0.5); --accent-cyan: #bae6fd; --accent-gold: #fbbf24; --text-muted: #a5f3fc; --accent-rgb: 56, 189, 248; --theme-glow-scale: 0.5;"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Titan GameVerse - Admin Panel</title>
@@ -224,7 +223,7 @@
         .overview-detail-table tr:hover td{background:rgba(var(--accent-rgb),.045)}
         .overview-pnl-positive{color:#34d399!important;font-weight:800}.overview-pnl-negative{color:#f87171!important;font-weight:800}.overview-pnl-zero{color:#fff!important;font-weight:700}
         .overview-metric-note{margin-top:8px;color:var(--text-muted);font-size:10px;line-height:1.45}
-        @media(max-width:700px){.overview-summary{grid-template-columns:1fr}.overview-currency-switch .admin-filter-tab{min-width:68px!important}}
+        @media(max-width:700px){.overview-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.overview-currency-switch .admin-filter-tab{min-width:68px!important}}
 
         .u360-kpi{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px!important;align-items:stretch;}
         .u360-kpi-item{min-width:0!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;text-align:center!important;padding:12px 10px!important;border:1px solid rgba(var(--accent-rgb),.16)!important;border-radius:10px!important;background:rgba(255,255,255,.025)!important;overflow:hidden!important;}
@@ -533,10 +532,17 @@
         .cc-status-active { background: rgba(52,211,153,0.15); color: #34d399; }
         .cc-status-paused { background: rgba(248,113,113,0.15); color: #f87171; }
 
-        .dash-bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 110px; padding-top: 6px; }
-        .dash-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
-        .dash-bar { width: 100%; max-width: 22px; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--accent-cyan), #71717a); min-height: 3px; }
+        .dash-bar-chart { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; gap: 6px; height: 188px; padding-top: 4px; width: 100%; min-width: 0; overflow: visible; }
+        .dash-bar-col { min-width: 0; width: 100%; height: 188px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; }
+        .dash-bar-value { font-size: 9px; font-weight: 800; color: #fff; line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dash-bar-track { flex: 1 1 auto; width: 100%; min-height: 0; display: flex; align-items: flex-end; justify-content: center; }
+        .dash-bar { width: 58%; max-width: 26px; min-width: 10px; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, var(--accent-cyan), #71717a); min-height: 4px; }
         .dash-bar-label { font-size: 9px; color: var(--text-muted); }
+        .dash-bar-sub { font-size: 8px; color: #64748b; font-weight: 700; }
+        #overviewRoundsPanel { overflow: visible; }
+        #overviewRoundsPanel .overview-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        #overviewDetail { max-height: 230px; overflow: auto; -webkit-overflow-scrolling: touch; }
+        .gcc-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
 
         .txn-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(var(--accent-rgb),0.07); font-size: 12px; }
         .txn-item:last-child { border-bottom: none; }
@@ -724,7 +730,7 @@
 :root{--theme-glow-scale:.5 !important;}
 </style>
 
-</head>
+<style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style></head>
 <body class="admin-shell-active">
 
     <!-- Auth Screen -->
@@ -819,28 +825,28 @@
                 </div>
                 <div class="kpi-card kpi-green">
                     <div class="kpi-label">💰 TOTAL DEPOSITS</div>
-                    <div class="kpi-value" id="kpiTotalDeposits">₹0</div>
+                    <div class="kpi-value" id="kpiTotalDeposits">₹0.00</div>
                     <div class="kpi-sub" id="kpiTotalDepositsUsdt">USDT: 0.0000</div>
                     <div class="kpi-sub">Approved deposits, all-time</div>
                     <div class="kpi-clear-link" onclick="clearAllDeposits()">🗑️ Clear Records</div>
                 </div>
                 <div class="kpi-card kpi-purple">
                     <div class="kpi-label">⬆️ TOTAL WITHDRAWALS</div>
-                    <div class="kpi-value" id="kpiTotalWithdrawals">₹0</div>
+                    <div class="kpi-value" id="kpiTotalWithdrawals">₹0.00</div>
                     <div class="kpi-sub" id="kpiTotalWithdrawalsUsdt">USDT: 0.0000</div>
                     <div class="kpi-sub">Approved payouts, all-time</div>
                     <div class="kpi-clear-link" onclick="clearAllWithdrawals()">🗑️ Clear Records</div>
                 </div>
                 <div class="kpi-card kpi-yellow">
                     <div class="kpi-label">👑 TOTAL PROFIT</div>
-                    <div class="kpi-value" id="kpiTotalProfit">₹0</div>
+                    <div class="kpi-value" id="kpiTotalProfit">₹-33.84</div>
                     <div class="kpi-sub" id="kpiTotalProfitUsdt">USDT: 0.0000</div>
                     <div class="kpi-sub">Wagered − paid out, all games</div>
                     <div class="kpi-clear-link" onclick="clearPlayHistoryDigest()">🗑️ Clear Records</div>
                 </div>
                 <div class="kpi-card kpi-pink">
                     <div class="kpi-label">📶 ACTIVE TODAY</div>
-                    <div class="kpi-value" id="kpiActiveToday">0</div>
+                    <div class="kpi-value" id="kpiActiveToday">2</div>
                     <div class="kpi-sub">Unique players with a round today</div>
                     <div class="kpi-sub">🟢 Online / Recently Active: <b id="kpiOnlineRecentlyActive">0</b></div>
                 </div>
@@ -849,70 +855,73 @@
             <!-- Game Command Center: live daily ledger -->
             <div class="dash-panel">
                 <div class="dash-panel-head">
-                    <h4>🎮 Game Command Center</h4><span id="dashboardGlobalGameState" style="float:right;font-size:11px;color:var(--text-muted);">Global switch: syncing…</span>
+                    <h4>🎮 Game Command Center</h4><span id="dashboardGlobalGameState" style="float:right;font-size:11px;color:var(--text-muted);">Global switch: ACTIVE</span>
                     <span class="view-all-link" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">Manage Games →</span>
                 </div>
-                <div style="overflow-x:auto;">
+                <div class="gcc-table-wrap" style="overflow-x:auto;">
                     <table class="cc-table">
                         <thead><tr><th>Game</th><th>Status</th><th>Players Today</th><th>Entries Today</th><th>INR Amount Today</th><th>USDT Amount Today</th></tr></thead>
-                        <tbody id="gameCommandCenterBody">
-                        <tr>
-                            <td>🚀 Rocket Jump <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">⚙️</span></td>
-                            <td><span class="cc-status-pill cc-status-paused" style="">● PAUSED</span></td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td style="color:#34d399">₹0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>🎡 Fortune Wheel <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">⚙️</span></td>
-                            <td><span class="cc-status-pill cc-status-paused" style="">● PAUSED</span></td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td style="color:#34d399">₹0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>🪙 Coin Flip <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">⚙️</span></td>
-                            <td><span class="cc-status-pill cc-status-paused" style="">● PAUSED</span></td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td style="color:#34d399">₹0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>🎯 Number Master <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">⚙️</span></td>
-                            <td><span class="cc-status-pill cc-status-paused" style="">● PAUSED</span></td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td style="color:#34d399">₹0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>💣 Mines <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="navTo('Mines Control', openMinesAdminModal, null)">⚙️</span></td>
-                            <td><span class="cc-status-pill cc-status-paused" style="">● PAUSED</span></td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td style="color:#34d399">₹0</td>
-                        </tr>
-                    
-                    <tr>
-                        <td>🎨 WINGO <span class="view-all-link" style="font-size:10px; margin-left:4px;" onclick="return gvOpenColourClashAdmin(null)">⚙️</span></td>
-                        <td><span class="cc-status-pill " style="">● PAUSED</span></td>
-                        <td colspan="4" style="color:var(--text-muted); font-size:11px;">Tracked live in WINGO → Round Audit Logs</td>
-                    </tr>
-                </tbody>
+                        <tbody id="gameCommandCenterBody"><tr>
+                        <td>🚀 Rocket Jump</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>🃏 High Card</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>🎡 Fortune Wheel</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>🪙 Coin Flip</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>🎯 Number Master</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>💣 Mines</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>🎨 WINGO</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>2</td>
+                        <td>33</td>
+                        <td style="color:#34d399">₹330.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr></tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Overview Chart -->
-            <div class="dash-panel">
+            <div class="dash-panel" id="overviewRoundsPanel">
                 <div class="dash-panel-head">
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h4 style="margin:0;">📈 Overview — Rounds Played (Last 7 Days)</h4><div class="admin-filter-tabs overview-currency-switch" style="margin:0;min-width:0;"><button type="button" id="overviewInrBtn" class="admin-filter-tab active" onclick="setOverviewCurrency('INR')">₹ INR</button><button type="button" id="overviewUsdtBtn" class="admin-filter-tab" onclick="setOverviewCurrency('USDT')">₮ USDT</button></div></div>
                     <span class="view-all-link" onclick="clearPlayHistoryDigest()">🗑️ Clear Records</span>
                 </div>
-                <div class="overview-metric-note">Daily rounds, wagered amount, winnings, house P&amp;L and activity are calculated from the selected currency. Hover a bar for the daily breakdown.</div>
+                <div class="overview-metric-note">Bar height scales by daily wagered amount (not just round count). Rounds, winnings, house P&amp;L and activity use the selected currency. Hover a bar for the full daily breakdown.</div>
                 <div class="dash-bar-chart" id="overviewBarChart">
                     <div class="dash-bar-col">
                         <div class="dash-bar" style="height:4%;" title="0 rounds"></div>
@@ -972,7 +981,7 @@
                                 <div class="alert-dot info">👤</div>
                                 <div class="alert-body">
                                     <div class="a1">New User Registered</div>
-                                    <div class="a2">User xfOMB5 joined GameVerse • </div>
+                                    <div class="a2">User AV0YTC joined GameVerse • 2h ago</div>
                                 </div>
                             </div>
                         </div>
@@ -1149,17 +1158,17 @@
                         <div class="dash2-control-head"><div><div class="dash2-control-title">🎯 Strict Online Detection</div><div class="dash2-control-desc">When enabled, “Online Now” requires a live Firebase presence signal instead of counting an old activity timestamp.</div></div><label class="dash2-switch"><input type="checkbox" id="d20StrictPresence" onchange="setSessionControl('strictPresence',this.checked)"> Enabled</label></div>
                     </div>
                     <div class="dash2-control">
-                        <div class="dash2-control-head"><div><div class="dash2-control-title">🧹 Stale Session Cleanup</div><div class="dash2-control-desc">Remove users from the Online count when their last heartbeat is older than the selected timeout.</div></div><select id="d20PresenceTimeout" style="max-width:125px;" onchange="setSessionControl('presenceTimeoutMinutes',Number(this.value))"><option value="2">2 min</option><option value="5" selected>5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></div>
+                        <div class="dash2-control-head"><div><div class="dash2-control-title">🧹 Stale Session Cleanup</div><div class="dash2-control-desc">Remove users from the Online count when their last heartbeat is older than the selected timeout.</div></div><select id="d20PresenceTimeout" style="max-width:125px;" onchange="setSessionControl('presenceTimeoutMinutes',Number(this.value))"><option value="2">2 min</option><option value="5" selected="">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></div>
                     </div>
                     <div class="dash2-control">
                         <div class="dash2-control-head"><div><div class="dash2-control-title">🧽 Clean Stale Online Sessions</div><div class="dash2-control-desc">One-click cleanup of expired presence records. This does not delete users or account data.</div></div></div>
                         <button class="btn-gray" onclick="cleanStaleOnlineSessions()" style="margin-top:8px;">🧹 Clean Now</button>
                     </div>
                     <div class="dash2-control">
-                        <div class="dash2-control-head"><div><div class="dash2-control-title">⚡ Presence Refresh Rate</div><div class="dash2-control-desc">Choose how frequently Dashboard 2.0 recalculates Online / Recently Active figures.</div></div><select id="d20PresenceRefresh" style="max-width:125px;" onchange="setPresenceRefreshRate(Number(this.value))"><option value="5000">5 sec</option><option value="10000" selected>10 sec</option><option value="30000">30 sec</option><option value="60000">60 sec</option></select></div>
+                        <div class="dash2-control-head"><div><div class="dash2-control-title">⚡ Presence Refresh Rate</div><div class="dash2-control-desc">Choose how frequently Dashboard 2.0 recalculates Online / Recently Active figures.</div></div><select id="d20PresenceRefresh" style="max-width:125px;" onchange="setPresenceRefreshRate(Number(this.value))"><option value="5000">5 sec</option><option value="10000" selected="">10 sec</option><option value="30000">30 sec</option><option value="60000">60 sec</option></select></div>
                     </div>
                     <div class="dash2-control">
-                        <div class="dash2-control-head"><div><div class="dash2-control-title">📡 Presence Monitor</div><div class="dash2-control-desc">Temporarily pause live presence polling without changing any user status.</div></div><label class="dash2-switch"><input type="checkbox" id="d20PresenceMonitor" checked onchange="togglePresenceMonitor(this.checked)"> Enabled</label></div>
+                        <div class="dash2-control-head"><div><div class="dash2-control-title">📡 Presence Monitor</div><div class="dash2-control-desc">Temporarily pause live presence polling without changing any user status.</div></div><label class="dash2-switch"><input type="checkbox" id="d20PresenceMonitor" checked="" onchange="togglePresenceMonitor(this.checked)"> Enabled</label></div>
                     </div>
                     <div class="dash2-control">
                         <div class="dash2-control-head"><div><div class="dash2-control-title">🔄 Refresh Presence Now</div><div class="dash2-control-desc">Immediately re-read every user presence record and update the dashboard counters.</div></div></div>
@@ -1169,7 +1178,7 @@
             </div>
 
             <div class="dash-panel">
-                <div class="dash-panel-head"><h4>📌 Live Session Flags</h4><span id="d20SessionFlagSummary" style="font-size:9px;color:var(--text-muted);">Loading…</span></div>
+                <div class="dash-panel-head"><h4>📌 Live Session Flags</h4><span id="d20SessionFlagSummary" style="font-size:9px;color:var(--text-muted);">Timeout 5 min · Monitoring ON</span></div>
                 <div class="dash2-ops-grid">
                     <div class="dash2-mini"><div class="m-label">Strict Detection</div><div class="m-value" id="d20StrictPresenceState">OFF</div><div class="m-help">Presence-based online count</div></div>
                     <div class="dash2-mini"><div class="m-label">Presence Timeout</div><div class="m-value" id="d20PresenceTimeoutState">5 min</div><div class="m-help">Stale-session threshold</div></div>
@@ -1188,7 +1197,7 @@
             <div class="global-game-control">
                 <div>
                     <div class="gg-title">🎮 Global Games Switch</div>
-                    <div class="gg-sub" id="globalGamesStatusText">Loading global game status…</div>
+                    <div class="gg-sub" id="globalGamesStatusText">Global switch is ACTIVE — individual game settings still apply.</div>
                 </div>
                 <button id="globalGamesToggleBtn" onclick="toggleAllGamesStatus()" class="btn-red">⏸ Pause All Games</button>
             </div>
@@ -1336,7 +1345,7 @@
                     <div><label>Gift Bonus Expiry (days) · 0 = never</label><input id="bonusGiftExpiry" type="number" min="0" step="1" placeholder="0"></div>
                     <div><label>Other Bonus Expiry (days) · 0 = never</label><input id="bonusExpiry" type="number" min="0" step="1" placeholder="0"></div>
                 </div>
-                <label class="restriction-toggle"><input id="bonusWithdrawalLock" type="checkbox" checked> Block withdrawal while bonus/gift turnover is incomplete</label>
+                <label class="restriction-toggle"><input id="bonusWithdrawalLock" type="checkbox" checked=""> Block withdrawal while bonus/gift turnover is incomplete</label>
                 <p class="hint-text">Bonus turnover is calculated from qualifying Game Rounds and WINGO bets recorded after the bonus credit. The user receives a warning popup when a restriction is triggered.</p>
                 <button onclick="saveBonusRestrictions()" class="btn-green" style="margin-top:8px;">💾 Save Bonus Rules</button>
             </div>
@@ -1439,7 +1448,7 @@
                     <button id="themeNeonBtn" onclick="setAppTheme('neon')" class="btn-gray">💚 Neon</button>
                     <button id="themeRedBtn" onclick="setAppTheme('red')" class="btn-gray">🟠 Orange</button>
                     <button id="themeColorfulBtn" onclick="setAppTheme('colorful')" class="btn-gray">🌈 Colorful</button>
-                    <button id="themeSkyBlueBtn" onclick="setAppTheme('skyblue')" class="btn-gray">🌤️ Sky Blue</button>
+                    <button id="themeSkyBlueBtn" onclick="setAppTheme('skyblue')" class="btn-green">🌤️ Sky Blue</button>
                     <button id="themeBloodMoonBtn" onclick="setAppTheme('bloodmoon')" class="btn-gray">🌑 Blood Moon</button>
                     <button id="themeEmeraldBtn" onclick="setAppTheme('emerald')" class="btn-gray">💎 Emerald</button>
                     <button id="themeAuroraBtn" onclick="setAppTheme('aurora')" class="btn-gray">🌌 Aurora</button>
@@ -1513,7 +1522,7 @@
                 <label style="font-size:11.5px; color:var(--text-muted); margin-top:14px; display:block;">Number Result — choose one number only:</label>
                 <div id="ccAdminNumberButtons" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px; margin-top:6px;"></div>
                 <div id="ccAdminNumberResultStatus" class="live-status" style="margin-top:8px;">No result selected.</div>
-                <button id="ccAdminConfirmResultBtn" class="cc-admin-confirm-btn" onclick="confirmColourClashAdminNumberResult()" disabled>✓ Confirm Result for This Round</button>
+                <button id="ccAdminConfirmResultBtn" class="cc-admin-confirm-btn" onclick="confirmColourClashAdminNumberResult()" disabled="">✓ Confirm Result for This Round</button>
             </div>
 
             <div class="dash-panel">
@@ -2009,7 +2018,7 @@
                 <input id="adminQrUrlInput" type="text" placeholder="INR QR Code Image URL (optional)" oninput="updateAdminQrPreview()">
                 <input id="adminUsdtQrUrlInput" type="text" placeholder="USDT BEP-20 QR Code Image URL (optional)" oninput="updateAdminUsdtQrPreview()">
                 <div class="two-cols" style="margin-top:8px;">
-                    <div id="adminQrPreviewWrap" class="" style="text-align:center;"><div style="font-size:10px;color:var(--text-muted);margin-bottom:5px;">INR QR</div><img id="adminQrPreview" src="" alt="INR QR Code Preview" style="max-width:140px;width:100%;border-radius:12px;border:1px solid rgba(var(--accent-rgb),0.4);background:#fff;padding:6px;" onerror="this.parentElement.classList.add('hidden');" onload="this.parentElement.classList.remove('hidden');"></div>
+                    <div id="adminQrPreviewWrap" class="hidden" style="text-align:center;"><div style="font-size:10px;color:var(--text-muted);margin-bottom:5px;">INR QR</div><img id="adminQrPreview" src="" alt="INR QR Code Preview" style="max-width:140px;width:100%;border-radius:12px;border:1px solid rgba(var(--accent-rgb),0.4);background:#fff;padding:6px;" onerror="this.parentElement.classList.add('hidden');" onload="this.parentElement.classList.remove('hidden');"></div>
                     <div id="adminUsdtQrPreviewWrap" class="hidden" style="text-align:center;"><div style="font-size:10px;color:#34d399;margin-bottom:5px;">USDT BEP-20 QR</div><img id="adminUsdtQrPreview" src="" alt="USDT BEP-20 QR Code Preview" style="max-width:140px;width:100%;border-radius:12px;border:1px solid rgba(34,197,94,.4);background:#fff;padding:6px;" onerror="this.parentElement.classList.add('hidden');" onload="this.parentElement.classList.remove('hidden');"></div>
                 </div>
                 <button onclick="saveDepositConfig()" class="btn-green" style="margin-top:6px;">💾 Save Deposit Settings</button>
@@ -2111,7 +2120,7 @@
 
         <!-- Events & Activity Management Section -->
         <div id="eventsAdminSection" class="hidden">
-            <h3 style="color:var(--accent-cyan); margin-top:0; font-size:16px;">🎉 Events & Activity Control Center</h3>
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size:16px;">🎉 Events &amp; Activity Control Center</h3>
             <p class="hint-text">Create scheduled events, feature important campaigns, control visibility, set priority, and give users a clear live/upcoming countdown.</p>
             <div id="eventsAdminStats" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0;">
                 <div class="admin-section-card" style="padding:9px;margin:0;text-align:center;"><span style="font-size:9px;color:var(--text-muted);">TOTAL</span><b id="eventStatTotal" style="display:block;font-size:18px;color:var(--accent-cyan);">0</b></div>
@@ -3318,12 +3327,23 @@ function formatAdminMoney(value){
                     });
                     Object.values(grouped).forEach(g=>{ g.day.count++; g.day.wagered+=g.wagered; g.day.won+=g.won; g.players.forEach(x=>g.day.players.add(x)); g.day.roundIds.add(String(g.day.start)+'-'+String(g.day.count)); });
                 }
-                const max=Math.max(1,...days.map(d=>d.count));
+                // Scale bars by WAGERED amount so days with different activity amounts show different heights.
+                // Fall back to round count only when all wagered totals are zero.
+                const maxWagered=Math.max(0,...days.map(d=>d.wagered));
+                const maxCount=Math.max(1,...days.map(d=>d.count));
+                const useWageredScale=maxWagered>0;
                 const money=v=>currency==='USDT'?`USDT ${Number(v).toFixed(4)}`:`₹${Number(v).toFixed(2)}`;
                 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+                const shortMoney=v=>{
+                    const n=Number(v)||0;
+                    if(currency==='USDT') return n>=1?n.toFixed(1):n.toFixed(2);
+                    if(n>=1000) return '₹'+(n/1000).toFixed(n>=10000?0:1)+'k';
+                    return '₹'+Math.round(n);
+                };
                 chart.innerHTML=days.map(d=>{
-                    const h=Math.max(4,(d.count/max)*100), pnl=d.wagered-d.won;
-                    return `<div class="dash-bar-col"><div class="dash-bar" style="height:${h}%;" title="${esc(d.dateLabel)} • ${d.count} rounds • ${d.players.size} players • Wagered ${money(d.wagered)} • Won ${money(d.won)} • House P&amp;L ${money(pnl)}"></div><div class="dash-bar-label">${esc(d.label)}</div></div>`;
+                    const ratio=useWageredScale?(d.wagered/maxWagered):(d.count/maxCount);
+                    const h=Math.max(6,ratio*100), pnl=d.wagered-d.won;
+                    return `<div class="dash-bar-col"><div class="dash-bar-value" title="${esc(money(d.wagered))}">${esc(shortMoney(d.wagered))}</div><div class="dash-bar-track"><div class="dash-bar" style="height:${h}%;" title="${esc(d.dateLabel)} • ${d.count} rounds • ${d.players.size} players • Wagered ${money(d.wagered)} • Won ${money(d.won)} • House P&L ${money(pnl)}"></div></div><div class="dash-bar-label">${esc(d.label)}</div><div class="dash-bar-sub">${d.count} rnd</div></div>`;
                 }).join('');
                 const totalRounds=days.reduce((s,d)=>s+d.count,0),totalWagered=days.reduce((s,d)=>s+d.wagered,0),totalWon=days.reduce((s,d)=>s+d.won,0),revenue=totalWagered-totalWon,totalPlayers=new Set(days.flatMap(d=>Array.from(d.players))).size;
                 let summary=document.getElementById('overviewSummary');
@@ -7540,4 +7560,47 @@ button,.btn,.neon-btn,.card,.glass-card,.panel,.game-card,.mission-card,.action-
   };
 })();
 </script>
+
+
+
+<style id="gv-admin-overview-complete-v2">
+html, body { max-width: 100%; }
+.admin-shell, .admin-main, .admin-page-container { max-width: 100%; box-sizing: border-box; }
+.admin-page-container { overflow-x: hidden; }
+/* Do NOT clip dashboard cards — tables scroll internally, bars stay fully visible */
+.dash-panel { max-width: 100%; box-sizing: border-box; overflow: visible; }
+#overviewBarChart {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  align-items: end !important;
+  gap: 6px !important;
+  height: 188px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+#overviewBarChart .dash-bar-col { min-width: 0 !important; height: 188px !important; }
+#overviewSummary { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+#overviewDetail { max-height: 230px !important; overflow: auto !important; }
+.overview-detail-table { min-width: 520px; }
+.gcc-table-wrap, .dash-panel > div[style*="overflow-x"] { overflow-x: auto; max-width: 100%; }
+#ccAdminNumberAmountGrid { display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 4px !important; width: 100% !important; }
+#ccAdminNumberAmountGrid .stat-card { min-width: 0 !important; padding: 6px 3px !important; overflow: hidden !important; }
+#ccAdminNumberAmountGrid .stat-card b { font-size: 10px !important; word-break: break-all !important; white-space: normal !important; }
+#ccAdminNumberButtons { display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)) !important; width: 100% !important; }
+#ccAdminNumberButtons button { min-width: 0 !important; padding: 10px 4px !important; }
+#colourClashAdminSection { overflow-x: hidden; max-width: 100%; }
+@media (max-width: 700px) {
+  #overviewSummary { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  #overviewSummary .overview-summary-card { padding: 8px 8px !important; }
+  #overviewSummary .overview-summary-card b { font-size: 13px !important; }
+  .overview-summary { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 430px) {
+  .admin-page-container { padding: 12px 10px 28px !important; }
+  #overviewBarChart, #overviewBarChart .dash-bar-col { height: 168px !important; }
+  #overviewBarChart .dash-bar-value { font-size: 8px !important; }
+}
+</style>
+
 </body></html>
