@@ -387,7 +387,99 @@
             transform: translateY(-1px);
         }
         .hint-text { font-size: 11px; color: var(--text-muted); text-align: left; margin: 4px 0 0 0; line-height: 1.4; }
+
+
+        /* ===== Clean compact Support Tickets UI ===== */
+        .gv-support-section{max-width:100%;padding:0 0 8px;}
+        .gv-support-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 2px 12px;border-bottom:1px solid rgba(148,163,184,.12);}
+        .gv-support-kicker{font-size:9px;letter-spacing:1.2px;font-weight:900;color:var(--accent-cyan);opacity:.8;margin-bottom:3px;}
+        .gv-support-head h3{margin:0;color:#f8fafc;font-size:17px;line-height:1.15;}
+        .gv-support-head p{margin:4px 0 0;color:#8f96a3;font-size:10.5px;line-height:1.35;}
+        .gv-support-refresh{width:32px!important;height:32px!important;min-width:32px!important;padding:0!important;margin:0!important;border-radius:9px!important;background:rgba(34,211,238,.08)!important;border:1px solid rgba(34,211,238,.22)!important;color:var(--accent-cyan)!important;font-size:18px!important;line-height:1!important;}
+        .gv-support-toolbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0;}
+        .gv-support-stat{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:10px;background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.11);min-width:0;}
+        .gv-support-stat span{font-size:9px;color:#8f96a3;text-transform:uppercase;letter-spacing:.55px;font-weight:800;}
+        .gv-support-stat b{font-size:13px;color:#e5e7eb;}
+        .gv-support-stat.open b{color:#34d399;}
+        .gv-support-stat.urgent b{color:#fb7185;}
+        .gv-support-list{max-height:calc(100vh - 245px);min-height:120px;overflow-y:auto;overflow-x:hidden;padding:2px 2px 6px;scrollbar-width:thin;}
+        .gv-support-list > .gv-support-ticket{margin-bottom:8px;}
+        .gv-support-ticket{position:relative;padding:10px 11px;border-radius:12px;background:linear-gradient(145deg,rgba(31,35,42,.96),rgba(17,19,23,.96));border:1px solid rgba(148,163,184,.13);box-shadow:0 4px 14px rgba(0,0,0,.16);text-align:left;overflow:hidden;}
+        .gv-support-ticket:hover{border-color:rgba(34,211,238,.24);}
+        .gv-support-ticket.urgent{border-left:3px solid #fb7185;padding-left:9px;}
+        .gv-support-ticket-top{display:flex;align-items:flex-start;justify-content:space-between;gap:9px;margin-bottom:7px;}
+        .gv-support-ticket-title{min-width:0;flex:1;}
+        .gv-support-ticket-subject{font-size:12px;font-weight:900;color:#f8fafc;line-height:1.25;overflow-wrap:anywhere;}
+        .gv-support-ticket-time{font-size:8.5px;color:#737b88;margin-top:3px;}
+        .gv-support-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:999px;font-size:8px;font-weight:900;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px;border:1px solid rgba(148,163,184,.15);background:rgba(148,163,184,.07);color:#cbd5e1;}
+        .gv-support-badge.open{color:#34d399;border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.07);}
+        .gv-support-badge.closed{color:#94a3b8;}
+        .gv-support-badge.urgent{color:#fb7185;border-color:rgba(251,113,133,.2);background:rgba(251,113,133,.07);}
+        .gv-support-meta{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
+        .gv-support-meta-chip{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:4px 7px;border-radius:7px;background:rgba(2,6,23,.32);border:1px solid rgba(148,163,184,.09);color:#aeb5c1;font-size:8.5px;line-height:1.15;}
+        .gv-support-meta-chip strong{color:#e2e8f0;font-weight:800;}
+        .gv-support-problem{padding:8px 9px;border-radius:9px;background:rgba(2,6,23,.28);border:1px solid rgba(148,163,184,.08);margin-bottom:8px;}
+        .gv-support-problem-label{font-size:8px;color:#7f8794;text-transform:uppercase;letter-spacing:.55px;font-weight:900;margin-bottom:3px;}
+        .gv-support-problem-text{font-size:10px;color:#d5d9df;line-height:1.42;white-space:pre-wrap;overflow-wrap:anywhere;max-height:76px;overflow:auto;}
+        .gv-support-order-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
+        .gv-support-order{min-width:0;padding:6px 7px;border-radius:8px;background:rgba(34,211,238,.045);border:1px solid rgba(34,211,238,.09);}
+        .gv-support-order label{font-size:7.5px!important;color:#77808e!important;margin:0 0 2px!important;letter-spacing:.45px;text-transform:uppercase;}
+        .gv-support-order div{font-size:9px;color:#b9f6ff;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+        .gv-support-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+        .gv-support-actions button{margin:0!important;min-height:30px!important;padding:5px 8px!important;border-radius:7px!important;font-size:9px!important;line-height:1.1!important;}
+        .gv-support-reply{margin-top:8px;padding-top:8px;border-top:1px solid rgba(148,163,184,.09);}
+        .gv-support-reply textarea,.gv-support-note textarea{width:100%;min-height:48px;box-sizing:border-box;margin:4px 0 0;padding:7px 8px;border-radius:8px;background:rgba(2,6,23,.42);border:1px solid rgba(148,163,184,.12);color:#e5e7eb;font-size:10px;font-family:inherit;resize:vertical;outline:none;}
+        .gv-support-reply textarea:focus,.gv-support-note textarea:focus{border-color:rgba(34,211,238,.3);}
+        .gv-support-reply-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:3px;}
+        .gv-support-reply-label,.gv-support-note-label{font-size:8px;color:#818996;text-transform:uppercase;letter-spacing:.5px;font-weight:900;}
+        .gv-support-send{background:rgba(34,211,238,.1)!important;border:1px solid rgba(34,211,238,.22)!important;color:#67e8f9!important;}
+        .gv-support-note{margin-top:7px;padding-top:7px;border-top:1px dashed rgba(100,116,139,.2);}
+        @media(max-width:600px){.gv-support-toolbar{gap:5px}.gv-support-stat{padding:7px 8px}.gv-support-list{max-height:calc(100vh - 230px)}.gv-support-order-row{grid-template-columns:1fr}.gv-support-head p{max-width:250px;}.gv-support-actions button{flex:1 1 auto;}}
+
+        /* ===== Premium admin deposit / withdrawal transaction cards ===== */
+        .gv-admin-fin-card{position:relative;overflow:hidden;margin:0 0 9px;padding:0;border-radius:13px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(145deg,#2b2b2d 0%,#18181a 100%);box-shadow:0 10px 28px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.045);text-align:left;}
+        .gv-admin-fin-card:before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.055),transparent 34%,rgba(255,255,255,.015) 75%);}
+        .gv-admin-fin-card.deposit:after,.gv-admin-fin-card.withdraw:after{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;opacity:.95;}
+        .gv-admin-fin-card.deposit:after{background:linear-gradient(180deg,#34d399,#22c55e);}
+        .gv-admin-fin-card.withdraw:after{background:linear-gradient(180deg,#ff7b7b,#f43f5e);}
+        .gv-admin-fin-inner{position:relative;z-index:1;padding:10px 11px 10px 14px;}
+        .gv-admin-fin-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;}
+        .gv-admin-fin-type-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+        .gv-admin-fin-icon{width:34px;height:34px;flex:0 0 34px;display:flex;align-items:center;justify-content:center;border-radius:11px;background:rgba(255,255,255,.07);font-size:17px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);}
+        .gv-admin-fin-type{font-size:13px;font-weight:900;color:#fff;}
+        .gv-admin-fin-time{font-size:10.5px;color:#a9abb2;line-height:1.35;}
+        .gv-admin-fin-amount{text-align:right;white-space:nowrap;}
+        .gv-admin-fin-amount-label{display:block;font-size:9.5px;color:#9ca0aa;text-transform:uppercase;letter-spacing:.65px;font-weight:800;margin-bottom:2px;}
+        .gv-admin-fin-amount-value{display:block;font-size:17px;color:#f5b23c;font-weight:950;line-height:1.1;}
+        .gv-admin-fin-bonus{display:block;margin-top:4px;color:#ff7580;font-size:10.5px;font-weight:800;}
+        .gv-admin-fin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:2px;}
+        .gv-admin-fin-detail{min-width:0;padding:6px 7px;border-radius:8px;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.055);}
+        .gv-admin-fin-label{font-size:8.5px;color:#9699a3;text-transform:uppercase;letter-spacing:.55px;font-weight:800;margin-bottom:3px;}
+        .gv-admin-fin-value{font-size:11px;color:#f4f4f5;font-weight:750;overflow-wrap:anywhere;}
+        .gv-admin-order{display:flex;align-items:center;gap:6px;margin-top:6px;padding:6px 7px;border-radius:8px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.065);}
+        .gv-admin-order-code{flex:1;min-width:0;color:#67e8f9;font:800 11px ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere;}
+        .gv-copy-btn{flex:0 0 30px!important;width:30px!important;height:30px!important;border:1px solid rgba(244,114,182,.55)!important;background:rgba(236,72,153,.14)!important;color:#fff!important;border-radius:8px!important;padding:0!important;margin:0!important;min-width:30px!important;font-size:14px!important;line-height:28px!important;font-weight:900!important;cursor:pointer;display:inline-flex!important;align-items:center!important;justify-content:center!important;}
+        .gv-copy-btn:hover{border-color:#f472b6!important;box-shadow:0 0 14px rgba(236,72,153,.22);transform:translateY(-1px);}
+        .gv-copy-record{display:none!important;}
+        .gv-admin-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px;}
+        .gv-admin-actions button{margin:0!important;min-height:34px!important;font-size:10.5px!important;}
+        .gv-admin-delete{width:100%!important;margin-top:7px!important;}
+        @media(max-width:520px){.gv-admin-fin-grid{grid-template-columns:1fr 1fr}.gv-admin-fin-top{gap:8px}.gv-admin-fin-amount-value{font-size:15px}.gv-admin-actions{grid-template-columns:1fr 1fr}}
         
+
+        /* ===== Support ticket conversation / reply UI ===== */
+        .gv-support-conversation{margin-top:10px;padding:9px;border-radius:10px;background:rgba(0,0,0,.22);border:1px solid rgba(100,116,139,.25);max-height:180px;overflow:auto;}
+        .gv-support-msg{padding:7px 9px;border-radius:9px;margin-bottom:6px;font-size:11px;line-height:1.45;}
+        .gv-support-msg:last-child{margin-bottom:0;}
+        .gv-support-msg.admin{background:rgba(34,211,238,.09);border:1px solid rgba(34,211,238,.18);}
+        .gv-support-msg.user{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);}
+        .gv-support-reply-box{display:flex;gap:6px;margin-top:7px;align-items:flex-end;}
+        .gv-support-reply-box textarea{flex:1;min-height:46px;max-height:100px;resize:vertical;margin:0!important;}
+        .gv-support-reply-box button{flex:0 0 auto;margin:0!important;min-height:38px!important;padding:8px 11px!important;font-size:11px!important;}
+        .gv-support-order-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px;}
+        .gv-support-order{padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.2);font-size:10.5px;overflow-wrap:anywhere;}
+        @media(max-width:520px){.gv-support-order-row{grid-template-columns:1fr}.gv-support-reply-box{flex-direction:column}.gv-support-reply-box button{width:100%;}}
+
         .uid-badge {
             background: rgba(63, 63, 70, 0.8);
             color: #f5f5f5;
@@ -2015,6 +2107,24 @@
                     <input id="adminMinDepUsdtInput" type="number" step="0.0001" min="0" placeholder="Minimum Deposit (USDT)">
                     <input id="adminUsdtBep20AddressInput" type="text" placeholder="Admin USDT BEP-20 Deposit Address">
                 </div>
+
+                <div style="margin-top:10px;padding:10px;border:1px solid rgba(82,116,139,.35);border-radius:10px;background:rgba(10,10,10,.35);">
+                    <label style="margin-bottom:7px;">🎁 Automatic Deposit Bonus — applied to every approved deposit</label>
+                    <div class="two-cols">
+                        <select id="adminDepositBonusType">
+                            <option value="off">Bonus: Off</option>
+                            <option value="percent">Bonus: Percentage (%)</option>
+                            <option value="fixed">Bonus: Fixed Amount</option>
+                        </select>
+                        <input id="adminDepositBonusPercent" type="number" min="0" max="100" step="0.01" placeholder="Bonus % (e.g. 10)">
+                    </div>
+                    <div class="two-cols" style="margin-top:7px;">
+                        <input id="adminDepositBonusFixedInr" type="number" min="0" step="0.01" placeholder="Fixed Bonus — INR (₹)">
+                        <input id="adminDepositBonusFixedUsdt" type="number" min="0" step="0.0001" placeholder="Fixed Bonus — USDT">
+                    </div>
+                    <div class="hint-text">Example: Percentage = 10% and approved deposit = ₹100 → ₹10 bonus is credited automatically. Fixed bonus uses the matching deposit currency.</div>
+                </div>
+
                 <input id="adminQrUrlInput" type="text" placeholder="INR QR Code Image URL (optional)" oninput="updateAdminQrPreview()">
                 <input id="adminUsdtQrUrlInput" type="text" placeholder="USDT BEP-20 QR Code Image URL (optional)" oninput="updateAdminUsdtQrPreview()">
                 <div class="two-cols" style="margin-top:8px;">
@@ -2022,6 +2132,22 @@
                     <div id="adminUsdtQrPreviewWrap" class="hidden" style="text-align:center;"><div style="font-size:10px;color:#34d399;margin-bottom:5px;">USDT BEP-20 QR</div><img id="adminUsdtQrPreview" src="" alt="USDT BEP-20 QR Code Preview" style="max-width:140px;width:100%;border-radius:12px;border:1px solid rgba(34,197,94,.4);background:#fff;padding:6px;" onerror="this.parentElement.classList.add('hidden');" onload="this.parentElement.classList.remove('hidden');"></div>
                 </div>
                 <button onclick="saveDepositConfig()" class="btn-green" style="margin-top:6px;">💾 Save Deposit Settings</button>
+            </div>
+
+            <div class="admin-section-card control-group" style="margin-top:10px; border-top:none; padding-top:12px;">
+                <label>🔎 Find Deposit by Order ID</label>
+                <div class="two-cols"><input id="depositOrderSearchInput" type="text" placeholder="Enter Order ID (e.g. DEP...)" onkeydown="if(event.key==='Enter')searchDepositByOrderId()"><button onclick="searchDepositByOrderId()" class="btn-green">🔎 Search</button></div>
+                <button onclick="clearDepositOrderSearch()" class="btn-gray" style="margin-top:6px;">✕ Clear Search</button>
+            </div>
+
+            <div class="admin-section-card control-group" style="margin-top:10px; border-top:none; padding-top:12px;">
+                <label>🧹 Automatic Deposit Record Cleanup</label>
+                <div class="two-cols">
+                    <select id="depositAutoDeleteDays"><option value="0">Never delete automatically</option><option value="1">Delete after 1 day</option><option value="3">Delete after 3 days</option><option value="7">Delete after 7 days</option><option value="30">Delete after 30 days</option><option value="90">Delete after 90 days</option></select>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input id="depositAutoDeletePending" type="checkbox" style="width:auto;"> Include pending deposits</label>
+                </div>
+                <button onclick="saveTransactionCleanupConfig()" class="btn-green" style="margin-top:6px;">💾 Save Cleanup Settings</button>
+                <div id="depositCleanupStatus" style="font-size:11px;color:var(--text-muted);margin-top:5px;">Automatic cleanup is disabled.</div>
             </div>
 
             <div class="admin-filter-tabs" id="depositFilterTabs">
@@ -2053,6 +2179,22 @@
                 <button onclick="saveWithdrawConfig()" class="btn-green" style="margin-top:6px;">💾 Save Withdrawal Settings</button>
             </div>
 
+            <div class="admin-section-card control-group" style="margin-top:10px; border-top:none; padding-top:12px;">
+                <label>🔎 Find Withdrawal by Order ID</label>
+                <div class="two-cols"><input id="withdrawOrderSearchInput" type="text" placeholder="Enter Order ID (e.g. WD...)" onkeydown="if(event.key==='Enter')searchWithdrawByOrderId()"><button onclick="searchWithdrawByOrderId()" class="btn-green">🔎 Search</button></div>
+                <button onclick="clearWithdrawOrderSearch()" class="btn-gray" style="margin-top:6px;">✕ Clear Search</button>
+            </div>
+
+            <div class="admin-section-card control-group" style="margin-top:10px; border-top:none; padding-top:12px;">
+                <label>🧹 Automatic Withdrawal Record Cleanup</label>
+                <div class="two-cols">
+                    <select id="withdrawAutoDeleteDays"><option value="0">Never delete automatically</option><option value="1">Delete after 1 day</option><option value="3">Delete after 3 days</option><option value="7">Delete after 7 days</option><option value="30">Delete after 30 days</option><option value="90">Delete after 90 days</option></select>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input id="withdrawAutoDeletePending" type="checkbox" style="width:auto;"> Include pending withdrawals</label>
+                </div>
+                <button onclick="saveTransactionCleanupConfig()" class="btn-green" style="margin-top:6px;">💾 Save Cleanup Settings</button>
+                <div id="withdrawCleanupStatus" style="font-size:11px;color:var(--text-muted);margin-top:5px;">Automatic cleanup is disabled.</div>
+            </div>
+
             <div class="admin-filter-tabs" id="withdrawFilterTabs">
                 <div class="admin-filter-tab active" data-filter="all" onclick="setWithdrawAdminFilter('all', this)">All</div>
                 <div class="admin-filter-tab" data-filter="pending" onclick="setWithdrawAdminFilter('pending', this)">Pending</div>
@@ -2066,9 +2208,21 @@
         </div>
 
         <!-- Support Requests Management Section -->
-        <div id="supportSection" class="hidden">
-            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">📞 Support Requests Management</h3>
-            <div id="supportRequestsContainer" style="max-height: 260px; overflow-y: auto; margin: 10px 0;">Loading support requests...</div>
+        <div id="supportSection" class="hidden gv-support-section">
+            <div class="gv-support-head">
+                <div>
+                    <div class="gv-support-kicker">CUSTOMER CARE</div>
+                    <h3>📞 Support Tickets</h3>
+                    <p>Review user problems, respond clearly, and manage ticket status.</p>
+                </div>
+                <button type="button" class="gv-support-refresh" onclick="loadSupportRequestsForAdmin(true)" title="Refresh tickets">↻</button>
+            </div>
+            <div class="gv-support-toolbar">
+                <div class="gv-support-stat"><span>All</span><b id="supportCountAll">0</b></div>
+                <div class="gv-support-stat open"><span>Open</span><b id="supportCountOpen">0</b></div>
+                <div class="gv-support-stat urgent"><span>Urgent</span><b id="supportCountUrgent">0</b></div>
+            </div>
+            <div id="supportRequestsContainer" class="gv-support-list">Loading support tickets...</div>
         </div>
 
         <!-- Tournaments Management Section -->
@@ -5190,9 +5344,19 @@ function formatAdminMoney(value){
             const usdtQrCodeUrl=document.getElementById('adminUsdtQrUrlInput').value.trim();
             const minDepositUsdt=Number(document.getElementById('adminMinDepUsdtInput').value)||0;
             const usdtBep20Address=document.getElementById('adminUsdtBep20AddressInput').value.trim();
+            const depositBonusType=String(document.getElementById('adminDepositBonusType').value||'off').toLowerCase();
+            const depositBonusPercent=Math.max(0,Math.min(100,Number(document.getElementById('adminDepositBonusPercent').value)||0));
+            const depositBonusFixedInr=Math.max(0,Number(document.getElementById('adminDepositBonusFixedInr').value)||0);
+            const depositBonusFixedUsdt=Math.max(0,Number(document.getElementById('adminDepositBonusFixedUsdt').value)||0);
             if(minDeposit<0||minDepositUsdt<0) return alert('Please enter valid minimum deposit amounts.');
+            if(depositBonusPercent<0||depositBonusPercent>100) return alert('Bonus percentage must be between 0% and 100%.');
             if(!upiId && !usdtBep20Address) return alert('Enter at least one INR UPI ID or USDT BEP-20 address.');
-            db.ref('control/depositConfig').update({minDeposit,upiId,qrCodeUrl,usdtQrCodeUrl,minDepositUsdt,usdtBep20Address}).then(()=>alert('INR + USDT deposit configuration updated successfully!'));
+            if(depositBonusType==='percent' && depositBonusPercent<=0) return alert('Enter a bonus percentage greater than 0.');
+            if(depositBonusType==='fixed' && depositBonusFixedInr<=0 && depositBonusFixedUsdt<=0) return alert('Enter at least one fixed bonus amount.');
+            db.ref('control/depositConfig').update({
+                minDeposit,upiId,qrCodeUrl,usdtQrCodeUrl,minDepositUsdt,usdtBep20Address,
+                depositBonusType,depositBonusPercent,depositBonusFixedInr,depositBonusFixedUsdt
+            }).then(()=>alert('INR + USDT deposit settings and automatic bonus updated successfully!'));
         }
         function loadDepositConfigSetting() {
             db.ref('control/depositConfig').once('value',snap=>{
@@ -5203,6 +5367,10 @@ function formatAdminMoney(value){
                 document.getElementById('adminUsdtQrUrlInput').value=d.usdtQrCodeUrl||'';
                 document.getElementById('adminMinDepUsdtInput').value=d.minDepositUsdt||0;
                 document.getElementById('adminUsdtBep20AddressInput').value=d.usdtBep20Address||'';
+                document.getElementById('adminDepositBonusType').value=String(d.depositBonusType||'off').toLowerCase();
+                document.getElementById('adminDepositBonusPercent').value=d.depositBonusPercent||0;
+                document.getElementById('adminDepositBonusFixedInr').value=d.depositBonusFixedInr||0;
+                document.getElementById('adminDepositBonusFixedUsdt').value=d.depositBonusFixedUsdt||0;
                 updateAdminQrPreview();
                 updateAdminUsdtQrPreview();
             });
@@ -5234,6 +5402,10 @@ function formatAdminMoney(value){
         let withdrawAdminFilter = 'all';
         let depositAdminCache = [];
         let withdrawAdminCache = [];
+        let depositOrderSearch = '';
+        let withdrawOrderSearch = '';
+        let transactionCleanupConfig = {depositDays:0, withdrawDays:0, deletePending:false};
+        let transactionCleanupTimer = null;
 
         function setDepositAdminFilter(f, el) {
             depositAdminFilter = f || 'all';
@@ -5249,55 +5421,86 @@ function formatAdminMoney(value){
         }
 
         function loadDepositRequestsForAdmin() {
-            db.ref('deposits').off('value');
-            db.ref('deposits').on('value', snap => {
+            const database = (typeof ensureGameVerseAdminDb === 'function') ? ensureGameVerseAdminDb() : db;
+            if (!database) {
+                const c=document.getElementById('depositRequestsContainer');
+                if(c) c.innerHTML='<p style=\"color:#f87171;\">⚠️ Firebase is not connected. Please refresh the Admin App.</p>';
+                return;
+            }
+            const ref=database.ref('deposits');
+            ref.off('value');
+            ref.on('value', snap => {
                 depositAdminCache = [];
-                if (snap.exists()) snap.forEach(child => {
+                if (snap && snap.exists()) snap.forEach(child => {
                     const r = child.val();
                     if (r && typeof r === 'object') depositAdminCache.push({ key: child.key, ...r });
                 });
-                depositAdminCache.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+                depositAdminCache.sort((a,b) => (Number(b.timestamp)||0) - (Number(a.timestamp)||0));
                 renderDepositRequestsAdmin();
+            }, error => {
+                console.error('[Admin] Failed to load deposits:', error);
+                const c=document.getElementById('depositRequestsContainer');
+                if(c) c.innerHTML='<p style=\"color:#f87171;\">⚠️ Could not load deposit records. Check Firebase connection/rules.</p>';
             });
         }
+        function gvAdminCopyText(text, successMessage) {
+            const value = String(text == null ? '' : text);
+            const done = () => { if (successMessage) alert(successMessage); };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(value).then(done).catch(() => {
+                    const ta=document.createElement('textarea'); ta.value=value; ta.style.position='fixed'; ta.style.opacity='0';
+                    document.body.appendChild(ta); ta.focus(); ta.select(); try{document.execCommand('copy'); done();}catch(e){prompt('Copy this text:',value);} ta.remove();
+                });
+            } else {
+                const ta=document.createElement('textarea'); ta.value=value; ta.style.position='fixed'; ta.style.opacity='0';
+                document.body.appendChild(ta); ta.focus(); ta.select(); try{document.execCommand('copy'); done();}catch(e){prompt('Copy this text:',value);} ta.remove();
+            }
+        }
+        function gvAdminOrderId(r){ return String(r.orderId || r.orderID || r.order_id || r.reqId || r.key || '—'); }
+        function gvAdminMoney(r, amount){ const c=String(r.currency||'INR').toUpperCase(); return c==='USDT' ? 'USDT '+Number(amount||0).toFixed(4) : '₹'+Number(amount||0).toFixed(2); }
+        function gvAdminTransactionRecord(r, type) {
+            const isDep=type==='deposit', st=String(r.status||'pending').toUpperCase(), order=gvAdminOrderId(r);
+            const gross=Number(r.amount)||0, tax=Number(r.taxAmount!==undefined?r.taxAmount:(gross*(Number(r.taxPercent)||0)/100))||0;
+            const net=Number(r.netAmount!==undefined?r.netAmount:gross-tax)||0;
+            const bonus=Number(r.bonusAmount!==undefined?r.bonusAmount:r.bonus)||0;
+            const lines = isDep ? [
+                'GAME VERSE - DEPOSIT ACCOUNTING ENTRY','Transaction: DEPOSIT','Status: '+st,
+                'Date/Time: '+(r.timestamp?new Date(r.timestamp).toLocaleString():'—'),'UID: '+(r.customUid||r.userId||'—'),'Order ID: '+order,
+                'Amount: '+gvAdminMoney(r,gross),'Bonus: '+gvAdminMoney(r,bonus),'Currency: '+String(r.currency||'INR').toUpperCase(),
+                'UTR/TXID: '+(r.utr||r.txid||'—'),'Phone: '+(r.phoneNumber||'—'),'Method: '+(r.method||'—'),
+                'Admin Note: '+(r.adminNote||'—')
+            ] : [
+                'GAME VERSE - WITHDRAWAL ACCOUNTING ENTRY','Transaction: WITHDRAWAL','Status: '+st,
+                'Date/Time: '+(r.timestamp?new Date(r.timestamp).toLocaleString():'—'),'UID: '+(r.customUid||r.userId||'—'),'Order ID: '+order,
+                'Gross Amount: '+gvAdminMoney(r,gross),'Tax: -'+gvAdminMoney(r,tax),'Net Payout: '+gvAdminMoney(r,net),
+                'Currency: '+String(r.currency||'INR').toUpperCase(),'UTR: '+(r.utr||r.payoutUtr||'—'),'Method: '+(r.method||'—'),
+                'UPI: '+(r.upiId||'—'),'USDT BEP-20: '+(r.usdtBep20Address||r.usdtAddress||'—'),'Telegram: '+(r.tgUsername||'—'),
+                'Admin Note: '+(r.adminNote||'—')
+            ];
+            return lines.join('\n');
+        }
+        function copyAdminOrderId(key,type){ const rows=type==='deposit'?depositAdminCache:withdrawAdminCache; const r=rows.find(x=>x.key===key); if(r) gvAdminCopyText(gvAdminOrderId(r),'Order ID copied.'); }
+        function copyAdminTransaction(key,type){ const rows=type==='deposit'?depositAdminCache:withdrawAdminCache; const r=rows.find(x=>x.key===key); if(r) gvAdminCopyText(gvAdminTransactionRecord(r,type),'Transaction record copied for accounting.'); }
+
         function renderDepositRequestsAdmin() {
-            const container = document.getElementById('depositRequestsContainer');
-            if (!container) return;
-            let rows = depositAdminCache.slice();
-            if (depositAdminFilter !== 'all') rows = rows.filter(r => (r.status||'pending') === depositAdminFilter);
-            if (depositAdminCache.length === 0) {
-                container.innerHTML = '<p>No deposit requests found.</p>';
-                return;
-            }
-            if (rows.length === 0) {
-                container.innerHTML = '<p>No requests match this filter.</p>';
-                return;
-            }
-            container.innerHTML = rows.map(r => {
-                const st = (r.status || 'pending').toLowerCase();
-                const pill = st === 'approved' ? 'approved' : (st === 'rejected' ? 'rejected' : 'pending');
-                let actionButtons = '';
-                if (st === 'pending') {
-                    actionButtons = `
-                        <div class="action-row">
-                            <button onclick="approveDeposit('${r.key}', '${r.userId}', ${Number(r.amount)||0})" class="btn-green">✅ Approve & Credit</button>
-                            <button onclick="rejectDeposit('${r.key}')" class="btn-red">❌ Reject</button>
-                        </div>`;
-                }
-                const noteBlock = r.adminNote ? `<div style="margin-top:4px;font-size:11px;color:var(--text-muted);">🔒 Note: ${escapeHtml(r.adminNote)}</div>` : '';
-                return `
-                    <div class="deposit-admin-item">
-                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
-                            <span><b>UID:</b> <span class="uid-badge">${r.customUid || '---'}</span></span>
-                            <span class="status-pill ${pill}">${st.toUpperCase()}</span>
-                        </div>
-                        <div><b>Amount:</b> <span style="color:var(--accent-gold);font-weight:800;">${String(r.currency||'INR').toUpperCase()==='USDT'?'USDT '+Number(r.amount||0).toFixed(4):'₹'+Number(r.amount||0).toFixed(2)}</span> · <b>Phone:</b> ${r.phoneNumber || 'N/A'}</div>
-                        <div style="font-size:12px;margin-top:3px;"><b>Currency:</b> ${String(r.currency||'INR').toUpperCase()} · <b>UTR/TXID:</b> ${r.utr || r.txid || '—'}</div>
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${r.timestamp ? new Date(r.timestamp).toLocaleString() : ''}</div>
-                        ${noteBlock}
-                        ${actionButtons}
-                        <button onclick="deleteDepositRequest('${r.key}')" class="btn-gray" style="margin-top:6px;">🗑️ Delete Record</button>
-                    </div>`;
+            const container = document.getElementById('depositRequestsContainer'); if (!container) return;
+            let rows=depositAdminCache.slice();
+            if(depositAdminFilter!=='all') rows=rows.filter(r=>(r.status||'pending')===depositAdminFilter);
+            if(depositOrderSearch){const q=depositOrderSearch.toLowerCase();rows=rows.filter(r=>gvAdminOrderId(r).toLowerCase().includes(q));}
+            if(!depositAdminCache.length){container.innerHTML='<p>No deposit requests found.</p>';return;}
+            if(!rows.length){container.innerHTML='<p>No requests match this filter.</p>';return;}
+            container.innerHTML=rows.map(r=>{
+                const st=String(r.status||'pending').toLowerCase(), pill=st==='approved'?'approved':(st==='rejected'?'rejected':'pending');
+                const bonus=Number(r.bonusAmount!==undefined?r.bonusAmount:r.bonus)||0, order=gvAdminOrderId(r);
+                const actionButtons=st==='pending'?`<div class="gv-admin-actions"><button onclick="approveDeposit('${r.key}', '${r.userId}', ${Number(r.amount)||0})" class="btn-green">✅ Approve & Credit</button><button onclick="rejectDeposit('${r.key}')" class="btn-red">❌ Reject</button></div>`:'';
+                return `<div class="gv-admin-fin-card deposit"><div class="gv-admin-fin-inner">
+                    <div class="gv-admin-fin-top"><div><div class="gv-admin-fin-type-row"><div class="gv-admin-fin-icon">💳</div><div><div class="gv-admin-fin-type">Deposit</div><div class="gv-admin-fin-time">${r.timestamp?new Date(r.timestamp).toLocaleString():'—'}</div></div></div></div><div class="status-pill ${pill}">${st.toUpperCase()}</div></div>
+                    <div class="gv-admin-fin-amount"><span class="gv-admin-fin-amount-label">Deposit Amount</span><span class="gv-admin-fin-amount-value">${gvAdminMoney(r,r.amount)}</span>${bonus>0?`<span class="gv-admin-fin-bonus">🎁 Bonus +${gvAdminMoney(r,bonus)}</span>`:''}</div>
+                    <div class="gv-admin-fin-grid"><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">User / UID</div><div class="gv-admin-fin-value">${escapeHtml(r.customUid||r.userId||'—')}</div></div><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">UTR / TXID</div><div class="gv-admin-fin-value">${escapeHtml(r.utr||r.txid||'—')}</div></div><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">Phone</div><div class="gv-admin-fin-value">${escapeHtml(r.phoneNumber||'—')}</div></div><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">Method</div><div class="gv-admin-fin-value">${escapeHtml(r.method||String(r.currency||'INR').toUpperCase())}</div></div></div>
+                    <div class="gv-admin-order"><div><div class="gv-admin-fin-label">Order ID</div><div class="gv-admin-order-code">${escapeHtml(order)}</div></div><button class="gv-copy-btn" onclick="copyAdminOrderId('${r.key}','deposit')" title="Copy Order ID" aria-label="Copy Order ID">⧉</button></div>
+                    ${r.adminNote?`<div class="gv-admin-fin-time" style="margin-top:7px;">🔒 ${escapeHtml(r.adminNote)}</div>`:''}
+                    ${actionButtons}<button onclick="deleteDepositRequest('${r.key}')" class="btn-gray gv-admin-delete">🗑️ Delete Record</button>
+                </div></div>`;
             }).join('');
         }
 
@@ -5390,32 +5593,87 @@ function formatAdminMoney(value){
 
                 const currency=String(r.currency||'INR').toUpperCase()==='USDT'?'USDT':'INR';
                 const field=currency==='USDT'?'usdtBalance':'balance';
-                const depositAmount=Number(amount)||0;
+                const depositAmount=Math.max(0,Number(amount)||0);
 
-                return db.ref('users/'+userId+'/'+field).transaction(v=>
-                    Number((Number(v)||0)+depositAmount).toFixed(currency==='USDT'?4:2)
-                ).then(res=>{
-                    if(!res.committed) throw new Error('Could not credit user wallet.');
+                // Read the current bonus rules at approval time. Every approved
+                // deposit receives the active percentage or fixed bonus.
+                return db.ref('control/depositConfig').once('value').then(configSnap=>{
+                    const cfg=configSnap.val()||{};
+                    const bonusType=String(cfg.depositBonusType||'off').toLowerCase();
+                    const bonusPercent=Math.max(0,Math.min(100,Number(cfg.depositBonusPercent)||0));
+                    const fixedBonus=currency==='USDT'
+                        ? Math.max(0,Number(cfg.depositBonusFixedUsdt)||0)
+                        : Math.max(0,Number(cfg.depositBonusFixedInr)||0);
 
-                    return db.ref('deposits/'+reqKey).update({
-                        status:'approved',
-                        adminNote:note,
-                        decidedAt:Date.now(),
-                        currency:currency
+                    let bonusAmount=0;
+                    if(bonusType==='percent'){
+                        bonusAmount=Number((depositAmount*bonusPercent/100).toFixed(currency==='USDT'?4:2));
+                    }else if(bonusType==='fixed'){
+                        bonusAmount=Number(fixedBonus.toFixed(currency==='USDT'?4:2));
+                    }
+                    if(!Number.isFinite(bonusAmount) || bonusAmount<0) bonusAmount=0;
+
+                    // Idempotent ledger: base deposit + bonus are credited together
+                    // only once even if the approval action is triggered twice.
+                    return db.ref('users/'+userId).transaction(user=>{
+                        if(!user) return user;
+                        const next=Object.assign({},user);
+                        const ledger=(user.depositCredits && typeof user.depositCredits==='object')?user.depositCredits:{};
+                        if(ledger[reqKey]) return user;
+
+                        const currentBalance=Number(user[field])||0;
+                        const totalCredit=depositAmount+bonusAmount;
+                        next[field]=Number((currentBalance+totalCredit).toFixed(currency==='USDT'?4:2));
+                        next.depositCredits=Object.assign({},ledger,{
+                            [reqKey]:{
+                                depositAmount,
+                                bonusAmount,
+                                bonusType,
+                                bonusPercent:bonusType==='percent'?bonusPercent:0,
+                                currency,
+                                creditedAt:Date.now()
+                            }
+                        });
+                        return next;
+                    }).then(res=>{
+                        if(!res.committed) throw new Error('Could not credit user wallet.');
+
+                        return db.ref('deposits/'+reqKey).update({
+                            status:'approved',
+                            adminNote:note,
+                            decidedAt:Date.now(),
+                            currency:currency,
+                            bonus:bonusAmount,
+                            bonusAmount:bonusAmount,
+                            bonusType:bonusType,
+                            bonusPercent:bonusType==='percent'?bonusPercent:0,
+                            totalCredited:Number((depositAmount+bonusAmount).toFixed(currency==='USDT'?4:2))
+                        });
+                    }).then(()=>{
+                        // Referral commission is calculated from the deposit amount,
+                        // not from the promotional bonus.
+                        return creditReferralDepositCommissionOnce(
+                            reqKey,
+                            userId,
+                            depositAmount,
+                            currency
+                        ).then(commissionPaid=>({
+                            currency,
+                            depositAmount,
+                            bonusAmount,
+                            bonusType,
+                            bonusPercent,
+                            commissionPaid
+                        }));
                     });
-                }).then(()=>{
-                    // The commission is calculated from the approved deposit amount
-                    // using the current Admin > Referral Deposit Commission setting.
-                    return creditReferralDepositCommissionOnce(
-                        reqKey,
-                        userId,
-                        depositAmount,
-                        currency
-                    );
-                }).then(commissionPaid=>{
-                    const baseMsg = `Deposit approved: ${currency==='USDT'?'USDT '+depositAmount.toFixed(4):'₹'+depositAmount.toFixed(2)} credited.`;
-                    alert(baseMsg + (commissionPaid ? ' Referral deposit commission credited to the referrer.' : ''));
                 });
+            }).then(result=>{
+                if(!result) return;
+                const bonusText=result.bonusAmount>0
+                    ? ` Bonus ${result.currency==='USDT'?'USDT '+result.bonusAmount.toFixed(4):'₹'+result.bonusAmount.toFixed(2)} added automatically.`
+                    : ' No deposit bonus is currently enabled.';
+                const baseMsg = `Deposit approved: ${result.currency==='USDT'?'USDT '+result.depositAmount.toFixed(4):'₹'+result.depositAmount.toFixed(2)} credited.`;
+                alert(baseMsg + bonusText + (result.commissionPaid ? ' Referral deposit commission credited to the referrer.' : ''));
             }).catch(e=>alert('Could not approve deposit: '+e.message));
         }
 
@@ -5467,60 +5725,98 @@ function formatAdminMoney(value){
             }
         }
 
+        function getTransactionOrderId(r) { return String(r && (r.orderId || r.orderID || r.order_id || r.key) || '').trim(); }
+        function searchDepositByOrderId() {
+            depositOrderSearch=String(document.getElementById('depositOrderSearchInput')?.value||'').trim();
+            renderDepositRequestsAdmin();
+            if(depositOrderSearch && !depositAdminCache.some(r=>getTransactionOrderId(r).toLowerCase().includes(depositOrderSearch.toLowerCase()))) alert('No deposit transaction found for this Order ID.');
+        }
+        function clearDepositOrderSearch(){ depositOrderSearch=''; const e=document.getElementById('depositOrderSearchInput'); if(e)e.value=''; renderDepositRequestsAdmin(); }
+        function searchWithdrawByOrderId(){
+            withdrawOrderSearch=String(document.getElementById('withdrawOrderSearchInput')?.value||'').trim();
+            renderWithdrawRequestsAdmin();
+            if(withdrawOrderSearch && !withdrawAdminCache.some(r=>getTransactionOrderId(r).toLowerCase().includes(withdrawOrderSearch.toLowerCase()))) alert('No withdrawal transaction found for this Order ID.');
+        }
+        function clearWithdrawOrderSearch(){ withdrawOrderSearch=''; const e=document.getElementById('withdrawOrderSearchInput'); if(e)e.value=''; renderWithdrawRequestsAdmin(); }
+        function formatCleanupPeriod(days){ const n=Number(days)||0; return n>0?`older than ${n} day${n===1?'':'s'}`:'disabled'; }
+        function updateTransactionCleanupStatus(){
+            const c=transactionCleanupConfig||{}, p=c.deletePending?'Pending records included.':'Pending records are kept.';
+            const d=document.getElementById('depositCleanupStatus'), w=document.getElementById('withdrawCleanupStatus');
+            if(d)d.textContent=`Deposit cleanup: ${formatCleanupPeriod(c.depositDays)}. ${p}`;
+            if(w)w.textContent=`Withdrawal cleanup: ${formatCleanupPeriod(c.withdrawDays)}. ${p}`;
+        }
+        function loadTransactionCleanupConfig(){
+            const database=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():db;
+            if(!database) return Promise.resolve(transactionCleanupConfig);
+            return database.ref('control/transactionCleanup').once('value').then(s=>{ const c=s.val()||{};
+                transactionCleanupConfig={depositDays:Math.max(0,Number(c.depositDays)||0),withdrawDays:Math.max(0,Number(c.withdrawDays)||0),deletePending:c.deletePending===true};
+                const d=document.getElementById('depositAutoDeleteDays'),w=document.getElementById('withdrawAutoDeleteDays'),dp=document.getElementById('depositAutoDeletePending'),wp=document.getElementById('withdrawAutoDeletePending');
+                if(d)d.value=String(transactionCleanupConfig.depositDays); if(w)w.value=String(transactionCleanupConfig.withdrawDays); if(dp)dp.checked=transactionCleanupConfig.deletePending; if(wp)wp.checked=transactionCleanupConfig.deletePending; updateTransactionCleanupStatus(); return transactionCleanupConfig;
+            }).catch(e=>{console.warn('[Admin] Could not load transaction cleanup config:',e);return transactionCleanupConfig;});
+        }
+        function saveTransactionCleanupConfig(){
+            const database=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():db; if(!database)return alert('Firebase is not connected.');
+            const d=Number(document.getElementById('depositAutoDeleteDays')?.value)||0, w=Number(document.getElementById('withdrawAutoDeleteDays')?.value)||0;
+            const pending=!!document.getElementById('depositAutoDeletePending')?.checked || !!document.getElementById('withdrawAutoDeletePending')?.checked;
+            transactionCleanupConfig={depositDays:d,withdrawDays:w,deletePending:pending};
+            database.ref('control/transactionCleanup').set(transactionCleanupConfig).then(()=>{updateTransactionCleanupStatus(); return runTransactionAutoCleanup(true);}).then(()=>alert('Transaction auto-delete settings saved.')).catch(e=>alert('Could not save cleanup settings: '+e.message));
+        }
+        function transactionEligibleForCleanup(r,days,now){ if(!(days>0)||!r||!r.timestamp)return false; if(!transactionCleanupConfig.deletePending&&String(r.status||'pending').toLowerCase()==='pending')return false; return now-Number(r.timestamp)>=days*86400000; }
+        function cleanupTransactionPath(path,days,now){
+            const database=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():db; if(!(days>0)||!database)return Promise.resolve(0);
+            return database.ref(path).once('value').then(s=>{if(!s.exists())return 0; const jobs=[]; s.forEach(ch=>{if(transactionEligibleForCleanup(ch.val()||{},days,now))jobs.push(ch.ref.remove());}); return Promise.all(jobs).then(()=>jobs.length);}).catch(e=>{console.warn('[Admin] Auto cleanup failed',path,e);return 0;});
+        }
+        function runTransactionAutoCleanup(manualRun){
+            const c=transactionCleanupConfig||{}; if(!(Number(c.depositDays)>0)&&!(Number(c.withdrawDays)>0))return Promise.resolve(); const now=Date.now();
+            return Promise.all([cleanupTransactionPath('deposits',Number(c.depositDays)||0,now),cleanupTransactionPath('withdrawals',Number(c.withdrawDays)||0,now)]).then(([d,w])=>{
+                if(d||w){ if(typeof loadDashboardHome==='function')loadDashboardHome(); if(!document.getElementById('depositSection')?.classList.contains('hidden'))loadDepositRequestsForAdmin(); if(!document.getElementById('withdrawSection')?.classList.contains('hidden'))loadWithdrawRequestsForAdmin(); if(manualRun)alert(`Auto-cleanup removed ${d} deposit record(s) and ${w} withdrawal record(s).`); }
+            });
+        }
+        function startTransactionAutoCleanup(){ if(transactionCleanupTimer)clearInterval(transactionCleanupTimer); loadTransactionCleanupConfig().then(()=>runTransactionAutoCleanup(false)); transactionCleanupTimer=setInterval(()=>loadTransactionCleanupConfig().then(()=>runTransactionAutoCleanup(false)),10*60*1000); }
+
         function loadWithdrawRequestsForAdmin() {
-            db.ref('withdrawals').off('value');
-            db.ref('withdrawals').on('value', snap => {
+            const database = (typeof ensureGameVerseAdminDb === 'function') ? ensureGameVerseAdminDb() : db;
+            if (!database) {
+                const c=document.getElementById('withdrawRequestsContainer');
+                if(c) c.innerHTML='<p style=\"color:#f87171;\">⚠️ Firebase is not connected. Please refresh the Admin App.</p>';
+                return;
+            }
+            const ref=database.ref('withdrawals');
+            ref.off('value');
+            ref.on('value', snap => {
                 withdrawAdminCache = [];
-                if (snap.exists()) snap.forEach(child => {
+                if (snap && snap.exists()) snap.forEach(child => {
                     const r = child.val();
                     if (r && typeof r === 'object') withdrawAdminCache.push({ key: child.key, ...r });
                 });
-                withdrawAdminCache.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+                withdrawAdminCache.sort((a,b) => (Number(b.timestamp)||0) - (Number(a.timestamp)||0));
                 renderWithdrawRequestsAdmin();
+            }, error => {
+                console.error('[Admin] Failed to load withdrawals:', error);
+                const c=document.getElementById('withdrawRequestsContainer');
+                if(c) c.innerHTML='<p style=\"color:#f87171;\">⚠️ Could not load withdrawal records. Check Firebase connection/rules.</p>';
             });
         }
         function renderWithdrawRequestsAdmin() {
-            const container = document.getElementById('withdrawRequestsContainer');
-            if (!container) return;
-            let rows = withdrawAdminCache.slice();
-            if (withdrawAdminFilter !== 'all') rows = rows.filter(r => (r.status||'pending') === withdrawAdminFilter);
-            if (withdrawAdminCache.length === 0) {
-                container.innerHTML = '<p>No payout requests found.</p>';
-                return;
-            }
-            if (rows.length === 0) {
-                container.innerHTML = '<p>No requests match this filter.</p>';
-                return;
-            }
-            container.innerHTML = rows.map(r => {
-                const st = (r.status || 'pending').toLowerCase();
-                const pill = st === 'approved' ? 'approved' : (st === 'rejected' ? 'rejected' : 'pending');
-                const grossAmt = Number(r.amount) || 0;
-                const taxAmt = r.taxAmount !== undefined ? Number(r.taxAmount) : ((grossAmt * (Number(r.taxPercent) || 0)) / 100);
-                const netAmt = r.netAmount !== undefined ? Number(r.netAmount) : (grossAmt - taxAmt);
-                let actionButtons = '';
-                if (st === 'pending') {
-                    actionButtons = `
-                        <div class="action-row">
-                            <button onclick="approveWithdrawal('${r.key}')" class="btn-green">✅ Mark Paid</button>
-                            <button onclick="rejectWithdrawal('${r.key}', '${r.userId}', ${grossAmt})" class="btn-red">❌ Reject & Refund</button>
-                        </div>`;
-                }
-                const noteBlock = r.adminNote ? `<div style="margin-top:4px;font-size:11px;color:var(--text-muted);">🔒 Note: ${escapeHtml(r.adminNote)}</div>` : '';
-                return `
-                    <div class="withdraw-admin-item">
-                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
-                            <span><b>UID:</b> <span class="uid-badge">${r.customUid || '---'}</span></span>
-                            <span class="status-pill ${pill}">${st.toUpperCase()}</span>
-                        </div>
-                        <div>Currency: <b>${String(r.currency||'INR').toUpperCase()}</b> · Gross: <b>${String(r.currency||'INR').toUpperCase()==='USDT'?'USDT '+grossAmt.toFixed(4):'₹'+grossAmt.toFixed(2)}</b> · Tax (${r.taxPercent || 0}%): <span style="color:#f87171;">-${String(r.currency||'INR').toUpperCase()==='USDT'?'USDT '+taxAmt.toFixed(4):'₹'+taxAmt.toFixed(2)}</span></div>
-                        <div style="color:#34d399;font-weight:800;margin:3px 0;">Net Payout: ${String(r.currency||'INR').toUpperCase()==='USDT'?'USDT '+netAmt.toFixed(4):'₹'+netAmt.toFixed(2)}</div>
-                        <div style="font-size:12px;">UPI: <span style="color:var(--accent-gold);">${r.upiId || '—'}</span> · USDT BEP-20: <span style="color:var(--accent-gold);">${r.usdtAddress || '—'}</span> · TG: ${r.tgUsername || '—'}</div>
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${r.timestamp ? new Date(r.timestamp).toLocaleString() : ''}</div>
-                        ${noteBlock}
-                        ${actionButtons}
-                        <button onclick="deleteWithdrawalRequest('${r.key}')" class="btn-gray" style="margin-top:6px;">🗑️ Delete Record</button>
-                    </div>`;
+            const container=document.getElementById('withdrawRequestsContainer'); if(!container)return;
+            let rows=withdrawAdminCache.slice();
+            if(withdrawAdminFilter!=='all')rows=rows.filter(r=>(r.status||'pending')===withdrawAdminFilter);
+            if(withdrawOrderSearch){const q=withdrawOrderSearch.toLowerCase();rows=rows.filter(r=>gvAdminOrderId(r).toLowerCase().includes(q));}
+            if(!withdrawAdminCache.length){container.innerHTML='<p>No payout requests found.</p>';return;}
+            if(!rows.length){container.innerHTML='<p>No requests match this filter.</p>';return;}
+            container.innerHTML=rows.map(r=>{
+                const st=String(r.status||'pending').toLowerCase(), pill=st==='approved'?'approved':(st==='rejected'?'rejected':'pending');
+                const gross=Number(r.amount)||0,tax=Number(r.taxAmount!==undefined?r.taxAmount:(gross*(Number(r.taxPercent)||0)/100))||0,net=Number(r.netAmount!==undefined?r.netAmount:gross-tax)||0,order=gvAdminOrderId(r);
+                const actionButtons=st==='pending'?`<div class="gv-admin-actions"><button onclick="approveWithdrawal('${r.key}')" class="btn-green">✅ Mark Paid</button><button onclick="rejectWithdrawal('${r.key}', '${r.userId}', ${gross})" class="btn-red">❌ Reject & Refund</button></div>`:'';
+                return `<div class="gv-admin-fin-card withdraw"><div class="gv-admin-fin-inner">
+                    <div class="gv-admin-fin-top"><div><div class="gv-admin-fin-type-row"><div class="gv-admin-fin-icon">💸</div><div><div class="gv-admin-fin-type">Withdrawal</div><div class="gv-admin-fin-time">${r.timestamp?new Date(r.timestamp).toLocaleString():'—'}</div></div></div></div><div class="status-pill ${pill}">${st.toUpperCase()}</div></div>
+                    <div class="gv-admin-fin-amount"><span class="gv-admin-fin-amount-label">Net Payout</span><span class="gv-admin-fin-amount-value">${gvAdminMoney(r,net)}</span></div>
+                    <div class="gv-admin-fin-grid"><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">Gross Amount</div><div class="gv-admin-fin-value">${gvAdminMoney(r,gross)}</div></div><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">Tax (${Number(r.taxPercent)||0}%)</div><div class="gv-admin-fin-value" style="color:#f87171;">-${gvAdminMoney(r,tax)}</div></div><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">User / UID</div><div class="gv-admin-fin-value">${escapeHtml(r.customUid||r.userId||'—')}</div></div><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">UPI / USDT</div><div class="gv-admin-fin-value">${escapeHtml(r.upiId||r.usdtBep20Address||r.usdtAddress||'—')}</div></div></div>
+                    <div class="gv-admin-order"><div><div class="gv-admin-fin-label">Order ID</div><div class="gv-admin-order-code">${escapeHtml(order)}</div></div><button class="gv-copy-btn" onclick="copyAdminOrderId('${r.key}','withdraw')" title="Copy Order ID" aria-label="Copy Order ID">⧉</button></div>
+                    <div class="gv-admin-fin-grid"><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">UTR / Payout ID</div><div class="gv-admin-fin-value">${escapeHtml(r.utr||r.payoutUtr||'—')}</div></div><div class="gv-admin-fin-detail"><div class="gv-admin-fin-label">Telegram</div><div class="gv-admin-fin-value">${escapeHtml(r.tgUsername||'—')}</div></div></div>
+                    ${r.adminNote?`<div class="gv-admin-fin-time" style="margin-top:7px;">🔒 ${escapeHtml(r.adminNote)}</div>`:''}
+                    ${actionButtons}<button onclick="deleteWithdrawalRequest('${r.key}')" class="btn-gray gv-admin-delete">🗑️ Delete Record</button>
+                </div></div>`;
             }).join('');
         }
 
@@ -5562,74 +5858,171 @@ function formatAdminMoney(value){
             return div.innerHTML;
         }
 
-        function loadSupportRequestsForAdmin() {
+        let supportAdminValueListener = null;
+        let supportAdminListenerAttached = false;
+
+        function renderAllSupportTickets(snapshot) {
             const container = document.getElementById('supportRequestsContainer');
-            db.ref('support_requests').on('value', snap => {
-                container.innerHTML = '';
-                if (!snap.exists()) {
-                    container.innerHTML = '<p>No support requests found.</p>';
-                    return;
-                }
+            if (!container) return;
 
-                const items = [];
-                snap.forEach(child => items.push({ key: child.key, ...child.val() }));
-                // Urgent tickets surface first; within each priority, newest first.
-                items.sort((a, b) => {
-                    const pa = a.priority === 'urgent' ? 1 : 0;
-                    const pb = b.priority === 'urgent' ? 1 : 0;
-                    if (pa !== pb) return pb - pa;
-                    return (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0);
+            const allEl = document.getElementById('supportCountAll');
+            const openEl = document.getElementById('supportCountOpen');
+            const urgentEl = document.getElementById('supportCountUrgent');
+
+            const items = [];
+            if (snapshot && snapshot.exists()) {
+                snapshot.forEach(child => {
+                    const value = child.val() || {};
+                    // Every direct child under support_requests is one independent ticket.
+                    items.push({ key: String(child.key), ...value });
                 });
+            }
 
-                items.forEach(r => {
-                    const rKey = r.key;
-                    let statusColor = 'var(--accent-cyan)';
-                    if (r.status === 'approved') statusColor = '#34d399';
-                    if (r.status === 'rejected') statusColor = '#f87171';
-                    const isUrgent = r.priority === 'urgent';
+            // Always rebuild the complete list from the complete Firebase snapshot.
+            // Do not use innerHTML += inside the loop because repeated DOM replacement can
+            // make the list unreliable when many tickets are present.
+            items.sort((a,b) => {
+                const pa = a.priority === 'urgent' ? 1 : 0;
+                const pb = b.priority === 'urgent' ? 1 : 0;
+                if (pa !== pb) return pb - pa;
+                return (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0);
+            });
 
-                    container.innerHTML += `
-                        <div class="support-admin-item" style="${isUrgent ? 'border-left:3px solid #f87171;' : ''}">
-                            ${isUrgent ? '<div style="color:#f87171; font-weight:900; font-size:11px; margin-bottom:4px;">🔴 URGENT</div>' : ''}
-                            <b>UID:</b> <span class="uid-badge">${r.customUid || '---'}</span><br>
-                            <b>Telegram:</b> <span style="color:var(--accent-cyan);">${escapeHtml(r.tgUsername || 'Not provided')}</span><br>
-                            <b>Subject:</b> ${escapeHtml(r.subject)}<br>
-                            <b>Description:</b> ${escapeHtml(r.description)}<br>
-                            <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${r.status.toUpperCase()}</span><br>
-                            <div class="action-row">
-                                <button onclick="updateSupportStatus('${rKey}', 'approved')" class="btn-green">Mark Resolved</button>
-                                <button onclick="updateSupportStatus('${rKey}', 'rejected')" class="btn-red">Reject</button>
-                                <button onclick="toggleSupportPriority('${rKey}', '${r.priority || 'normal'}')" class="${isUrgent ? 'btn-gray' : 'btn-yellow'}">${isUrgent ? '⬇️ Un-escalate' : '🔴 Mark Urgent'}</button>
-                                <button onclick="deleteSupportRequest('${rKey}')" class="btn-gray">Delete</button>
+            const openCount = items.filter(x => !['approved','rejected','resolved','closed'].includes(String(x.status || 'pending').toLowerCase())).length;
+            const urgentCount = items.filter(x => x.priority === 'urgent').length;
+            if (allEl) allEl.textContent = String(items.length);
+            if (openEl) openEl.textContent = String(openCount);
+            if (urgentEl) urgentEl.textContent = String(urgentCount);
+
+            if (!items.length) {
+                container.innerHTML = '<div class="gv-support-ticket"><div style="color:#8f96a3;font-size:10px;text-align:center;padding:14px 5px;">No support tickets found.</div></div>';
+                return;
+            }
+
+            const html = items.map(r => {
+                const rKey = String(r.key || '');
+                const safeKey = escapeHtml(rKey);
+                const status = String(r.status || 'pending').toLowerCase();
+                const statusLabel = ['approved','resolved','closed'].includes(status) ? 'Resolved' : status === 'rejected' ? 'Rejected' : 'Open';
+                const statusClass = statusLabel === 'Resolved' ? 'closed' : statusLabel === 'Open' ? 'open' : '';
+                const isUrgent = r.priority === 'urgent';
+                const time = Number(r.timestamp) ? new Date(Number(r.timestamp)).toLocaleString([], {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Unknown time';
+                const depositId = String(r.depositOrderId || r.depositId || '').trim();
+                const withdrawId = String(r.withdrawOrderId || r.withdrawId || '').trim();
+                const hasOrders = !!(depositId || withdrawId);
+                const replies = Array.isArray(r.replies) ? r.replies : (r.replies && typeof r.replies === 'object' ? Object.values(r.replies) : []);
+                const lastReply = replies.length ? replies[replies.length - 1] : null;
+                const replyPreview = lastReply ? `<div class="gv-support-problem" style="margin-top:6px;margin-bottom:0;"><div class="gv-support-problem-label">Latest admin reply</div><div class="gv-support-problem-text">${escapeHtml(lastReply.message || lastReply.text || '')}</div></div>` : '';
+
+                return `
+                    <div class="gv-support-ticket ${isUrgent ? 'urgent' : ''}" data-ticket-key="${safeKey}">
+                        <div class="gv-support-ticket-top">
+                            <div class="gv-support-ticket-title">
+                                <div class="gv-support-ticket-subject">${escapeHtml(r.subject || 'Support Request')}</div>
+                                <div class="gv-support-ticket-time">${time} · Ticket ${escapeHtml(rKey.slice(-8))}</div>
                             </div>
-                            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(100,116,139,.35);">
-                                <label style="font-size:11px; color:var(--text-muted);">🔒 Internal Note — visible to admins only, never shown to the user:</label>
-                                <textarea id="internal_note_${rKey}" placeholder="Add a private note for other admins handling this ticket..." style="width:100%; min-height:52px; margin-top:5px; padding:9px; border-radius:8px; background:rgba(10, 10, 10, 0.9); border:1px solid rgba(100,116,139,0.35); color:#e2e8f0; font-size:12px; font-family:inherit; resize:vertical;">${escapeHtml(r.internalNote || '')}</textarea>
-                                <button onclick="saveSupportInternalNote('${rKey}')" class="btn-gray" style="margin-top:6px; padding:7px; font-size:11px;">💾 Save Note</button>
+                            <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;">
+                                ${isUrgent ? '<span class="gv-support-badge urgent">● Urgent</span>' : ''}
+                                <span class="gv-support-badge ${statusClass}">${statusLabel}</span>
                             </div>
                         </div>
-                    `;
-                });
+                        <div class="gv-support-meta">
+                            <span class="gv-support-meta-chip">UID <strong>${escapeHtml(r.customUid || '---')}</strong></span>
+                            <span class="gv-support-meta-chip">Telegram <strong>${escapeHtml(r.tgUsername || 'Not provided')}</strong></span>
+                        </div>
+                        <div class="gv-support-problem">
+                            <div class="gv-support-problem-label">User's problem</div>
+                            <div class="gv-support-problem-text">${escapeHtml(r.description || 'No description provided.')}</div>
+                        </div>
+                        ${hasOrders ? `<div class="gv-support-order-row">
+                            <div class="gv-support-order"><label>Deposit Order ID</label><div>${escapeHtml(depositId || 'Not provided')}</div></div>
+                            <div class="gv-support-order"><label>Withdraw Order ID</label><div>${escapeHtml(withdrawId || 'Not provided')}</div></div>
+                        </div>` : ''}
+                        ${replyPreview}
+                        <div class="gv-support-actions">
+                            <button onclick="updateSupportStatus('${safeKey}', 'approved')" class="btn-green">✓ Resolve</button>
+                            <button onclick="updateSupportStatus('${safeKey}', 'rejected')" class="btn-red">Reject</button>
+                            <button onclick="toggleSupportPriority('${safeKey}', '${escapeHtml(r.priority || 'normal')}')" class="${isUrgent ? 'btn-gray' : 'btn-yellow'}">${isUrgent ? '↓ Normal' : '● Urgent'}</button>
+                            <button onclick="deleteSupportRequest('${safeKey}')" class="btn-gray">Delete</button>
+                        </div>
+                        <div class="gv-support-reply">
+                            <div class="gv-support-reply-row">
+                                <span class="gv-support-reply-label">Reply to user</span>
+                                <button type="button" class="btn-gray gv-support-send" onclick="sendSupportReply('${safeKey}')">↗ Send Reply</button>
+                            </div>
+                            <textarea id="support_reply_${safeKey}" placeholder="Write a clear reply to the user..."></textarea>
+                        </div>
+                        <div class="gv-support-note">
+                            <div class="gv-support-note-label">🔒 Private admin note</div>
+                            <textarea id="internal_note_${safeKey}" placeholder="Visible only to admins...">${escapeHtml(r.internalNote || '')}</textarea>
+                            <button onclick="saveSupportInternalNote('${safeKey}')" class="btn-gray" style="margin-top:5px!important;min-height:27px!important;padding:4px 7px!important;font-size:8.5px!important;">💾 Save Note</button>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function loadSupportRequestsForAdmin(forceRefresh = false) {
+            const container = document.getElementById('supportRequestsContainer');
+            if (!container) return;
+
+            const ref = db.ref('support_requests');
+
+            // Keep exactly one listener owned by this support section.
+            if (supportAdminListenerAttached && !forceRefresh) return;
+            if (supportAdminValueListener) {
+                ref.off('value', supportAdminValueListener);
+                supportAdminValueListener = null;
+            }
+
+            supportAdminValueListener = snapshot => renderAllSupportTickets(snapshot);
+            supportAdminListenerAttached = true;
+            ref.on('value', supportAdminValueListener, err => {
+                container.innerHTML = '<div class="gv-support-ticket"><div style="color:#f87171;font-size:10px;text-align:center;padding:14px 5px;">Could not load support tickets.</div></div>';
+                console.error('Support ticket listener error:', err);
             });
+        }
+
+        function sendSupportReply(reqKey) {
+            const el = document.getElementById('support_reply_' + reqKey);
+            if (!el) return;
+            const message = String(el.value || '').trim();
+            if (!message) return alert('Please write a reply first.');
+            const admin = firebase.auth().currentUser;
+            const reply = {
+                message,
+                senderType: 'admin',
+                senderUid: admin?.uid || '',
+                senderEmail: admin?.email || '',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+            db.ref('support_requests/' + reqKey + '/replies').push(reply).then(() => {
+                return db.ref('support_requests/' + reqKey).update({lastReplyAt: firebase.database.ServerValue.TIMESTAMP, lastReplyBy: 'admin'});
+            }).then(() => {
+                el.value = '';
+                alert('Reply sent to the user.');
+            }).catch(err => alert('Could not send reply: ' + err.message));
         }
 
         function toggleSupportPriority(rKey, currentPriority) {
             const newPriority = currentPriority === 'urgent' ? 'normal' : 'urgent';
-            db.ref('support_requests/' + rKey).update({ priority: newPriority });
+            db.ref('support_requests/' + rKey).update({ priority: newPriority }).catch(err => alert('Could not update priority: ' + err.message));
         }
 
         function saveSupportInternalNote(rKey) {
             const el = document.getElementById('internal_note_' + rKey);
             if (!el) return;
-            db.ref('support_requests/' + rKey).update({ internalNote: el.value }).then(() => alert('Internal note saved.'));
+            db.ref('support_requests/' + rKey).update({ internalNote: el.value }).then(() => alert('Internal note saved.')).catch(err => alert('Could not save note: ' + err.message));
         }
 
         function updateSupportStatus(reqKey, status) {
-            db.ref('support_requests/' + reqKey).update({ status: status }).then(() => alert('Support status updated!'));
+            db.ref('support_requests/' + reqKey).update({ status: status, decidedAt: firebase.database.ServerValue.TIMESTAMP }).then(() => alert('Support status updated!')).catch(err => alert('Could not update status: ' + err.message));
         }
 
         function deleteSupportRequest(reqKey) {
-            db.ref('support_requests/' + reqKey).remove().then(() => alert('Support request deleted!'));
+            if (!confirm('Delete this support ticket permanently?')) return;
+            db.ref('support_requests/' + reqKey).remove().then(() => alert('Support request deleted!')).catch(err => alert('Could not delete support request: ' + err.message));
         }
 
         function openTournamentsAdminModal() {
@@ -7603,4 +7996,7 @@ html, body { max-width: 100%; }
 }
 </style>
 
+<script>
+setTimeout(function(){if(typeof startTransactionAutoCleanup==='function')startTransactionAutoCleanup();},1500);
+</script>
 </body></html>
