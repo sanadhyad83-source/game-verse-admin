@@ -6439,8 +6439,16 @@ function formatAdminMoney(value){
             if(startAt)eventData.startAt=startAt; else if(editKey)eventData.startAt=null;
             if(endAt)eventData.endAt=endAt; else if(editKey)eventData.endAt=null;
             if(!editKey)eventData.timestamp=Date.now();
-            const ref=editKey?db.ref('events/'+editKey):db.ref('events').push();
-            const task=editKey?ref.update(eventData):ref.set(eventData);
+            // Every new event gets its own Firebase push key. Never write a new event
+            // directly to /events, which could replace an existing record.
+            let ref, task;
+            if(editKey){
+                ref=db.ref('events/'+editKey);
+                task=ref.update(eventData);
+            }else{
+                ref=db.ref('events').push();
+                task=ref.set(Object.assign({},eventData,{createdAt:Date.now()}));
+            }
             task.then(()=>{alert(editKey?'Event updated successfully!':'Event published successfully!');resetEventForm();}).catch(err=>alert('Event save failed: '+err.message));
         }
         function resetEventForm(){
@@ -6454,19 +6462,45 @@ function formatAdminMoney(value){
         function toggleEventStatus(eKey,currentStatus){db.ref('events/'+eKey).update({status:currentStatus==='active'?'inactive':'active'});}
         function deleteEvent(eKey){if(confirm('Are you sure you want to delete this event?'))db.ref('events/'+eKey).remove().then(()=>alert('Event deleted successfully!'));}
         let eventsAdminCache=[];
+        let eventsAdminRef=null;
+        let eventsAdminListener=null;
+        function stopEventsAdminListener(){
+            if(eventsAdminRef && eventsAdminListener){
+                try{eventsAdminRef.off('value',eventsAdminListener);}catch(e){console.warn('[Events] listener cleanup:',e);}
+            }
+            eventsAdminRef=null;
+            eventsAdminListener=null;
+        }
         function loadEventsAdminList(){
             const container=document.getElementById('eventsAdminContainer'); if(!container)return;
-            db.ref('events').on('value',snap=>{
+            stopEventsAdminListener();
+            eventsAdminRef=db.ref('events');
+            eventsAdminListener=snap=>{
                 try{
-                    eventsAdminCache=[];
-                    if(snap.exists())snap.forEach(child=>eventsAdminCache.push({eKey:child.key,e:(child.val()&&typeof child.val()==='object')?child.val():{}}));
+                    const next=[];
+                    if(snap.exists()){
+                        const root=snap.val();
+                        // Normal structure: /events/<unique-push-key>/<event fields>.
+                        // Read EVERY child explicitly so no previous render can replace another event.
+                        if(root && typeof root==='object' && (root.title || root.imageUrl || root.description || root.category)){
+                            // Legacy single-event structure: keep it visible instead of losing it.
+                            next.push({eKey:snap.key || 'legacy-event',e:root});
+                        }else{
+                            snap.forEach(child=>{
+                                const value=child.val();
+                                if(value && typeof value==='object') next.push({eKey:child.key,e:value});
+                            });
+                        }
+                    }
+                    eventsAdminCache=next;
                     updateEventAdminStats();
                     renderEventsAdminList();
                 }catch(err){
                     console.error('[Events] Render error:',err);
                     container.innerHTML='<p style="padding:12px;color:#f87171;">Could not render events. Please refresh the admin panel.</p>';
                 }
-            },err=>{
+            };
+            eventsAdminRef.on('value',eventsAdminListener,err=>{
                 console.error('[Events] Firebase error:',err);
                 container.innerHTML='<p style="padding:12px;color:#f87171;">Could not load events. Please check Firebase access.</p>';
             });
