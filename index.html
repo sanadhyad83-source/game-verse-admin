@@ -824,7 +824,6 @@
 
 <style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style>
 <script>
-(function(){window.gvStartLoginEventNotifications=function(){try{const d=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():window.db;if(!d)return;const r=d.ref('adminNotifications/loginEvents');if(window.__gvLoginEventRef)try{window.__gvLoginEventRef.off('child_added')}catch(e){};window.__gvLoginEventRef=r;r.on('child_added',function(s){if(!window.__gvLoginEventsReady)return;const e=s.val()||{},label=e.username?('@'+String(e.username).replace(/^@/,'')):(e.customUid||e.userId||'User');if(typeof gvAdminNotify==='function')gvAdminNotify('New User Login',label+' has logged in to the User App.','👤');else if(typeof Notification!=='undefined'&&Notification.permission==='granted')new Notification('New User Login',{body:label+' has logged in to the User App.',tag:'gameverse-login-'+s.key});});setTimeout(()=>window.__gvLoginEventsReady=true,1200);}catch(e){console.warn('[Admin Login Notifications]',e)}};setTimeout(()=>{try{if(typeof requestAdminDeviceNotifications==='function')requestAdminDeviceNotifications()}catch(e){};setTimeout(()=>window.gvStartLoginEventNotifications(),800)},1800);})();
 </script>
 </head>
 <body class="admin-shell-active">
