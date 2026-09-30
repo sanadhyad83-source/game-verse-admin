@@ -822,7 +822,52 @@
 :root{--theme-glow-scale:.5 !important;}
 </style>
 
-<style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style></head>
+<style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style><!-- GAME VERSE: Android Chrome launcher -->
+<script>
+(function () {
+  'use strict';
+  function gvAndroid(){ return /Android/i.test(navigator.userAgent || ''); }
+  function gvEmbedded(){
+    if(!gvAndroid()) return false;
+    var ua=navigator.userAgent||'', ref=document.referrer||'';
+    return /;\s*wv\)/i.test(ua) || /\bwv\b/i.test(ua) ||
+           /^android-app:\/\//i.test(ref);
+  }
+  function gvOpenChrome(){
+    if(!gvAndroid()) return;
+    var u=location.origin+location.pathname+location.search+location.hash;
+    var intent='intent://'+location.host+location.pathname+location.search+location.hash+
+      '#Intent;scheme=https;package=com.android.chrome;'+
+      'S.browser_fallback_url='+encodeURIComponent(u)+';end';
+    location.href=intent;
+  }
+  function gvChromeButton(){
+    if(!gvEmbedded() || document.getElementById('gvChromeOpen')) return;
+    var b=document.createElement('button');
+    b.id='gvChromeOpen';
+    b.type='button';
+    b.textContent='Open in Chrome';
+    b.onclick=gvOpenChrome;
+    b.style.cssText='position:fixed;right:12px;bottom:12px;z-index:2147483647;padding:11px 15px;border:0;border-radius:12px;background:#fff;color:#111;font:800 13px system-ui;box-shadow:0 6px 24px #0008;';
+    document.body.appendChild(b);
+  }
+  function gvStart(){
+    if(!gvEmbedded()) return;
+    var key='gv_chrome_launch_v2';
+    var tried=false;
+    try { tried=sessionStorage.getItem(key)==='1'; } catch(e){}
+    if(!tried){
+      try { sessionStorage.setItem(key,'1'); } catch(e){}
+      setTimeout(gvOpenChrome,150);
+    }
+    setTimeout(gvChromeButton,900);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',gvStart,{once:true});
+  else gvStart();
+  window.GameVerseOpenInChrome=gvOpenChrome;
+})();
+</script>
+</head>
 <body class="admin-shell-active">
 
     <!-- Auth Screen -->
@@ -2630,6 +2675,179 @@ function formatAdminMoney(value){
             }).catch(err => alert('Could not save glow setting: ' + err.message));
         }
 
+        // ===== REAL-TIME ADMIN DEVICE NOTIFICATIONS =====
+        // Notifies the currently logged-in admin device when:
+        // 1) a user becomes active/logs in,
+        // 2) a new deposit becomes pending,
+        // 3) a new withdrawal becomes pending.
+        // Uses the browser Notification API when permission is granted, with an
+        // in-app toast fallback. Initial Firebase snapshots are treated as baseline
+        // so old users/requests do not generate a flood of notifications.
+        const gvAdminNotifyState = {
+            started: false,
+            usersReady: false,
+            depositsReady: false,
+            withdrawalsReady: false,
+            usersOnline: Object.create(null),
+            pendingDeposits: Object.create(null),
+            pendingWithdrawals: Object.create(null),
+            userRef: null,
+            depositRef: null,
+            withdrawalRef: null,
+            toastTimer: null
+        };
+
+        function gvAdminEscapeNotifyText(value){
+            return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+
+        function gvAdminShowNotifyToast(title, body, icon){
+            let host=document.getElementById('gvAdminRealtimeToastHost');
+            if(!host){
+                host=document.createElement('div');
+                host.id='gvAdminRealtimeToastHost';
+                host.style.cssText='position:fixed;right:16px;bottom:16px;z-index:999999;display:flex;flex-direction:column;gap:8px;width:min(360px,calc(100vw - 32px));pointer-events:none;';
+                document.body.appendChild(host);
+            }
+            const toast=document.createElement('div');
+            toast.style.cssText='pointer-events:auto;background:rgba(15,23,42,.97);border:1px solid rgba(56,189,248,.45);border-radius:12px;padding:11px 13px;box-shadow:0 10px 30px rgba(0,0,0,.45);color:#fff;font-family:inherit;cursor:pointer;';
+            toast.innerHTML=`<div style="display:flex;gap:9px;align-items:flex-start;"><div style="font-size:21px;line-height:1;">${icon||'🔔'}</div><div style="min-width:0;flex:1;"><div style="font-size:12px;font-weight:900;">${gvAdminEscapeNotifyText(title)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:3px;line-height:1.4;">${gvAdminEscapeNotifyText(body)}</div></div><button type="button" style="border:0;background:none;color:#94a3b8;font-size:16px;cursor:pointer;padding:0;">×</button></div>`;
+            const close=()=>{if(toast.parentNode)toast.remove();};
+            toast.querySelector('button').onclick=close;
+            toast.onclick=e=>{if(e.target.tagName!=='BUTTON')close();};
+            host.appendChild(toast);
+            setTimeout(close,7000);
+        }
+
+        function gvAdminBrowserNotify(title, body, icon){
+            try{
+                if(typeof Notification==='undefined') return;
+                if(Notification.permission==='granted'){
+                    const n=new Notification(title,{body:body,icon:icon||undefined,tag:'gameverse-admin-'+title});
+                    n.onclick=()=>{try{window.focus();n.close();}catch(e){}};
+                }
+            }catch(e){ console.warn('[Admin Notifications] Browser notification failed:',e); }
+        }
+
+        function gvAdminNotify(title, body, icon){
+            gvAdminShowNotifyToast(title,body,icon);
+            gvAdminBrowserNotify(title,body,icon);
+        }
+
+        async function requestAdminDeviceNotifications(){
+            try{
+                if(typeof Notification==='undefined'){
+                    gvAdminShowNotifyToast('Admin alerts enabled','Browser notifications are not supported here. In-app alerts will still appear.','🔔');
+                    return;
+                }
+                if(Notification.permission==='default'){
+                    const permission=await Notification.requestPermission();
+                    if(permission==='granted') gvAdminShowNotifyToast('Notifications enabled','This admin device will receive live alerts for users, deposits and withdrawals.','🔔');
+                    else gvAdminShowNotifyToast('Notifications blocked','Browser notifications are blocked. Live alerts will still appear inside the Admin App.','⚠️');
+                }else if(Notification.permission==='granted'){
+                    gvAdminShowNotifyToast('Notifications active','Live admin alerts are enabled on this device.','🔔');
+                }
+            }catch(e){
+                console.warn('[Admin Notifications] Permission request failed:',e);
+                gvAdminShowNotifyToast('Live alerts enabled','In-app admin alerts are active.','🔔');
+            }
+        }
+
+        function gvAdminIsUserActive(u){
+            if(!u || typeof u!=='object') return false;
+            const until=Number(u.onlineUntil)||0;
+            return u.isOnline===true || until>Date.now();
+        }
+
+        function gvAdminPending(r){
+            return r && typeof r==='object' && String(r.status||'pending').toLowerCase()==='pending';
+        }
+
+        function gvAdminUserLabel(u,key){
+            return String((u&&u.customUid)||((u&&u.username)?'@'+u.username:'')||key||'User');
+        }
+
+        function gvAdminAmountLabel(r){
+            const currency=String(r&&r.currency||'INR').toUpperCase();
+            const amount=Number(r&&r.amount)||0;
+            return currency==='USDT' ? `₮${amount.toFixed(4)}` : `₹${amount.toLocaleString('en-IN',{maximumFractionDigits:2})}`;
+        }
+
+        function stopAdminRealtimeNotifications(){
+            try{
+                if(gvAdminNotifyState.userRef)gvAdminNotifyState.userRef.off('value');
+                if(gvAdminNotifyState.depositRef)gvAdminNotifyState.depositRef.off('value');
+                if(gvAdminNotifyState.withdrawalRef)gvAdminNotifyState.withdrawalRef.off('value');
+            }catch(e){}
+            gvAdminNotifyState.started=false;
+            gvAdminNotifyState.usersReady=false;
+            gvAdminNotifyState.depositsReady=false;
+            gvAdminNotifyState.withdrawalsReady=false;
+            gvAdminNotifyState.usersOnline=Object.create(null);
+            gvAdminNotifyState.pendingDeposits=Object.create(null);
+            gvAdminNotifyState.pendingWithdrawals=Object.create(null);
+            gvAdminNotifyState.userRef=gvAdminNotifyState.depositRef=gvAdminNotifyState.withdrawalRef=null;
+        }
+
+        function startAdminRealtimeNotifications(){
+            const database=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():db;
+            if(!database || gvAdminNotifyState.started) return;
+            gvAdminNotifyState.started=true;
+            requestAdminDeviceNotifications();
+
+            gvAdminNotifyState.userRef=database.ref('users');
+            gvAdminNotifyState.userRef.on('value',snap=>{
+                const next=Object.create(null);
+                if(snap && snap.exists()) snap.forEach(ch=>{
+                    const u=ch.val()||{};
+                    next[ch.key]=gvAdminIsUserActive(u);
+                });
+                if(!gvAdminNotifyState.usersReady){
+                    gvAdminNotifyState.usersOnline=next;
+                    gvAdminNotifyState.usersReady=true;
+                    return;
+                }
+                Object.keys(next).forEach(uid=>{
+                    if(next[uid] && !gvAdminNotifyState.usersOnline[uid]){
+                        const u=snap.child(uid).val()||{};
+                        const label=gvAdminUserLabel(u,uid);
+                        gvAdminNotify('User Active / Login',`${label} is now active in the User App.`,'👤');
+                    }
+                });
+                gvAdminNotifyState.usersOnline=next;
+            },err=>console.warn('[Admin Notifications] User listener:',err));
+
+            const watchPending=(path,stateKey,title,icon)=>{
+                const ref=database.ref(path);
+                gvAdminNotifyState[stateKey]=ref;
+                ref.on('value',snap=>{
+                    const next=Object.create(null);
+                    if(snap && snap.exists()) snap.forEach(ch=>{
+                        const r=ch.val()||{};
+                        if(gvAdminPending(r)) next[ch.key]=true;
+                    });
+                    if(!gvAdminNotifyState[stateKey==='pendingDeposits'?'depositsReady':'withdrawalsReady']){
+                        gvAdminNotifyState[stateKey]=ref;
+                        if(stateKey==='pendingDeposits')gvAdminNotifyState.depositsReady=true;else gvAdminNotifyState.withdrawalsReady=true;
+                        if(stateKey==='pendingDeposits')gvAdminNotifyState.pendingDeposits=next;else gvAdminNotifyState.pendingWithdrawals=next;
+                        return;
+                    }
+                    const previous=stateKey==='pendingDeposits'?gvAdminNotifyState.pendingDeposits:gvAdminNotifyState.pendingWithdrawals;
+                    Object.keys(next).forEach(key=>{
+                        if(!previous[key]){
+                            const r=snap.child(key).val()||{};
+                            const label=String(r.customUid||r.uid||r.userUid||'User');
+                            const order=String(r.orderId||r.orderID||r.order_id||key);
+                            gvAdminNotify(title,`${label} • ${gvAdminAmountLabel(r)} • Order ${order}` ,icon);
+                        }
+                    });
+                    if(stateKey==='pendingDeposits')gvAdminNotifyState.pendingDeposits=next;else gvAdminNotifyState.pendingWithdrawals=next;
+                },err=>console.warn(`[Admin Notifications] ${path} listener:`,err));
+            };
+            watchPending('deposits','pendingDeposits','New Pending Deposit','💳');
+            watchPending('withdrawals','pendingWithdrawals','New Pending Withdrawal','💸');
+        }
+
         function loginAdmin() {
             const e = document.getElementById('email').value.trim();
             const p = document.getElementById('password').value;
@@ -2656,6 +2874,9 @@ function formatAdminMoney(value){
                     loadInvestmentConfigSetting();
                     loadAppStatusSetting();
                     loadBroadcastHistory();
+                    // Start device-level live alerts only after this browser has been
+                    // authenticated and authorized as an admin.
+                    startAdminRealtimeNotifications();
                 });
             }).catch(err => alert(err.message));
         }
@@ -2663,6 +2884,7 @@ function formatAdminMoney(value){
         function logoutAdmin() {
             if (!confirm('Log out of the admin panel?')) return;
             firebase.auth().signOut().then(() => {
+                stopAdminRealtimeNotifications();
                 document.getElementById('dash').classList.add('hidden');
                 document.body.classList.remove('admin-shell-active');
                 document.getElementById('auth').classList.remove('hidden');
