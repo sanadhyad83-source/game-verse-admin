@@ -824,6 +824,7 @@
 
 <style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style>
 <script>
+(function(){window.gvStartLoginEventNotifications=function(){try{const d=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():window.db;if(!d)return;const r=d.ref('adminNotifications/loginEvents');if(window.__gvLoginEventRef)try{window.__gvLoginEventRef.off('child_added')}catch(e){};window.__gvLoginEventRef=r;r.on('child_added',function(s){if(!window.__gvLoginEventsReady)return;const e=s.val()||{},label=e.username?('@'+String(e.username).replace(/^@/,'')):(e.customUid||e.userId||'User');if(typeof gvAdminNotify==='function')gvAdminNotify('New User Login',label+' has logged in to the User App.','👤');else if(typeof Notification!=='undefined'&&Notification.permission==='granted')new Notification('New User Login',{body:label+' has logged in to the User App.',tag:'gameverse-login-'+s.key});});setTimeout(()=>window.__gvLoginEventsReady=true,1200);}catch(e){console.warn('[Admin Login Notifications]',e)}};setTimeout(()=>{try{if(typeof requestAdminDeviceNotifications==='function')requestAdminDeviceNotifications()}catch(e){};setTimeout(()=>window.gvStartLoginEventNotifications(),800)},1800);})();
 </script>
 </head>
 <body class="admin-shell-active">
@@ -1285,10 +1286,17 @@
             <button onclick="goToDashboardHome()" class="btn-gray" style="margin-top:12px;">⬅ Back to Dashboard</button>
         </div>
 
+<style>
+.gv-gm-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px;border:1px solid rgba(96,165,250,.18);border-radius:15px;background:linear-gradient(145deg,rgba(37,99,235,.09),rgba(168,85,247,.05));margin-bottom:10px}.gv-gm-toolbar b{display:block;font-size:12px}.gv-gm-toolbar span{display:block;font-size:9px;color:var(--text-muted);margin-top:3px}.gv-gm-state{font-size:9px;font-weight:950;color:#86efac;padding:6px 8px;border-radius:999px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.18);white-space:nowrap}.gv-gm-card{padding:11px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.018)}.gv-gm-card-title{font-size:11px;font-weight:950;color:#93c5fd;margin-bottom:8px}.gv-gm-help{font-size:9px;color:var(--text-muted);line-height:1.4;margin-top:7px}
+</style>
         <!-- Games Management Section (moved from old main menu) -->
         <div id="gamesManagementAdminSection" class="hidden">
             <h3 style="margin-top:0; font-size: 16px;">🎮 Games Management</h3>
-            <p class="hint-text" style="margin-bottom:12px;">Control each mini-game: on/off, entry fee mode, win chance and bet scaling. Changes apply to the user app instantly.</p>
+            <p class="hint-text" style="margin-bottom:12px;">Advanced control center for every game. Configure availability, wallet currency limits, outcome settings and game-specific behavior. Changes are synced to the User App through Firebase.</p>
+            <div class="gv-gm-toolbar">
+                <div><b>🎛 Advanced Game Controls</b><span>Use the selected game panel below. Limits are enforced before a bet is placed.</span></div>
+                <div id="gmConfigState" class="gv-gm-state">LIVE CONFIG</div>
+            </div>
             <div class="global-game-control">
                 <div>
                     <div class="gg-title">🎮 Global Games Switch</div>
@@ -1322,6 +1330,34 @@
                         </select>
                     </div>
                 </div>
+                <div class="gv-gm-card" style="margin-top:10px;">
+                    <div class="gv-gm-card-title">💰 Bet Limits</div>
+                    <div class="two-cols">
+                        <div><label>Minimum Bet — INR</label><input id="gameMinBetINR" type="number" step="0.01" min="0" placeholder="e.g. 10"></div>
+                        <div><label>Maximum Bet — INR</label><input id="gameMaxBetINR" type="number" step="0.01" min="0" placeholder="e.g. 5000"></div>
+                        <div><label>Minimum Bet — USDT</label><input id="gameMinBetUSDT" type="number" step="0.0001" min="0" placeholder="e.g. 0.10"></div>
+                        <div><label>Maximum Bet — USDT</label><input id="gameMaxBetUSDT" type="number" step="0.0001" min="0" placeholder="e.g. 500"></div>
+                    </div>
+                    <div class="gv-gm-help">Set 0 to disable a limit. When User Chooses Amount is enabled, the entered amount must stay inside the configured range.</div>
+                </div>
+                <div id="rocketAdvancedControls" class="gv-gm-card hidden" style="margin-top:10px;">
+                    <div class="gv-gm-card-title">🚀 Rocket Jump Controls</div>
+                    <div class="two-cols">
+                        <div><label>Tick / Update (ms)</label><input id="rocketTickMs" type="number" min="40" max="1000" step="10" placeholder="90"></div>
+                        <div><label>Multiplier Step</label><input id="rocketMultiplierStep" type="number" min="0.001" max="1" step="0.001" placeholder="0.03"></div>
+                        <div><label>Maximum Multiplier Cap</label><input id="rocketMaxMultiplier" type="number" min="1" max="10000" step="0.1" placeholder="100"></div>
+                        <div style="grid-column:1/-1"><label>Crash Range — single value</label><input id="gameCrashRangeAdvanced" type="text" inputmode="decimal" autocomplete="off" placeholder="2.20 - 5.00"><small style="display:block;color:var(--text-muted);margin-top:4px">Enter one range only, for example: 2.20 - 5.00</small></div>
+                    </div>
+                </div>
+                <div id="numberMasterAdvancedControls" class="gv-gm-card hidden" style="margin-top:10px;">
+                    <div class="gv-gm-card-title">🎯 Number Master Controls</div>
+                    <div class="two-cols">
+                        <div><label>Minimum Number</label><input id="numberMinValue" type="number" min="1" max="99" step="1" placeholder="1"></div>
+                        <div><label>Maximum Number</label><input id="numberMaxValue" type="number" min="1" max="99" step="1" placeholder="10"></div>
+                        <div><label>Attempts Per Round</label><input id="numberAttempts" type="number" min="1" max="10" step="1" placeholder="3"></div>
+                        <div><label>Win Payout Multiplier</label><input id="numberPayoutMultiplier" type="number" min="1" max="20" step="0.1" placeholder="2"></div>
+                    </div>
+                </div>
                 <div id="gamePrizeWrapper" class="hidden" style="margin-top:10px;">
                     <label>Win Chance (%) — 0 always lose · 100 always win · Win pays 2× bet</label>
                     <input id="gameWinChance" type="number" placeholder="e.g. 50" min="0" max="100">
@@ -1333,7 +1369,6 @@
                     <input id="gameEntryFee" type="number" step="0.01" placeholder="INR Entry Fee (₹)" min="0">
                     <input id="gameEntryFeeUsdt" type="number" step="0.0001" placeholder="USDT Entry Fee" min="0">
                 </div>
-                <input id="gameCrashRange" type="text" placeholder="Crash Range (e.g. 2.20 - 5.00)" class="">
                 <div id="highCardControls" class="hidden" style="margin-top:10px;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.025);">
                     <div style="font-size:11px;font-weight:900;color:#facc15;margin-bottom:7px;">🃏 High Card Controls</div>
                     <div class="two-cols">
@@ -1371,6 +1406,30 @@
 
             <label style="font-size:12px; color:var(--text-muted); margin: 10px 0 4px 2px; display:block;">Recent Broadcasts:</label>
             <div id="broadcastHistoryContainer" style="max-height: 220px; overflow-y: auto; margin-top: 4px;"><p style="font-size:12px; color:var(--text-muted);">No broadcasts sent yet.</p></div>
+
+            <!-- Home Banner Slider manager -->
+            <div class="control-group" id="gvBnAdminCard" style="margin-top:18px;">
+                <h4 style="margin-top:0;">🖼️ Home Banner Slider</h4>
+                <p style="font-size:11px; color:var(--text-muted); margin:0 0 10px;">Banners appear as a slider at the top of the User App home screen. If no active banner is set here, the slider is hidden from users.</p>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="gvBnEnabled" onchange="gvBnSaveSettings()" style="width:auto; margin:0;">
+                    <span style="font-size:12px;">Show banner slider in User App</span>
+                </label>
+                <label style="font-size:12px; color:var(--text-muted); margin:10px 0 4px; display:block;">Auto-slide every (seconds):</label>
+                <input id="gvBnInterval" type="number" min="2" max="30" step="1" value="4" onchange="gvBnSaveSettings()">
+
+                <label style="font-size:12px; color:var(--text-muted); margin:12px 0 4px; display:block;">Add a banner — image URL:</label>
+                <input id="gvBnUrl" type="text" placeholder="https://example.com/banner.jpg (wide image, ~16:7)" oninput="gvBnUrlTyped()">
+                <label style="font-size:12px; color:var(--text-muted); margin:8px 0 4px; display:block;">…or upload an image:</label>
+                <input id="gvBnFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="gvBnFilePicked(this)">
+                <img id="gvBnPreview" alt="" style="display:none; width:100%; max-height:140px; object-fit:cover; border-radius:10px; margin-top:8px; border:1px solid var(--border-blue);">
+                <label style="font-size:12px; color:var(--text-muted); margin:8px 0 4px; display:block;">Link when tapped (optional):</label>
+                <input id="gvBnLink" type="text" placeholder="https://… (leave empty for no link)">
+                <button onclick="gvBnAdd()" style="margin-top:8px;">➕ Add Banner</button>
+
+                <label style="font-size:12px; color:var(--text-muted); margin:14px 0 4px; display:block;">Current banners (shown top to bottom):</label>
+                <div id="gvBnList" style="max-height:340px; overflow-y:auto;"><p style="font-size:12px; color:var(--text-muted);">No banners set — slider is hidden in the User App.</p></div>
+            </div>
         </div>
 
         <!-- Settings Section (moved referral controls + app status here) -->
@@ -1605,8 +1664,22 @@
                         <input id="ccAdminSizeMultiplier" type="number" min="1" step="0.01" placeholder="BIG/SMALL Win Multiplier">
                     </div>
                     <select id="ccAdminAuto"><option value="true">Automatic Result: ON</option><option value="false">Automatic Result: OFF</option></select>
-                    <select id="ccAdminRandomized"><option value="true">Secure Random Results: ON • No Consecutive Repeat</option><option value="false">Secure Random Results: OFF • Deterministic (testing only)</option></select>
-                    <button onclick="saveColourClashConfig()" class="btn-green">💾 Save WINGO Settings</button>
+                    <select id="ccAdminRandomized"><option value="true">🔐 Cryptographic Random Results: ON</option></select>
+                    <select id="ccAdminFairness"><option value="false">🔓 Fairness Lock: OFF</option><option value="true">🔒 Fairness Lock: ON</option></select>
+                    <div class="two-cols">
+                        <input id="ccAdminMaxEntriesPerUser" type="number" min="1" placeholder="Max Entries / User / Round">
+                        <input id="ccAdminMaxRoundEntries" type="number" min="1" placeholder="Max Total Entries / Round">
+                    </div>
+                    <div class="two-cols">
+                        <input id="ccAdminMaxRoundLiability" type="number" min="0" placeholder="Max INR Round Wager">
+                        <input id="ccAdminMaxRoundLiabilityUsdt" type="number" min="0" step="0.0001" placeholder="Max USDT Round Wager">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+                      <div class="stat-card"><span>Fairness Lock</span><b id="ccAdminFairnessStatus" style="color:#34d399">OFF</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Controls whether manual result selection is locked.</small></div>
+                      <div class="stat-card"><span>RNG Source</span><b>Web Crypto</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Unpredictable per round.</small></div>
+                    </div>
+                    <p class="hint-text">For a fair game, result generation uses cryptographic randomness and is not based on round numbers, player bets, or visible history. Liability controls only manage exposure; they do not alter the result.</p>
+                    <button onclick="saveColourClashConfig()" class="btn-green">💾 Save Advanced WINGO Settings</button>
                 </div>
             </div>
 
@@ -1617,7 +1690,7 @@
                 <label style="font-size:11.5px; color:var(--text-muted); margin-top:14px; display:block;">Number Result — choose one number only:</label>
                 <div id="ccAdminNumberButtons" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px; margin-top:6px;"></div>
                 <div id="ccAdminNumberResultStatus" class="live-status" style="margin-top:8px;">No result selected.</div>
-                <button id="ccAdminConfirmResultBtn" class="cc-admin-confirm-btn" onclick="confirmColourClashAdminNumberResult()" disabled="">✓ Confirm Result for This Round</button>
+                <button id="ccAdminConfirmResultBtn" class="cc-admin-confirm-btn" onclick="confirmColourClashAdminNumberResult()" disabled>Select a number to confirm a result</button>
             </div>
 
             <div class="dash-panel">
@@ -3168,7 +3241,115 @@ function formatAdminMoney(value){
             document.getElementById('mainAdminMenu').classList.remove('hidden');
         }
 
+        // ===== Home Banner Slider (Notifications) — data: control/bannerSlider =====
+        var gvBnPendingData = '';
+        var gvBnListening = false;
+        var gvBnCache = {};
+        function gvBnEsc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+        function gvBnValidImg(u){ return /^https?:\/\//i.test(u) || /^data:image\/(png|jpe?g|webp);base64,/i.test(u); }
+        function gvBnInit(){
+            if(gvBnListening || !db) return;
+            gvBnListening = true;
+            db.ref('control/bannerSlider').on('value', function(snap){
+                var v = snap.val() || {};
+                gvBnCache = v.items || {};
+                var en = document.getElementById('gvBnEnabled'); if(en) en.checked = v.enabled !== false;
+                var iv = document.getElementById('gvBnInterval'); if(iv && document.activeElement !== iv) iv.value = v.intervalSec || 4;
+                gvBnRenderList();
+            }, function(err){ var l = document.getElementById('gvBnList'); if(l) l.innerHTML = '<p style="color:#f87171; font-size:12px;">⚠️ Could not load banners: ' + gvBnEsc(err && err.message) + '</p>'; });
+        }
+        function gvBnSortedKeys(){
+            return Object.keys(gvBnCache).sort(function(a,b){
+                var x = gvBnCache[a], y = gvBnCache[b];
+                return (Number(x.order)||0) - (Number(y.order)||0) || (Number(x.createdAt)||0) - (Number(y.createdAt)||0);
+            });
+        }
+        function gvBnRenderList(){
+            var box = document.getElementById('gvBnList'); if(!box) return;
+            var keys = gvBnSortedKeys();
+            if(!keys.length){ box.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">No banners set — slider is hidden in the User App.</p>'; return; }
+            box.innerHTML = keys.map(function(k, i){
+                var b = gvBnCache[k], on = b.enabled !== false;
+                var img = gvBnValidImg(b.imageUrl || '') ? '<img src="' + gvBnEsc(b.imageUrl) + '" alt="" style="width:100%; height:80px; object-fit:cover; border-radius:8px; display:block;">' : '<div style="height:80px; display:flex; align-items:center; justify-content:center; color:#f87171; font-size:11px;">Invalid image</div>';
+                return '<div style="border:1px solid var(--border-blue); border-radius:12px; padding:8px; margin-bottom:8px; opacity:' + (on ? 1 : 0.55) + ';">' + img +
+                    '<div style="font-size:11px; color:var(--text-muted); margin:6px 0; word-break:break-all;">' + (b.linkUrl ? '🔗 ' + gvBnEsc(b.linkUrl) : 'No link') + ' • ' + (on ? '🟢 Active' : '⚪ Hidden') + '</div>' +
+                    '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+                    '<button class="btn-gray" style="width:auto; flex:1; margin:0; padding:7px;" onclick="gvBnMove(\'' + k + '\',-1)"' + (i === 0 ? ' disabled' : '') + '>▲</button>' +
+                    '<button class="btn-gray" style="width:auto; flex:1; margin:0; padding:7px;" onclick="gvBnMove(\'' + k + '\',1)"' + (i === keys.length - 1 ? ' disabled' : '') + '>▼</button>' +
+                    '<button class="btn-gray" style="width:auto; flex:2; margin:0; padding:7px;" onclick="gvBnToggle(\'' + k + '\')">' + (on ? '🙈 Hide' : '👁️ Show') + '</button>' +
+                    '<button class="btn-gray" style="width:auto; flex:2; margin:0; padding:7px; color:#f87171;" onclick="gvBnDelete(\'' + k + '\')">🗑️ Delete</button>' +
+                    '</div></div>';
+            }).join('');
+        }
+        function gvBnSaveSettings(){
+            var en = !!document.getElementById('gvBnEnabled').checked;
+            var iv = Math.min(30, Math.max(2, Number(document.getElementById('gvBnInterval').value) || 4));
+            document.getElementById('gvBnInterval').value = iv;
+            db.ref('control/bannerSlider').update({ enabled: en, intervalSec: iv, updatedAt: Date.now() })
+                .catch(function(e){ alert('Could not save slider settings: ' + (e && e.message ? e.message : 'Unknown error')); });
+        }
+        function gvBnUrlTyped(){
+            gvBnPendingData = '';
+            var f = document.getElementById('gvBnFile'); if(f) f.value = '';
+            var u = document.getElementById('gvBnUrl').value.trim(), p = document.getElementById('gvBnPreview');
+            if(gvBnValidImg(u)){ p.src = u; p.style.display = 'block'; } else { p.style.display = 'none'; }
+        }
+        function gvBnFilePicked(input){
+            var file = input.files && input.files[0]; if(!file) return;
+            if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)) { input.value = ''; return alert('Please choose a PNG, JPG or WEBP image.'); }
+            var reader = new FileReader();
+            reader.onload = function(){
+                var img = new Image();
+                img.onload = function(){
+                    // Downscale + compress so the banner stays light for users.
+                    var maxW = 1000, scale = Math.min(1, maxW / img.width);
+                    var c = document.createElement('canvas'); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+                    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                    var data = c.toDataURL('image/jpeg', 0.72);
+                    if(data.length > 450000){ input.value = ''; return alert('This image is too large even after compression. Use a smaller image or paste an image URL instead.'); }
+                    gvBnPendingData = data;
+                    document.getElementById('gvBnUrl').value = '';
+                    var p = document.getElementById('gvBnPreview'); p.src = data; p.style.display = 'block';
+                };
+                img.onerror = function(){ input.value = ''; alert('Could not read this image.'); };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        function gvBnAdd(){
+            var url = gvBnPendingData || document.getElementById('gvBnUrl').value.trim();
+            var link = document.getElementById('gvBnLink').value.trim();
+            if(!url) return alert('Please enter an image URL or upload an image.');
+            if(!gvBnValidImg(url)) return alert('Image URL must start with https:// (or http://).');
+            if(link && !/^https?:\/\//i.test(link)) return alert('Link must start with https:// (or http://), or be left empty.');
+            var maxOrder = 0; Object.keys(gvBnCache).forEach(function(k){ maxOrder = Math.max(maxOrder, Number(gvBnCache[k].order) || 0); });
+            db.ref('control/bannerSlider/items').push({ imageUrl: url, linkUrl: link, enabled: true, order: maxOrder + 1, createdAt: Date.now() })
+                .then(function(){
+                    gvBnPendingData = '';
+                    ['gvBnUrl','gvBnLink','gvBnFile'].forEach(function(id){ var e = document.getElementById(id); if(e) e.value = ''; });
+                    var p = document.getElementById('gvBnPreview'); if(p) p.style.display = 'none';
+                    alert('Banner added. It is now live in the User App.');
+                })
+                .catch(function(e){ alert('Could not add banner: ' + (e && e.message ? e.message : 'Unknown error')); });
+        }
+        function gvBnToggle(key){
+            var b = gvBnCache[key]; if(!b) return;
+            db.ref('control/bannerSlider/items/' + key).update({ enabled: b.enabled === false });
+        }
+        function gvBnDelete(key){
+            if(!confirm('Delete this banner? It will disappear from the User App.')) return;
+            db.ref('control/bannerSlider/items/' + key).remove();
+        }
+        function gvBnMove(key, dir){
+            var keys = gvBnSortedKeys(), i = keys.indexOf(key), j = i + dir;
+            if(i < 0 || j < 0 || j >= keys.length) return;
+            keys.splice(j, 0, keys.splice(i, 1)[0]);
+            var upd = {}; keys.forEach(function(k, n){ upd['control/bannerSlider/items/' + k + '/order'] = n + 1; });
+            db.ref().update(upd);
+        }
+
         function openNotificationsAdminModal() {
+            if (typeof gvBnInit === 'function') gvBnInit();
             document.getElementById('mainAdminMenu').classList.add('hidden');
             document.getElementById('notificationsAdminSection').classList.remove('hidden');
             toggleBroadcastScheduleFields();
@@ -3926,10 +4107,14 @@ function formatAdminMoney(value){
 
         function loadSelectedGameData() {
             const gameId = document.getElementById('gameSelect').value;
-            const crashRangeInput = document.getElementById('gameCrashRange');
+            const crashRangeInput = document.getElementById('gameCrashRangeAdvanced');
             const prizeWrapper = document.getElementById('gamePrizeWrapper');
 
             const highCardControls = document.getElementById('highCardControls');
+            const rocketAdvanced = document.getElementById('rocketAdvancedControls');
+            const numberAdvanced = document.getElementById('numberMasterAdvancedControls');
+            if (rocketAdvanced) rocketAdvanced.classList.toggle('hidden', gameId !== 'rocket_jump');
+            if (numberAdvanced) numberAdvanced.classList.toggle('hidden', gameId !== 'number_guess');
             if (gameId === 'rocket_jump') {
                 crashRangeInput.classList.remove('hidden');
                 prizeWrapper.classList.add('hidden');
@@ -3947,9 +4132,15 @@ function formatAdminMoney(value){
                 document.getElementById('gameBetScaling').value = data.betScalingPercent || 0;
                 document.getElementById('gameEntryFee').value = data.entryFee || 0;
                 document.getElementById('gameEntryFeeUsdt').value = data.usdtEntryFee || data.entryFeeUsdt || data.entryFee || 0;
+                const setVal=(id,val)=>{const e=document.getElementById(id);if(e)e.value=(val===undefined||val===null?'':val);};
+                setVal('gameMinBetINR',data.minBetINR ?? data.minBet ?? 0); setVal('gameMaxBetINR',data.maxBetINR ?? data.maxBet ?? 0);
+                setVal('gameMinBetUSDT',data.minBetUSDT ?? 0); setVal('gameMaxBetUSDT',data.maxBetUSDT ?? 0);
                 if (gameId === 'rocket_jump') {
-                    document.getElementById('gameCrashRange').value = data.crashRange || '2.20 - 5.00';
+                    const range=String(data.crashRange ?? '2.20 - 5.00').trim();
+                    setVal('gameCrashRangeAdvanced',range);
+                    setVal('rocketTickMs',data.tickMs ?? 90); setVal('rocketMultiplierStep',data.multiplierStep ?? 0.03); setVal('rocketMaxMultiplier',data.maxMultiplierCap ?? 100);
                 }
+                if(gameId==='number_guess'){ setVal('numberMinValue',data.minNumber ?? 1); setVal('numberMaxValue',data.maxNumber ?? 10); setVal('numberAttempts',data.attempts ?? 3); setVal('numberPayoutMultiplier',data.payoutMultiplier ?? 2); }
                 const winChanceInfo = gameId === 'rocket_jump' ? '' : ` | Win Chance: ${(data.winChancePercent !== undefined && data.winChancePercent !== null) ? data.winChancePercent : 50}% | Bet Scaling: -${data.betScalingPercent || 0}% per ₹100`;
                 document.getElementById('liveGameStatus').innerText = `Status: ${(data.status||'active').toUpperCase()} | Mode: ${data.allowUserAmount ? 'Allow User Own Amount' : 'Fixed Fee'} | INR: ₹${data.entryFee || 0} | USDT: ${Number(data.usdtEntryFee || data.entryFee || 0).toFixed(4)}${winChanceInfo}`;
             });
@@ -3961,18 +4152,39 @@ function formatAdminMoney(value){
             const amountMode = document.getElementById('gameAmountMode').value;
             const entryFee = Number(document.getElementById('gameEntryFee').value) || 0;
             const usdtEntryFee = Number(document.getElementById('gameEntryFeeUsdt').value) || 0;
-            const crashRange = document.getElementById('gameCrashRange').value.trim();
+            const crashRange = (document.getElementById('gameCrashRangeAdvanced')?.value || '2.20 - 5.00').trim();
             const allowUserAmount = amountMode === 'user_amount';
 
             let updatePayload = {
                 status: status,
                 allowUserAmount: allowUserAmount,
                 entryFee: entryFee,
-                usdtEntryFee: usdtEntryFee
+                usdtEntryFee: usdtEntryFee,
+                minBetINR: Math.max(0,Number(document.getElementById('gameMinBetINR')?.value)||0),
+                maxBetINR: Math.max(0,Number(document.getElementById('gameMaxBetINR')?.value)||0),
+                minBetUSDT: Math.max(0,Number(document.getElementById('gameMinBetUSDT')?.value)||0),
+                maxBetUSDT: Math.max(0,Number(document.getElementById('gameMaxBetUSDT')?.value)||0)
             };
 
             if (gameId === 'rocket_jump') {
-                updatePayload.crashRange = crashRange || '2.20 - 5.00';
+                updatePayload.crashRange = String(document.getElementById('gameCrashRangeAdvanced')?.value ?? '2.20 - 5.00').trim() || '2.20 - 5.00';
+                const rangeMatch=updatePayload.crashRange.match(/^\s*(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)\s*$/i);
+                if(!rangeMatch) return alert('Crash Range must be in this format: 2.20 - 5.00');
+                const crashMin=Number(rangeMatch[1]), crashMax=Number(rangeMatch[2]);
+                if(!(crashMin>0) || !(crashMax>=crashMin)) return alert('Crash Range is invalid. Maximum must be greater than or equal to minimum.');
+                updatePayload.crashRange=`${crashMin.toFixed(2)} - ${crashMax.toFixed(2)}`;
+                updatePayload.tickMs = Math.min(1000,Math.max(40,Number(document.getElementById('rocketTickMs')?.value)||90));
+                updatePayload.multiplierStep = Math.min(1,Math.max(0.001,Number(document.getElementById('rocketMultiplierStep')?.value)||0.03));
+                updatePayload.maxMultiplierCap = Math.min(10000,Math.max(1,Number(document.getElementById('rocketMaxMultiplier')?.value)||100));
+            } else if(gameId==='number_guess') {
+                const nmin=Math.max(1,Math.floor(Number(document.getElementById('numberMinValue')?.value)||1));
+                const nmax=Math.max(nmin,Math.floor(Number(document.getElementById('numberMaxValue')?.value)||10));
+                updatePayload.minNumber=nmin; updatePayload.maxNumber=Math.min(99,nmax);
+                updatePayload.attempts=Math.min(10,Math.max(1,Math.floor(Number(document.getElementById('numberAttempts')?.value)||3)));
+                updatePayload.payoutMultiplier=Math.min(20,Math.max(1,Number(document.getElementById('numberPayoutMultiplier')?.value)||2));
+                let winChance = Number(document.getElementById('gameWinChance').value);
+                if (isNaN(winChance)) winChance = 50; winChance=Math.min(100,Math.max(0,winChance)); updatePayload.winChancePercent=winChance;
+                let betScaling = Number(document.getElementById('gameBetScaling').value); if(isNaN(betScaling)||betScaling<0)betScaling=0; updatePayload.betScalingPercent=betScaling;
             } else {
                 let winChance = Number(document.getElementById('gameWinChance').value);
                 if (isNaN(winChance)) winChance = 50;
@@ -6737,8 +6949,10 @@ function formatAdminMoney(value){
                 numberMultiplier: Math.max(1, Number(d.numberMultiplier) || 9),
                 sizeMultiplier: Math.max(1, Number(d.sizeMultiplier) || 2),
                 autoResult: d.autoResult !== false,
-                randomizedResult: d.randomizedResult !== false,
-                noConsecutiveRepeat: d.noConsecutiveRepeat !== false
+                randomizedResult: true,
+                noConsecutiveRepeat: false,
+                fairRandomOnly: d.fairRandomOnly === true,
+                auditRounds: d.auditRounds !== false
             };
             // These input fields are ONLY for editing/saving settings — they no longer feed the timer.
             // The elements always exist in the DOM (the section is only CSS-hidden), so it's safe to
@@ -6746,6 +6960,7 @@ function formatAdminMoney(value){
             const enabledEl=document.getElementById('ccAdminEnabled'); if(enabledEl) enabledEl.value=d.enabled===false?'false':'true';
             const esEl=document.getElementById('ccAdminEntrySeconds'); if(esEl) esEl.value=Number(d.entrySeconds)||30;
             const csEl=document.getElementById('ccAdminCooldownSeconds'); if(csEl) csEl.value=Number(d.cooldownSeconds)||5;
+            const fairnessEl=document.getElementById('ccAdminFairness'); if(fairnessEl) fairnessEl.value=d.fairRandomOnly===true?'true':'false'; const fairnessStatus=document.getElementById('ccAdminFairnessStatus'); if(fairnessStatus){ fairnessStatus.textContent=d.fairRandomOnly===true?'ON':'OFF'; fairnessStatus.style.color=d.fairRandomOnly===true?'#34d399':'#fbbf24'; }
             const minEl=document.getElementById('ccAdminMinBet'); if(minEl) minEl.value=Number(d.minBet)||10;
             const maxEl=document.getElementById('ccAdminMaxBet'); if(maxEl) maxEl.value=Number(d.maxBet)||5000;
             const minUsdtEl=document.getElementById('ccAdminMinBetUsdt'); if(minUsdtEl) minUsdtEl.value=Number(d.minBetUsdt)||0.1;
@@ -6755,8 +6970,13 @@ function formatAdminMoney(value){
             const numMulEl=document.getElementById('ccAdminNumberMultiplier'); if(numMulEl) numMulEl.value=Number(d.numberMultiplier)||9;
             const sizeMulEl=document.getElementById('ccAdminSizeMultiplier'); if(sizeMulEl) sizeMulEl.value=Number(d.sizeMultiplier)||2;
             const autoEl=document.getElementById('ccAdminAuto'); if(autoEl) autoEl.value=d.autoResult===false?'false':'true';
-            const randomEl=document.getElementById('ccAdminRandomized'); if(randomEl) randomEl.value=d.randomizedResult===false?'false':'true';
+            const randomEl=document.getElementById('ccAdminRandomized'); if(randomEl) randomEl.value='true';
+            const me=document.getElementById('ccAdminMaxEntriesPerUser'); if(me) me.value=Number(d.maxEntriesPerUserPerRound)||5;
+            const mre=document.getElementById('ccAdminMaxRoundEntries'); if(mre) mre.value=Number(d.maxRoundEntries)||500;
+            const ml=document.getElementById('ccAdminMaxRoundLiability'); if(ml) ml.value=Number(d.maxRoundLiability)||0;
+            const mlu=document.getElementById('ccAdminMaxRoundLiabilityUsdt'); if(mlu) mlu.value=Number(d.maxRoundLiabilityUsdt)||0;
             ccAdminConfigReady = true;
+            updateManualResultControlUi();
         }
         // Firebase may still be unavailable during a partial/CDN startup. Never let the
         // WINGO listener throw at script-load time, otherwise the functions below
@@ -6799,13 +7019,11 @@ function formatAdminMoney(value){
         // by default, reject the immediately previous resolved number.
         function ccSecureRandomInt(max){
             max=Math.max(1,Number(max)||1);
-            if(window.crypto&&window.crypto.getRandomValues){
-                const limit=Math.floor(0x100000000/max)*max;
-                const buf=new Uint32Array(1);
-                do{window.crypto.getRandomValues(buf);}while(buf[0]>=limit);
-                return buf[0]%max;
-            }
-            return Math.floor(Math.random()*max);
+            if(!(window.crypto&&window.crypto.getRandomValues)) throw new Error('Secure random generator unavailable.');
+            const limit=Math.floor(0x100000000/max)*max;
+            const buf=new Uint32Array(1);
+            do{window.crypto.getRandomValues(buf);}while(buf[0]>=limit);
+            return buf[0]%max;
         }
         async function ccGetAutomaticNumber(roundId){
             let previous=null;
@@ -6850,16 +7068,15 @@ function formatAdminMoney(value){
                 }
                 const hasConfirmed=current.confirmedResultNumber!==undefined&&current.confirmedResultNumber!==null;
                 if(!hasConfirmed&&!ccAdminConfig.autoResult)return;
-                const fallbackNumber=hasConfirmed?Number(current.confirmedResultNumber):
-                    (ccAdminConfig.randomizedResult!==false?await ccGetAutomaticNumber(roundId):ccDeterministicNumber(roundId));
+                const fallbackNumber=(hasConfirmed && !ccAdminConfig.fairRandomOnly)?Number(current.confirmedResultNumber):await ccGetAutomaticNumber(roundId);
                 const res=await ref.transaction(cur=>{
                     cur=cur||{};
                     if(cur.status==='resolved'&&cur.resultNumber!==undefined&&cur.resultNumber!==null)return cur;
                     const confirmed=cur.confirmedResultNumber!==undefined&&cur.confirmedResultNumber!==null;
                     if(!confirmed&&!ccAdminConfig.autoResult)return cur;
-                    const resultNumber=confirmed?Number(cur.confirmedResultNumber):fallbackNumber;
-                    const manual=confirmed;
-                    return Object.assign({},cur,{roundId,status:'resolved',resultNumber,result:ccNumberColour(resultNumber),resultColours:ccNumberColours(resultNumber),resultSize:ccNumberSize(resultNumber),resolvedNumberAt:Date.now(),resolvedAt:Date.now(),modeNumber:manual?'manual':'auto',mode:manual?'manual-number':'auto',randomSource:manual?'manual':'crypto.getRandomValues'});
+                    const resultNumber=(confirmed && !ccAdminConfig.fairRandomOnly)?Number(cur.confirmedResultNumber):fallbackNumber;
+                    const manual=confirmed && !ccAdminConfig.fairRandomOnly;
+                    return Object.assign({},cur,{roundId,status:'resolved',resultNumber,result:ccNumberColour(resultNumber),resultColours:ccNumberColours(resultNumber),resultSize:ccNumberSize(resultNumber),resolvedNumberAt:Date.now(),resolvedAt:Date.now(),modeNumber:manual?'manual':'auto',mode:manual?'manual-number':'auto',randomSource:'crypto.getRandomValues',audit:{rng:'Web Crypto getRandomValues',fairRandomOnly:manual===false && ccAdminConfig.fairRandomOnly===true,generatedAfterEntry:true}});
                 });
                 const v=res.snapshot.val(); if(!v||v.resultNumber===undefined||v.resultNumber===null)return;
                 settleColourClashAdminNumberRound(roundId,v.resultNumber);
@@ -6927,7 +7144,7 @@ function formatAdminMoney(value){
                 const main=document.getElementById('mainAdminMenu'); if(main) main.classList.add('hidden');
                 const section=document.getElementById('colourClashAdminSection'); if(section) section.classList.remove('hidden');
                 if(typeof ccAdminConfig !== 'object' || !ccAdminConfig) {
-                    ccAdminConfig = {enabled:true,entrySeconds:30,cooldownSeconds:5,minBet:10,maxBet:5000,minBetUsdt:0.1,maxBetUsdt:5000,multiplier:2,violetMultiplier:3,numberMultiplier:9,sizeMultiplier:2,autoResult:true,randomizedResult:true,noConsecutiveRepeat:true};
+                    ccAdminConfig = {enabled:true,entrySeconds:30,cooldownSeconds:5,minBet:10,maxBet:5000,minBetUsdt:0.1,maxBetUsdt:5000,multiplier:2,violetMultiplier:3,numberMultiplier:9,sizeMultiplier:2,autoResult:true,randomizedResult:true,noConsecutiveRepeat:false,fairRandomOnly:false,auditRounds:true};
                 }
                 const database=ensureGameVerseAdminDb();
                 const btnBox=document.getElementById('ccAdminNumberButtons');
@@ -6989,19 +7206,26 @@ function formatAdminMoney(value){
         }
         function saveColourClashConfig(){
             try{
-                const ids=['ccAdminEnabled','ccAdminEntrySeconds','ccAdminCooldownSeconds','ccAdminMinBet','ccAdminMaxBet','ccAdminMinBetUsdt','ccAdminMaxBetUsdt','ccAdminMultiplier','ccAdminVioletMultiplier','ccAdminNumberMultiplier','ccAdminSizeMultiplier','ccAdminAuto','ccAdminRandomized'];
+                const ids=['ccAdminEnabled','ccAdminEntrySeconds','ccAdminCooldownSeconds','ccAdminMinBet','ccAdminMaxBet','ccAdminMinBetUsdt','ccAdminMaxBetUsdt','ccAdminMultiplier','ccAdminVioletMultiplier','ccAdminNumberMultiplier','ccAdminSizeMultiplier','ccAdminAuto','ccAdminRandomized','ccAdminFairness','ccAdminMaxEntriesPerUser','ccAdminMaxRoundEntries','ccAdminMaxRoundLiability','ccAdminMaxRoundLiabilityUsdt'];
                 const els=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
                 if(Object.values(els).some(x=>!x)) return alert('WINGO settings UI is incomplete. Please reload the Admin App.');
                 const database=ensureGameVerseAdminDb();
                 if(!database) return alert('Firebase is unavailable. Please reload the Admin App and try again.');
-                const data={enabled:els.ccAdminEnabled.value==='true',entrySeconds:Math.max(5,Number(els.ccAdminEntrySeconds.value)||30),cooldownSeconds:Math.max(2,Number(els.ccAdminCooldownSeconds.value)||5),minBet:Math.max(1,Number(els.ccAdminMinBet.value)||10),maxBet:Math.max(1,Number(els.ccAdminMaxBet.value)||5000),minBetUsdt:Math.max(0.0001,Number(els.ccAdminMinBetUsdt.value)||0.1),maxBetUsdt:Math.max(0.0001,Number(els.ccAdminMaxBetUsdt.value)||5000),multiplier:Math.max(1,Number(els.ccAdminMultiplier.value)||2),violetMultiplier:Math.max(1,Number(els.ccAdminVioletMultiplier.value)||3),numberMultiplier:Math.max(1,Number(els.ccAdminNumberMultiplier.value)||9),sizeMultiplier:Math.max(1,Number(els.ccAdminSizeMultiplier.value)||2),autoResult:els.ccAdminAuto.value==='true',randomizedResult:els.ccAdminRandomized.value==='true',noConsecutiveRepeat:true,avoidSequentialPattern:true,avoidRepeatingWindow:10};
+                const data={fairRandomOnly:els.ccAdminFairness.value==='true',enabled:els.ccAdminEnabled.value==='true',entrySeconds:Math.max(5,Number(els.ccAdminEntrySeconds.value)||30),cooldownSeconds:Math.max(2,Number(els.ccAdminCooldownSeconds.value)||5),minBet:Math.max(1,Number(els.ccAdminMinBet.value)||10),maxBet:Math.max(1,Number(els.ccAdminMaxBet.value)||5000),minBetUsdt:Math.max(0.0001,Number(els.ccAdminMinBetUsdt.value)||0.1),maxBetUsdt:Math.max(0.0001,Number(els.ccAdminMaxBetUsdt.value)||5000),multiplier:Math.max(1,Number(els.ccAdminMultiplier.value)||2),violetMultiplier:Math.max(1,Number(els.ccAdminVioletMultiplier.value)||3),numberMultiplier:Math.max(1,Number(els.ccAdminNumberMultiplier.value)||9),sizeMultiplier:Math.max(1,Number(els.ccAdminSizeMultiplier.value)||2),autoResult:els.ccAdminAuto.value==='true',randomizedResult:true,noConsecutiveRepeat:false,auditRounds:true,maxEntriesPerUserPerRound:Math.max(1,Number(els.ccAdminMaxEntriesPerUser.value)||5),maxRoundEntries:Math.max(1,Number(els.ccAdminMaxRoundEntries.value)||500),maxRoundLiability:Math.max(0,Number(els.ccAdminMaxRoundLiability.value)||0),maxRoundLiabilityUsdt:Math.max(0,Number(els.ccAdminMaxRoundLiabilityUsdt.value)||0)};
                 if(data.maxBet<data.minBet)return alert('Maximum INR bet must be greater than or equal to minimum INR bet.');
                 if(data.maxBetUsdt<data.minBetUsdt)return alert('Maximum USDT bet must be greater than or equal to minimum USDT bet.');
-                database.ref('control/colourClashConfig').set(data).then(()=>alert('WINGO settings saved.')).catch(e=>alert('Could not save settings: '+e.message));
+                database.ref('control/colourClashConfig').update(data).then(()=>{ ccApplyAdminConfig(data); updateManualResultControlUi(); alert('WINGO settings saved.'); }).catch(e=>alert('Could not save settings: '+e.message));
             }catch(e){
                 console.error('[WINGO] Save error:',e);
                 alert('Could not save WINGO settings. Please reload the Admin App.');
             }
+        }
+        function updateManualResultControlUi(){
+            const locked = ccAdminConfig.fairRandomOnly === true;
+            const btn=document.getElementById('ccAdminConfirmResultBtn');
+            if(btn){ btn.disabled = locked || ccAdminPendingNumber===null || ccAdminPendingNumber===undefined; btn.textContent = locked ? '🔐 Manual Result Disabled — Fairness Lock ON' : '✅ Confirm Manual Result'; }
+            const status=document.getElementById('ccAdminFairnessStatus');
+            if(status){ status.textContent=locked?'ON':'OFF'; status.style.color=locked?'#34d399':'#fbbf24'; }
         }
         function getAdminColourClashRound(){const entry=ccAdminConfig.entrySeconds,cycle=ccAdminCycleMs(),idx=Math.floor(Date.now()/cycle),roundId=String(idx+1),start=idx*cycle,elapsed=Date.now()-start,phase=elapsed<entry*1000?'open':'cooldown';return {roundId,phase};}
         let ccAdminCurrency = 'INR';
@@ -7066,6 +7290,7 @@ function formatAdminMoney(value){
             loadColourClashAdminResult(roundId);
         }
         function selectColourClashAdminNumber(n){
+            if(ccAdminConfig.fairRandomOnly===true)return alert('Manual result selection is disabled while Fairness Lock is ON.');
             const r=getAdminColourClashRound();
             if(r.phase!=='open') return alert('Manual result selection is available only while the round is OPEN.');
             n=Number(n); if(!Number.isInteger(n)||n<0||n>9)return;
@@ -7078,6 +7303,7 @@ function formatAdminMoney(value){
             const btn=document.getElementById('ccAdminConfirmResultBtn'); if(btn)btn.disabled=false;
         }
         function confirmColourClashAdminNumberResult(){
+            if(ccAdminConfig.fairRandomOnly===true)return alert('Manual result confirmation is disabled while Fairness Lock is ON.');
             const r=getAdminColourClashRound();
             if(r.phase!=='open')return alert('You can confirm a manual result only while the round is OPEN.');
             if(ccAdminPendingNumber===null||ccAdminPendingNumber===undefined)return alert('Please select a number first.');
