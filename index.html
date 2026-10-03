@@ -1,4 +1,4 @@
-<html lang="en" style="--bg-darkblue: #041018; --panel-blue: #0a222c; --border-blue: #38bdf8; --glow-blue: rgba(56, 189, 248, 0.5); --accent-cyan: #bae6fd; --accent-gold: #fbbf24; --text-muted: #a5f3fc; --accent-rgb: 56, 189, 248; --theme-glow-scale: 0.5;"><head>
+<html lang="en" style="--bg-darkblue: #08052a; --panel-blue: #18104a; --border-blue: #8b5cf6; --glow-blue: rgba(139, 92, 246, 0.78); --accent-cyan: #22d3ee; --accent-gold: #f5d0fe; --text-muted: #c4b5fd; --accent-rgb: 139, 92, 246; --theme-glow-scale: 0.5;"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Titan GameVerse - Admin Panel</title>
@@ -824,9 +824,8 @@
 
 <style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style>
 <script>
-(function(){window.gvStartLoginEventNotifications=function(){try{const d=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():window.db;if(!d)return;const r=d.ref('adminNotifications/loginEvents');if(window.__gvLoginEventRef)try{window.__gvLoginEventRef.off('child_added')}catch(e){};window.__gvLoginEventRef=r;r.on('child_added',function(s){if(!window.__gvLoginEventsReady)return;const e=s.val()||{},label=e.username?('@'+String(e.username).replace(/^@/,'')):(e.customUid||e.userId||'User');if(typeof gvAdminNotify==='function')gvAdminNotify('New User Login',label+' has logged in to the User App.','👤');else if(typeof Notification!=='undefined'&&Notification.permission==='granted')new Notification('New User Login',{body:label+' has logged in to the User App.',tag:'gameverse-login-'+s.key});});setTimeout(()=>window.__gvLoginEventsReady=true,1200);}catch(e){console.warn('[Admin Login Notifications]',e)}};setTimeout(()=>{try{if(typeof requestAdminDeviceNotifications==='function')requestAdminDeviceNotifications()}catch(e){};setTimeout(()=>window.gvStartLoginEventNotifications(),800)},1800);})();
 </script>
-</head>
+<style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style></head>
 <body class="admin-shell-active">
 
     <!-- Auth Screen -->
@@ -896,9 +895,6 @@
                     <div class="topbar-icon-btn" id="topbarRefreshBtn" onclick="refreshAllAdminSystems()" title="Refresh all dashboard data &amp; systems">
                         🔄
                     </div>
-                    <div class="topbar-icon-btn" onclick="navTo('Notifications', openNotificationsAdminModal, null)">
-                        🔔
-                    </div>
                     <div class="topbar-admin-pill">
                         <div class="topbar-admin-avatar">🧑‍💼</div>
                         <div>
@@ -935,23 +931,23 @@
                 </div>
                 <div class="kpi-card kpi-yellow">
                     <div class="kpi-label">👑 TOTAL PROFIT</div>
-                    <div class="kpi-value" id="kpiTotalProfit">₹-33.84</div>
+                    <div class="kpi-value" id="kpiTotalProfit">₹24.90</div>
                     <div class="kpi-sub" id="kpiTotalProfitUsdt">USDT: 0.0000</div>
                     <div class="kpi-sub">Wagered − paid out, all games</div>
                     <div class="kpi-clear-link" onclick="clearPlayHistoryDigest()">🗑️ Clear Records</div>
                 </div>
                 <div class="kpi-card kpi-pink">
                     <div class="kpi-label">📶 ACTIVE TODAY</div>
-                    <div class="kpi-value" id="kpiActiveToday">2</div>
+                    <div class="kpi-value" id="kpiActiveToday">1</div>
                     <div class="kpi-sub">Unique players with a round today</div>
-                    <div class="kpi-sub">🟢 Online / Recently Active: <b id="kpiOnlineRecentlyActive">0</b></div>
+                    <div class="kpi-sub">🟢 Online / Recently Active: <b id="kpiOnlineRecentlyActive">1</b></div>
                 </div>
             </div>
 
             <!-- Game Command Center: live daily ledger -->
             <div class="dash-panel">
                 <div class="dash-panel-head">
-                    <h4>🎮 Game Command Center</h4><span id="dashboardGlobalGameState" style="float:right;font-size:11px;color:var(--text-muted);">Global switch: ACTIVE</span>
+                    <h4>🎮 Game Command Center</h4><span id="dashboardGlobalGameState" style="float:right;font-size:11px;color:var(--text-muted);">Global switch: PAUSED</span>
                     <span class="view-all-link" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">Manage Games →</span>
                 </div>
                 <div class="gcc-table-wrap" style="overflow-x:auto;">
@@ -959,52 +955,52 @@
                         <thead><tr><th>Game</th><th>Status</th><th>Players Today</th><th>Entries Today</th><th>INR Amount Today</th><th>USDT Amount Today</th></tr></thead>
                         <tbody id="gameCommandCenterBody"><tr>
                         <td>🚀 Rocket Jump</td>
-                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td style="color:#34d399">₹0.00</td>
+                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td style="color:#34d399">₹30.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🃏 High Card</td>
-                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🎡 Fortune Wheel</td>
-                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🪙 Coin Flip</td>
-                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🎯 Number Master</td>
-                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>💣 Mines</td>
-                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td style="color:#34d399">₹0.00</td>
+                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td style="color:#34d399">₹5.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🎨 WINGO</td>
-                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
-                        <td>2</td>
-                        <td>33</td>
-                        <td style="color:#34d399">₹330.00</td>
+                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr></tbody>
                     </table>
@@ -1065,23 +1061,6 @@
                     </div>
                     <div id="recentTransactionsList"><p style="font-size:12px;color:var(--text-muted);">No transactions yet.</p></div>
                 </div>
-
-                <!-- Alerts & Notifications -->
-                <div class="dash-panel">
-                    <div class="dash-panel-head">
-                        <h4>🔔 Alerts &amp; Notifications</h4>
-                        <span class="view-all-link" onclick="navTo('Notifications', openNotificationsAdminModal, null)">View All →</span>
-                    </div>
-                    <div id="dashAlertsList">
-                            <div class="alert-item">
-                                <div class="alert-dot info">👤</div>
-                                <div class="alert-body">
-                                    <div class="a1">New User Registered</div>
-                                    <div class="a2">User AV0YTC joined GameVerse • 2h ago</div>
-                                </div>
-                            </div>
-                        </div>
-                </div>
             </div>
 
             <!-- Quick Action Cards -->
@@ -1122,8 +1101,8 @@
             </div>
 
             <div class="dash2-grid">
-                <div class="dash2-stat"><span>🟢 Online Now</span><b id="d20OnlineNow">0</b><small>Presence heartbeat / last 5 minutes</small></div>
-                <div class="dash2-stat"><span>Online / Recently Active</span><b id="d20ActiveUsers">0</b><small>Users active in the last 15 minutes</small></div>
+                <div class="dash2-stat"><span>🟢 Online Now</span><b id="d20OnlineNow">1</b><small>Presence heartbeat / last 5 minutes</small></div>
+                <div class="dash2-stat"><span>Online / Recently Active</span><b id="d20ActiveUsers">1</b><small>Users active in the last 15 minutes</small></div>
                 <div class="dash2-stat"><span>Blocked Users</span><b id="d20BlockedUsers">0</b><small>Accounts currently marked blocked</small></div>
                 <div class="dash2-stat"><span>Pending Deposits</span><b id="d20PendingDeposits">0</b><small>Requests waiting for admin review</small></div>
                 <div class="dash2-stat"><span>Pending Withdrawals</span><b id="d20PendingWithdrawals">0</b><small>Requests waiting for admin review</small></div>
@@ -1196,7 +1175,7 @@
                     <div class="dash2-mini"><div class="m-label">Games Available</div><div class="m-value" id="d20GamesAvailable">0 / 0</div><div class="m-help">Effective status after global switch</div></div>
                     <div class="dash2-mini"><div class="m-label">Open Queues</div><div class="m-value" id="d20OpenQueues">0</div><div class="m-help">Pending deposits + withdrawals</div></div>
                     <div class="dash2-mini"><div class="m-label">New Users Today</div><div class="m-value" id="d20NewUsersToday">0</div><div class="m-help">Registration activity since midnight</div></div>
-                    <div class="dash2-mini"><div class="m-label">Active Last Hour</div><div class="m-value" id="d20ActiveHour">0</div><div class="m-help">Users with recent activity</div></div>
+                    <div class="dash2-mini"><div class="m-label">Active Last Hour</div><div class="m-value" id="d20ActiveHour">1</div><div class="m-help">Users with recent activity</div></div>
                 </div>
             </div>
 
@@ -1300,9 +1279,9 @@
             <div class="global-game-control">
                 <div>
                     <div class="gg-title">🎮 Global Games Switch</div>
-                    <div class="gg-sub" id="globalGamesStatusText">Global switch is ACTIVE — individual game settings still apply.</div>
+                    <div class="gg-sub" id="globalGamesStatusText">Global switch is PAUSED — all games are temporarily unavailable to users.</div>
                 </div>
-                <button id="globalGamesToggleBtn" onclick="toggleAllGamesStatus()" class="btn-red">⏸ Pause All Games</button>
+                <button id="globalGamesToggleBtn" onclick="toggleAllGamesStatus()" class="btn-green">▶ Activate All Games</button>
             </div>
 
             <div class="admin-section-card control-group" style="border-top:none; margin-top:0; padding-top:12px;">
@@ -1341,13 +1320,32 @@
                     <div class="gv-gm-help">Set 0 to disable a limit. When User Chooses Amount is enabled, the entered amount must stay inside the configured range.</div>
                 </div>
                 <div id="rocketAdvancedControls" class="gv-gm-card hidden" style="margin-top:10px;">
-                    <div class="gv-gm-card-title">🚀 Rocket Jump Controls</div>
+                    <div class="gv-gm-card-title">🚀 Rocket Jump — Live Round Controls</div>
+                    <div class="gv-gm-help" style="margin:0 0 10px;">Rocket Jump runs continuously for every player (like WINGO): betting window → flight → crash → short pause → next round. Players can place up to two bets per round and cash out any time before the crash. Round timing is locked into each round when it starts, so changes here apply from the <b>next</b> round.</div>
                     <div class="two-cols">
+                        <div><label>Round Engine</label>
+                            <select id="rocketAutoRun">
+                                <option value="on">RUNNING — rounds repeat automatically</option>
+                                <option value="off">PAUSED — no new rounds</option>
+                            </select>
+                        </div>
+                        <div><label>Betting Window (sec)</label><input id="rocketBettingSeconds" type="number" min="3" max="60" step="1" placeholder="10"></div>
+                        <div><label>Pause After Crash (sec)</label><input id="rocketCrashPauseSeconds" type="number" min="2" max="30" step="1" placeholder="4"></div>
+                        <div><label>Max Flight Time (sec)</label><input id="rocketMaxFlightSeconds" type="number" min="5" max="600" step="1" placeholder="90"></div>
                         <div><label>Tick / Update (ms)</label><input id="rocketTickMs" type="number" min="40" max="1000" step="10" placeholder="90"></div>
-                        <div><label>Multiplier Step</label><input id="rocketMultiplierStep" type="number" min="0.001" max="1" step="0.001" placeholder="0.03"></div>
+                        <div><label>Multiplier Step (per tick)</label><input id="rocketMultiplierStep" type="number" min="0.001" max="1" step="0.001" placeholder="0.03"></div>
                         <div><label>Maximum Multiplier Cap</label><input id="rocketMaxMultiplier" type="number" min="1" max="10000" step="0.1" placeholder="100"></div>
-                        <div style="grid-column:1/-1"><label>Crash Range — single value</label><input id="gameCrashRangeAdvanced" type="text" inputmode="decimal" autocomplete="off" placeholder="2.20 - 5.00"><small style="display:block;color:var(--text-muted);margin-top:4px">Enter one range only, for example: 2.20 - 5.00</small></div>
+                        <div><label>Instant Crash Chance (%)</label><input id="rocketInstantCrashPercent" type="number" min="0" max="50" step="0.5" placeholder="0"></div>
+                        <div style="grid-column:1/-1"><label>Crash Range — single value</label><input id="gameCrashRangeAdvanced" type="text" inputmode="decimal" autocomplete="off" placeholder="2.20 - 5.00"><small style="display:block;color:var(--text-muted);margin-top:4px">Enter one range only, for example: 2.20 - 5.00. Each round crashes at a random point inside this range.</small></div>
+                        <div style="grid-column:1/-1"><label>Next Round Crash Override (optional)</label><input id="rocketNextCrash" type="number" min="1" step="0.01" placeholder="Leave blank for random"><small style="display:block;color:var(--text-muted);margin-top:4px">If set, the next round that starts will crash exactly here, then this field clears itself. Use 1.00 for an instant crash.</small></div>
                     </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+                        <button type="button" class="btn-yellow" onclick="resetRocketJumpRound()" style="margin:0;flex:1 1 220px;">🔄 Reset Round to #1</button>
+                    </div>
+                    <div class="gv-gm-help" style="margin-top:7px;color:#facc15;">Reset clears Rocket Jump round history/bets and starts the shared round counter again from Round #1. Any active bets are refunded before the reset.</div>
+                    <div class="gv-gm-card-title" style="margin-top:14px;">📡 Live Monitor</div>
+                    <div id="rocketMonitorNow" class="live-status">Waiting for data…</div>
+                    <div id="rocketMonitorHistory" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;"></div>
                 </div>
                 <div id="numberMasterAdvancedControls" class="gv-gm-card hidden" style="margin-top:10px;">
                     <div class="gv-gm-card-title">🎯 Number Master Controls</div>
@@ -1602,10 +1600,10 @@
                     <button id="themeNeonBtn" onclick="setAppTheme('neon')" class="btn-gray">💚 Neon</button>
                     <button id="themeRedBtn" onclick="setAppTheme('red')" class="btn-gray">🟠 Orange</button>
                     <button id="themeColorfulBtn" onclick="setAppTheme('colorful')" class="btn-gray">🌈 Colorful</button>
-                    <button id="themeSkyBlueBtn" onclick="setAppTheme('skyblue')" class="btn-green">🌤️ Sky Blue</button>
+                    <button id="themeSkyBlueBtn" onclick="setAppTheme('skyblue')" class="btn-gray">🌤️ Sky Blue</button>
                     <button id="themeBloodMoonBtn" onclick="setAppTheme('bloodmoon')" class="btn-gray">🌑 Blood Moon</button>
                     <button id="themeEmeraldBtn" onclick="setAppTheme('emerald')" class="btn-gray">💎 Emerald</button>
-                    <button id="themeAuroraBtn" onclick="setAppTheme('aurora')" class="btn-gray">🌌 Aurora</button>
+                    <button id="themeAuroraBtn" onclick="setAppTheme('aurora')" class="btn-green">🌌 Aurora</button>
                 </div>
                 <p class="hint-text">Applies instantly to every user app and this admin panel.</p>
             </div>
@@ -1675,7 +1673,7 @@
                         <input id="ccAdminMaxRoundLiabilityUsdt" type="number" min="0" step="0.0001" placeholder="Max USDT Round Wager">
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
-                      <div class="stat-card"><span>Fairness Lock</span><b id="ccAdminFairnessStatus" style="color:#34d399">OFF</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Controls whether manual result selection is locked.</small></div>
+                      <div class="stat-card"><span>Fairness Lock</span><b id="ccAdminFairnessStatus" style="color:#34d399">ON</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Controls whether manual result selection is locked.</small></div>
                       <div class="stat-card"><span>RNG Source</span><b>Web Crypto</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Unpredictable per round.</small></div>
                     </div>
                     <p class="hint-text">For a fair game, result generation uses cryptographic randomness and is not based on round numbers, player bets, or visible history. Liability controls only manage exposure; they do not alter the result.</p>
@@ -1690,7 +1688,7 @@
                 <label style="font-size:11.5px; color:var(--text-muted); margin-top:14px; display:block;">Number Result — choose one number only:</label>
                 <div id="ccAdminNumberButtons" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px; margin-top:6px;"></div>
                 <div id="ccAdminNumberResultStatus" class="live-status" style="margin-top:8px;">No result selected.</div>
-                <button id="ccAdminConfirmResultBtn" class="cc-admin-confirm-btn" onclick="confirmColourClashAdminNumberResult()" disabled>Select a number to confirm a result</button>
+                <button id="ccAdminConfirmResultBtn" class="cc-admin-confirm-btn" onclick="confirmColourClashAdminNumberResult()" disabled="">🔐 Manual Result Disabled — Fairness Lock ON</button>
             </div>
 
             <div class="dash-panel">
@@ -2223,7 +2221,7 @@
                     <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input id="depositAutoDeletePending" type="checkbox" style="width:auto;"> Include pending deposits</label>
                 </div>
                 <button onclick="saveTransactionCleanupConfig()" class="btn-green" style="margin-top:6px;">💾 Save Cleanup Settings</button>
-                <div id="depositCleanupStatus" style="font-size:11px;color:var(--text-muted);margin-top:5px;">Automatic cleanup is disabled.</div>
+                <div id="depositCleanupStatus" style="font-size:11px;color:var(--text-muted);margin-top:5px;">Deposit cleanup: older than 7 days. Pending records are kept.</div>
             </div>
 
             <div class="admin-filter-tabs" id="depositFilterTabs">
@@ -2268,7 +2266,7 @@
                     <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input id="withdrawAutoDeletePending" type="checkbox" style="width:auto;"> Include pending withdrawals</label>
                 </div>
                 <button onclick="saveTransactionCleanupConfig()" class="btn-green" style="margin-top:6px;">💾 Save Cleanup Settings</button>
-                <div id="withdrawCleanupStatus" style="font-size:11px;color:var(--text-muted);margin-top:5px;">Automatic cleanup is disabled.</div>
+                <div id="withdrawCleanupStatus" style="font-size:11px;color:var(--text-muted);margin-top:5px;">Withdrawal cleanup: older than 7 days. Pending records are kept.</div>
             </div>
 
             <div class="admin-filter-tabs" id="withdrawFilterTabs">
@@ -2706,179 +2704,6 @@ function formatAdminMoney(value){
             }).catch(err => alert('Could not save glow setting: ' + err.message));
         }
 
-        // ===== REAL-TIME ADMIN DEVICE NOTIFICATIONS =====
-        // Notifies the currently logged-in admin device when:
-        // 1) a user becomes active/logs in,
-        // 2) a new deposit becomes pending,
-        // 3) a new withdrawal becomes pending.
-        // Uses the browser Notification API when permission is granted, with an
-        // in-app toast fallback. Initial Firebase snapshots are treated as baseline
-        // so old users/requests do not generate a flood of notifications.
-        const gvAdminNotifyState = {
-            started: false,
-            usersReady: false,
-            depositsReady: false,
-            withdrawalsReady: false,
-            usersOnline: Object.create(null),
-            pendingDeposits: Object.create(null),
-            pendingWithdrawals: Object.create(null),
-            userRef: null,
-            depositRef: null,
-            withdrawalRef: null,
-            toastTimer: null
-        };
-
-        function gvAdminEscapeNotifyText(value){
-            return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-        }
-
-        function gvAdminShowNotifyToast(title, body, icon){
-            let host=document.getElementById('gvAdminRealtimeToastHost');
-            if(!host){
-                host=document.createElement('div');
-                host.id='gvAdminRealtimeToastHost';
-                host.style.cssText='position:fixed;right:16px;bottom:16px;z-index:999999;display:flex;flex-direction:column;gap:8px;width:min(360px,calc(100vw - 32px));pointer-events:none;';
-                document.body.appendChild(host);
-            }
-            const toast=document.createElement('div');
-            toast.style.cssText='pointer-events:auto;background:rgba(15,23,42,.97);border:1px solid rgba(56,189,248,.45);border-radius:12px;padding:11px 13px;box-shadow:0 10px 30px rgba(0,0,0,.45);color:#fff;font-family:inherit;cursor:pointer;';
-            toast.innerHTML=`<div style="display:flex;gap:9px;align-items:flex-start;"><div style="font-size:21px;line-height:1;">${icon||'🔔'}</div><div style="min-width:0;flex:1;"><div style="font-size:12px;font-weight:900;">${gvAdminEscapeNotifyText(title)}</div><div style="font-size:10px;color:#cbd5e1;margin-top:3px;line-height:1.4;">${gvAdminEscapeNotifyText(body)}</div></div><button type="button" style="border:0;background:none;color:#94a3b8;font-size:16px;cursor:pointer;padding:0;">×</button></div>`;
-            const close=()=>{if(toast.parentNode)toast.remove();};
-            toast.querySelector('button').onclick=close;
-            toast.onclick=e=>{if(e.target.tagName!=='BUTTON')close();};
-            host.appendChild(toast);
-            setTimeout(close,7000);
-        }
-
-        function gvAdminBrowserNotify(title, body, icon){
-            try{
-                if(typeof Notification==='undefined') return;
-                if(Notification.permission==='granted'){
-                    const n=new Notification(title,{body:body,icon:icon||undefined,tag:'gameverse-admin-'+title});
-                    n.onclick=()=>{try{window.focus();n.close();}catch(e){}};
-                }
-            }catch(e){ console.warn('[Admin Notifications] Browser notification failed:',e); }
-        }
-
-        function gvAdminNotify(title, body, icon){
-            gvAdminShowNotifyToast(title,body,icon);
-            gvAdminBrowserNotify(title,body,icon);
-        }
-
-        async function requestAdminDeviceNotifications(){
-            try{
-                if(typeof Notification==='undefined'){
-                    gvAdminShowNotifyToast('Admin alerts enabled','Browser notifications are not supported here. In-app alerts will still appear.','🔔');
-                    return;
-                }
-                if(Notification.permission==='default'){
-                    const permission=await Notification.requestPermission();
-                    if(permission==='granted') gvAdminShowNotifyToast('Notifications enabled','This admin device will receive live alerts for users, deposits and withdrawals.','🔔');
-                    else gvAdminShowNotifyToast('Notifications blocked','Browser notifications are blocked. Live alerts will still appear inside the Admin App.','⚠️');
-                }else if(Notification.permission==='granted'){
-                    gvAdminShowNotifyToast('Notifications active','Live admin alerts are enabled on this device.','🔔');
-                }
-            }catch(e){
-                console.warn('[Admin Notifications] Permission request failed:',e);
-                gvAdminShowNotifyToast('Live alerts enabled','In-app admin alerts are active.','🔔');
-            }
-        }
-
-        function gvAdminIsUserActive(u){
-            if(!u || typeof u!=='object') return false;
-            const until=Number(u.onlineUntil)||0;
-            return u.isOnline===true || until>Date.now();
-        }
-
-        function gvAdminPending(r){
-            return r && typeof r==='object' && String(r.status||'pending').toLowerCase()==='pending';
-        }
-
-        function gvAdminUserLabel(u,key){
-            return String((u&&u.customUid)||((u&&u.username)?'@'+u.username:'')||key||'User');
-        }
-
-        function gvAdminAmountLabel(r){
-            const currency=String(r&&r.currency||'INR').toUpperCase();
-            const amount=Number(r&&r.amount)||0;
-            return currency==='USDT' ? `₮${amount.toFixed(4)}` : `₹${amount.toLocaleString('en-IN',{maximumFractionDigits:2})}`;
-        }
-
-        function stopAdminRealtimeNotifications(){
-            try{
-                if(gvAdminNotifyState.userRef)gvAdminNotifyState.userRef.off('value');
-                if(gvAdminNotifyState.depositRef)gvAdminNotifyState.depositRef.off('value');
-                if(gvAdminNotifyState.withdrawalRef)gvAdminNotifyState.withdrawalRef.off('value');
-            }catch(e){}
-            gvAdminNotifyState.started=false;
-            gvAdminNotifyState.usersReady=false;
-            gvAdminNotifyState.depositsReady=false;
-            gvAdminNotifyState.withdrawalsReady=false;
-            gvAdminNotifyState.usersOnline=Object.create(null);
-            gvAdminNotifyState.pendingDeposits=Object.create(null);
-            gvAdminNotifyState.pendingWithdrawals=Object.create(null);
-            gvAdminNotifyState.userRef=gvAdminNotifyState.depositRef=gvAdminNotifyState.withdrawalRef=null;
-        }
-
-        function startAdminRealtimeNotifications(){
-            const database=(typeof ensureGameVerseAdminDb==='function')?ensureGameVerseAdminDb():db;
-            if(!database || gvAdminNotifyState.started) return;
-            gvAdminNotifyState.started=true;
-            requestAdminDeviceNotifications();
-
-            gvAdminNotifyState.userRef=database.ref('users');
-            gvAdminNotifyState.userRef.on('value',snap=>{
-                const next=Object.create(null);
-                if(snap && snap.exists()) snap.forEach(ch=>{
-                    const u=ch.val()||{};
-                    next[ch.key]=gvAdminIsUserActive(u);
-                });
-                if(!gvAdminNotifyState.usersReady){
-                    gvAdminNotifyState.usersOnline=next;
-                    gvAdminNotifyState.usersReady=true;
-                    return;
-                }
-                Object.keys(next).forEach(uid=>{
-                    if(next[uid] && !gvAdminNotifyState.usersOnline[uid]){
-                        const u=snap.child(uid).val()||{};
-                        const label=gvAdminUserLabel(u,uid);
-                        gvAdminNotify('User Active / Login',`${label} is now active in the User App.`,'👤');
-                    }
-                });
-                gvAdminNotifyState.usersOnline=next;
-            },err=>console.warn('[Admin Notifications] User listener:',err));
-
-            const watchPending=(path,stateKey,title,icon)=>{
-                const ref=database.ref(path);
-                gvAdminNotifyState[stateKey]=ref;
-                ref.on('value',snap=>{
-                    const next=Object.create(null);
-                    if(snap && snap.exists()) snap.forEach(ch=>{
-                        const r=ch.val()||{};
-                        if(gvAdminPending(r)) next[ch.key]=true;
-                    });
-                    if(!gvAdminNotifyState[stateKey==='pendingDeposits'?'depositsReady':'withdrawalsReady']){
-                        gvAdminNotifyState[stateKey]=ref;
-                        if(stateKey==='pendingDeposits')gvAdminNotifyState.depositsReady=true;else gvAdminNotifyState.withdrawalsReady=true;
-                        if(stateKey==='pendingDeposits')gvAdminNotifyState.pendingDeposits=next;else gvAdminNotifyState.pendingWithdrawals=next;
-                        return;
-                    }
-                    const previous=stateKey==='pendingDeposits'?gvAdminNotifyState.pendingDeposits:gvAdminNotifyState.pendingWithdrawals;
-                    Object.keys(next).forEach(key=>{
-                        if(!previous[key]){
-                            const r=snap.child(key).val()||{};
-                            const label=String(r.customUid||r.uid||r.userUid||'User');
-                            const order=String(r.orderId||r.orderID||r.order_id||key);
-                            gvAdminNotify(title,`${label} • ${gvAdminAmountLabel(r)} • Order ${order}` ,icon);
-                        }
-                    });
-                    if(stateKey==='pendingDeposits')gvAdminNotifyState.pendingDeposits=next;else gvAdminNotifyState.pendingWithdrawals=next;
-                },err=>console.warn(`[Admin Notifications] ${path} listener:`,err));
-            };
-            watchPending('deposits','pendingDeposits','New Pending Deposit','💳');
-            watchPending('withdrawals','pendingWithdrawals','New Pending Withdrawal','💸');
-        }
-
         function loginAdmin() {
             const e = document.getElementById('email').value.trim();
             const p = document.getElementById('password').value;
@@ -2905,9 +2730,6 @@ function formatAdminMoney(value){
                     loadInvestmentConfigSetting();
                     loadAppStatusSetting();
                     loadBroadcastHistory();
-                    // Start device-level live alerts only after this browser has been
-                    // authenticated and authorized as an admin.
-                    startAdminRealtimeNotifications();
                 });
             }).catch(err => alert(err.message));
         }
@@ -2915,7 +2737,6 @@ function formatAdminMoney(value){
         function logoutAdmin() {
             if (!confirm('Log out of the admin panel?')) return;
             firebase.auth().signOut().then(() => {
-                stopAdminRealtimeNotifications();
                 document.getElementById('dash').classList.add('hidden');
                 document.body.classList.remove('admin-shell-active');
                 document.getElementById('auth').classList.remove('hidden');
@@ -3606,41 +3427,7 @@ function formatAdminMoney(value){
                         newestUser = { customUid: u.customUid, joinedAt: u.joinedAt };
                     }
                 });
-
-                // Build alerts list
-                const alerts = [];
-                largeWithdrawals.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-                largeWithdrawals.slice(0, 3).forEach(w => {
-                    alerts.push({ type: 'danger', icon: '⬆️', title: 'Large Withdrawal Pending', sub: `User ${w.uid} requested ₹${w.amount}`, timestamp: w.timestamp });
-                });
-                if (pendingDepositCount > 0) {
-                    alerts.push({ type: 'warn', icon: '💳', title: 'Deposits Awaiting Approval', sub: `${pendingDepositCount} pending deposit${pendingDepositCount > 1 ? 's' : ''}`, timestamp: Date.now() });
-                }
-                if (newestUser) {
-                    alerts.push({ type: 'info', icon: '👤', title: 'New User Registered', sub: `User ${newestUser.customUid || '---'} joined GameVerse`, timestamp: newestUser.joinedAt });
-                }
-                alerts.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-
-                const alertsList = document.getElementById('dashAlertsList');
-                if (alertsList) {
-                    if (alerts.length === 0) {
-                        alertsList.innerHTML = '<p style="font-size:12px;color:var(--text-muted);">No alerts right now.</p>';
-                    } else {
-                        alertsList.innerHTML = alerts.map(a => `
-                            <div class="alert-item">
-                                <div class="alert-dot ${a.type}">${a.icon}</div>
-                                <div class="alert-body">
-                                    <div class="a1">${a.title}</div>
-                                    <div class="a2">${a.sub} • ${a.timestamp ? timeAgo(a.timestamp) : ''}</div>
-                                </div>
-                            </div>
-                        `).join('');
-                    }
-                }
-            }).catch(() => {
-                const alertsList = document.getElementById('dashAlertsList');
-                if (alertsList) alertsList.innerHTML = '<p style="font-size:12px;color:var(--text-muted);">Could not load alerts.</p>';
-            });
+            }).catch(() => {});
         }
 
         function timeAgo(ts) {
@@ -4114,6 +3901,7 @@ function formatAdminMoney(value){
             const rocketAdvanced = document.getElementById('rocketAdvancedControls');
             const numberAdvanced = document.getElementById('numberMasterAdvancedControls');
             if (rocketAdvanced) rocketAdvanced.classList.toggle('hidden', gameId !== 'rocket_jump');
+            if (gameId === 'rocket_jump') startRocketMonitor(); else stopRocketMonitor();
             if (numberAdvanced) numberAdvanced.classList.toggle('hidden', gameId !== 'number_guess');
             if (gameId === 'rocket_jump') {
                 crashRangeInput.classList.remove('hidden');
@@ -4139,6 +3927,9 @@ function formatAdminMoney(value){
                     const range=String(data.crashRange ?? '2.20 - 5.00').trim();
                     setVal('gameCrashRangeAdvanced',range);
                     setVal('rocketTickMs',data.tickMs ?? 90); setVal('rocketMultiplierStep',data.multiplierStep ?? 0.03); setVal('rocketMaxMultiplier',data.maxMultiplierCap ?? 100);
+                    setVal('rocketBettingSeconds',data.bettingSeconds ?? 10); setVal('rocketCrashPauseSeconds',data.crashPauseSeconds ?? 4); setVal('rocketMaxFlightSeconds',data.maxFlightSeconds ?? 90);
+                    setVal('rocketInstantCrashPercent',data.instantCrashPercent ?? 0); setVal('rocketNextCrash',data.nextCrashOverride ?? '');
+                    setVal('rocketAutoRun',data.autoRun===false?'off':'on');
                 }
                 if(gameId==='number_guess'){ setVal('numberMinValue',data.minNumber ?? 1); setVal('numberMaxValue',data.maxNumber ?? 10); setVal('numberAttempts',data.attempts ?? 3); setVal('numberPayoutMultiplier',data.payoutMultiplier ?? 2); }
                 const winChanceInfo = gameId === 'rocket_jump' ? '' : ` | Win Chance: ${(data.winChancePercent !== undefined && data.winChancePercent !== null) ? data.winChancePercent : 50}% | Bet Scaling: -${data.betScalingPercent || 0}% per ₹100`;
@@ -4176,6 +3967,20 @@ function formatAdminMoney(value){
                 updatePayload.tickMs = Math.min(1000,Math.max(40,Number(document.getElementById('rocketTickMs')?.value)||90));
                 updatePayload.multiplierStep = Math.min(1,Math.max(0.001,Number(document.getElementById('rocketMultiplierStep')?.value)||0.03));
                 updatePayload.maxMultiplierCap = Math.min(10000,Math.max(1,Number(document.getElementById('rocketMaxMultiplier')?.value)||100));
+                const rjNum=(id,def,lo,hi)=>{const raw=document.getElementById(id)?.value;const n=(raw===''||raw===undefined)?def:Number(raw);return Math.min(hi,Math.max(lo,isNaN(n)?def:n));};
+                updatePayload.bettingSeconds = Math.round(rjNum('rocketBettingSeconds',10,3,60));
+                updatePayload.crashPauseSeconds = Math.round(rjNum('rocketCrashPauseSeconds',4,2,30));
+                updatePayload.maxFlightSeconds = Math.round(rjNum('rocketMaxFlightSeconds',90,5,600));
+                updatePayload.instantCrashPercent = rjNum('rocketInstantCrashPercent',0,0,50);
+                updatePayload.autoRun = (document.getElementById('rocketAutoRun')?.value || 'on') !== 'off';
+                const ovRaw = String(document.getElementById('rocketNextCrash')?.value ?? '').trim();
+                if (ovRaw === '') { updatePayload.nextCrashOverride = null; }
+                else {
+                    const ov = Number(ovRaw);
+                    if (!(ov >= 1) || ov > updatePayload.maxMultiplierCap) return alert('Next Round Crash Override must be between 1.00 and the Maximum Multiplier Cap.');
+                    updatePayload.nextCrashOverride = Number(ov.toFixed(2));
+                }
+                updatePayload.name = 'Rocket Jump';
             } else if(gameId==='number_guess') {
                 const nmin=Math.max(1,Math.floor(Number(document.getElementById('numberMinValue')?.value)||1));
                 const nmax=Math.max(nmin,Math.floor(Number(document.getElementById('numberMaxValue')?.value)||10));
@@ -4208,6 +4013,133 @@ function formatAdminMoney(value){
                 alert('Game settings updated successfully!');
                 loadSelectedGameData();
             });
+        }
+
+        /* --- ROCKET JUMP ROUND RESET --- */
+        async function resetRocketJumpRound() {
+            if (!db) return alert('Firebase is not connected.');
+            const ok = confirm('Reset Rocket Jump to Round #1? Active bets will be refunded and Rocket Jump round history/bets will be cleared.');
+            if (!ok) return;
+
+            const btn = document.querySelector('#rocketAdvancedControls button[onclick="resetRocketJumpRound()"]');
+            if (btn) { btn.disabled = true; btn.innerText = '⏳ Resetting…'; }
+
+            try {
+                const betsSnap = await db.ref('rocket_live/bets').once('value');
+                const active = [];
+                betsSnap.forEach(ch => {
+                    const b = ch.val() || {};
+                    if (b.status === 'active' && b.userId && Number(b.amount) > 0) {
+                        active.push({ id: ch.key, bet: b });
+                    }
+                });
+
+                // Refund each active bet with a per-bet guard on the user record.
+                // This prevents a reset and normal Rocket Jump settlement from
+                // crediting the same amount twice if they race.
+                for (const item of active) {
+                    const b = item.bet;
+                    const cur = String(b.currency || 'INR').toUpperCase() === 'USDT' ? 'USDT' : 'INR';
+                    const field = cur === 'USDT' ? 'usdtBalance' : 'balance';
+                    const dec = cur === 'USDT' ? 4 : 2;
+                    const amount = Number(b.amount) || 0;
+                    const guardKey = 'admin_reset_refund_' + item.id;
+
+                    const userRes = await db.ref('users/' + b.userId).transaction(user => {
+                        if (!user) return user;
+                        const guards = (user.rocketPayouts && typeof user.rocketPayouts === 'object') ? user.rocketPayouts : {};
+                        if (guards[guardKey]) return user;
+                        const next = Object.assign({}, user);
+                        next[field] = Number((Number(user[field] || 0) + amount).toFixed(dec));
+                        next.rocketPayouts = Object.assign({}, guards, {
+                            [guardKey]: { amount:Number(amount.toFixed(dec)), currency:cur, reason:'admin_round_reset', creditedAt:Date.now() }
+                        });
+                        return next;
+                    });
+
+                    if (!userRes.committed) throw new Error('Could not refund active bet ' + item.id + '.');
+                }
+
+                // Remove live round state. Existing user-app listeners see the null
+                // current round, and the existing shared engine then creates Round #1.
+                await db.ref('rocket_live').set({
+                    resetAt: Date.now(),
+                    resetBy: (firebase.auth().currentUser && firebase.auth().currentUser.uid) || 'admin'
+                });
+
+                alert('Rocket Jump has been reset. The next shared round is Round #1.');
+                loadSelectedGameData();
+            } catch (err) {
+                console.error('[Rocket Jump] Reset failed:', err);
+                alert('Rocket Jump reset failed: ' + (err && err.message ? err.message : 'Please check Firebase permissions.'));
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = '🔄 Reset Round to #1'; }
+            }
+        }
+
+        /* --- ROCKET JUMP LIVE MONITOR (admin) --- */
+        let rocketMonRefs = { cur:null, rounds:null, bets:null, betsRound:null, timer:null };
+        let rocketMonData = { cur:null, rounds:[], bets:[] };
+        function stopRocketMonitor() {
+            try { if (rocketMonRefs.cur) rocketMonRefs.cur.off('value'); } catch(e) {}
+            try { if (rocketMonRefs.rounds) rocketMonRefs.rounds.off('value'); } catch(e) {}
+            try { if (rocketMonRefs.bets) rocketMonRefs.bets.off('value'); } catch(e) {}
+            if (rocketMonRefs.timer) clearInterval(rocketMonRefs.timer);
+            rocketMonRefs = { cur:null, rounds:null, bets:null, betsRound:null, timer:null };
+        }
+        function startRocketMonitor() {
+            stopRocketMonitor();
+            rocketMonRefs.cur = db.ref('rocket_live/current');
+            rocketMonRefs.cur.on('value', snap => {
+                rocketMonData.cur = snap.val();
+                const id = rocketMonData.cur && rocketMonData.cur.id;
+                if (id && rocketMonRefs.betsRound !== id) {
+                    try { if (rocketMonRefs.bets) rocketMonRefs.bets.off('value'); } catch(e) {}
+                    rocketMonRefs.betsRound = id;
+                    rocketMonRefs.bets = db.ref('rocket_live/bets').orderByChild('roundId').equalTo(Number(id));
+                    rocketMonRefs.bets.on('value', bs => {
+                        const arr = [];
+                        bs.forEach(ch => { arr.push(ch.val() || {}); });
+                        rocketMonData.bets = arr;
+                        renderRocketMonitor();
+                    });
+                }
+                renderRocketMonitor();
+            });
+            rocketMonRefs.rounds = db.ref('rocket_live/rounds').limitToLast(30);
+            rocketMonRefs.rounds.on('value', snap => {
+                const arr = [];
+                snap.forEach(ch => { arr.push(ch.val() || {}); });
+                rocketMonData.rounds = arr;
+                renderRocketMonitor();
+            });
+            rocketMonRefs.timer = setInterval(renderRocketMonitor, 1000);
+        }
+        function renderRocketMonitor() {
+            const nowEl = document.getElementById('rocketMonitorNow');
+            const histEl = document.getElementById('rocketMonitorHistory');
+            if (!nowEl || !histEl) return;
+            const c = rocketMonData.cur;
+            if (!c) { nowEl.innerText = 'No round has run yet. A round starts automatically once the engine is running and a player has the app open.'; }
+            else {
+                const now = Date.now();
+                let phase = 'ENDED / WAITING';
+                let left = 0;
+                if (now < c.launchAt) { phase = 'BETTING'; left = c.launchAt - now; }
+                else if (now < c.crashAt) { phase = 'IN FLIGHT'; left = c.crashAt - now; }
+                else if (now < c.endAt) { phase = 'CRASHED'; left = c.endAt - now; }
+                const bets = rocketMonData.bets || [];
+                let inr = 0, usdt = 0;
+                bets.forEach(b => { if (b.status === 'cancelled' || b.status === 'refunded') return; if (String(b.currency).toUpperCase() === 'USDT') usdt += Number(b.amount) || 0; else inr += Number(b.amount) || 0; });
+                nowEl.innerText = `Round #${c.id} • ${phase}${left ? ' (' + Math.ceil(left / 1000) + 's)' : ''} • Crash point: ${Number(c.crashPoint).toFixed(2)}x${c.overridden ? ' (override)' : ''} • Bets: ${bets.length} • Wagered: ₹${inr.toFixed(2)} / USDT ${usdt.toFixed(4)}`;
+            }
+            const now2 = Date.now();
+            const done = (rocketMonData.rounds || []).filter(r => r && r.crashAt && r.crashAt <= now2).slice(-20).reverse();
+            histEl.innerHTML = done.length ? done.map(r => {
+                const v = Number(r.crashPoint) || 1;
+                const col = v < 2 ? '#38bdf8' : (v < 10 ? '#a78bfa' : '#f472b6');
+                return `<span title="Round #${r.id}" style="font-size:11px;font-weight:900;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:${col};">${v.toFixed(2)}x</span>`;
+            }).join('') : '<span style="font-size:11px;color:var(--text-muted);">No finished rounds yet.</span>';
         }
 
         function toggleAppStatus() {
