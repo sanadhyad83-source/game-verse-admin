@@ -1425,10 +1425,10 @@
                 <input id="gvBnInterval" type="number" min="2" max="30" step="1" value="4" onchange="gvBnSaveSettings()">
 
                 <label style="font-size:12px; color:var(--text-muted); margin:12px 0 4px; display:block;">Add a banner — image URL:</label>
-                <input id="gvBnUrl" type="text" placeholder="https://example.com/banner.jpg (wide image, ~16:7)" oninput="gvBnUrlTyped()">
+                <input id="gvBnUrl" type="text" placeholder="https://example.com/banner.jpg (any size — shown in full, never cropped)" oninput="gvBnUrlTyped()">
                 <label style="font-size:12px; color:var(--text-muted); margin:8px 0 4px; display:block;">…or upload an image:</label>
                 <input id="gvBnFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="gvBnFilePicked(this)">
-                <img id="gvBnPreview" alt="" style="display:none; width:100%; max-height:140px; object-fit:cover; border-radius:10px; margin-top:8px; border:1px solid var(--border-blue);">
+                <img id="gvBnPreview" alt="" style="display:none; width:100%; max-height:160px; object-fit:contain; background:#0a0a0c; border-radius:10px; margin-top:8px; border:1px solid var(--border-blue);">
                 <label style="font-size:12px; color:var(--text-muted); margin:8px 0 4px; display:block;">Link when tapped (optional):</label>
                 <input id="gvBnLink" type="text" placeholder="https://… (leave empty for no link)">
                 <button onclick="gvBnAdd()" style="margin-top:8px;">➕ Add Banner</button>
@@ -1790,7 +1790,7 @@
 
             <div class="dash-panel" style="margin-top:12px;">
                 <div class="dash-panel-head"><h4>🎯 Force Result (current round)</h4></div>
-                <p class="hint-text">Set three dice (1–6). Applied if the round is not resolved yet. Disabled when Fairness Lock is ON.</p>
+                <p class="hint-text">Set three dice (1–6). You can force the CURRENT round at any time until its timer fully ends (entries + cooldown). The result is drawn and shown to players only at the very end of the round, and the same stored result is what this panel and the players see. Disabled when Fairness Lock is ON.</p>
                 <div class="two-cols">
                     <div><label>Die 1</label><input id="k3ForceD1" type="number" min="1" max="6" placeholder="1–6"></div>
                     <div><label>Die 2</label><input id="k3ForceD2" type="number" min="1" max="6" placeholder="1–6"></div>
@@ -1798,7 +1798,7 @@
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn-yellow" onclick="forceK3Result()">Apply Forced Dice</button>
-                    <button type="button" class="btn-green" onclick="resolveK3AdminNow()">Resolve Current Round Now</button>
+                    <button type="button" class="btn-green" onclick="resolveK3AdminNow()">Lock Result Now (shown at round end)</button>
                 </div>
                 <div id="k3ForceStatus" class="live-status">No force set.</div>
             </div>
@@ -3210,7 +3210,7 @@ function formatAdminMoney(value){
             if(!keys.length){ box.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">No banners set — slider is hidden in the User App.</p>'; return; }
             box.innerHTML = keys.map(function(k, i){
                 var b = gvBnCache[k], on = b.enabled !== false;
-                var img = gvBnValidImg(b.imageUrl || '') ? '<img src="' + gvBnEsc(b.imageUrl) + '" alt="" style="width:100%; height:80px; object-fit:cover; border-radius:8px; display:block;">' : '<div style="height:80px; display:flex; align-items:center; justify-content:center; color:#f87171; font-size:11px;">Invalid image</div>';
+                var img = gvBnValidImg(b.imageUrl || '') ? '<img src="' + gvBnEsc(b.imageUrl) + '" alt="" style="width:100%; height:90px; object-fit:contain; background:#0a0a0c; border-radius:8px; display:block;">' : '<div style="height:80px; display:flex; align-items:center; justify-content:center; color:#f87171; font-size:11px;">Invalid image</div>';
                 return '<div style="border:1px solid var(--border-blue); border-radius:12px; padding:8px; margin-bottom:8px; opacity:' + (on ? 1 : 0.55) + ';">' + img +
                     '<div style="font-size:11px; color:var(--text-muted); margin:6px 0; word-break:break-all;">' + (b.linkUrl ? '🔗 ' + gvBnEsc(b.linkUrl) : 'No link') + ' • ' + (on ? '🟢 Active' : '⚪ Hidden') + '</div>' +
                     '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
@@ -8539,6 +8539,7 @@ function loadK3Admin() {
   settleAllPendingK3Entries();
   if (!window.__k3AdminTimer) window.__k3AdminTimer = setInterval(function(){
     refreshK3AdminLive();
+    try { k3AdminAutoResolve(); } catch (e) {}
   }, 800);
   // Realtime feed of ALL recent entries into live panel area as well
   if (!window.__k3LiveEntriesOn) {
@@ -8590,6 +8591,9 @@ function refreshK3AdminLive() {
       paintFromList(k3AdminEntriesCache);
     }
 
+    // throttle the heavy scan: live cache listener already keeps entries fresh
+    if (k3AdminCfg.__lastScan && (Date.now() - k3AdminCfg.__lastScan) < 5000 && k3AdminEntriesCache.length) return;
+    k3AdminCfg.__lastScan = Date.now();
     // 2) Live scan: pull a large slice and keep EVERY matching entry (no per-user merge)
     db.ref('k3/entries').limitToLast(1000).once('value').then(es => {
       const list = [];
@@ -8652,6 +8656,64 @@ function saveK3AdminSettings() {
   }).catch(e => alert('Save failed: ' + e.message));
 }
 
+function k3AdminRoundEndMs(rid) { return Number(rid) * k3AdminCycleMs(); }
+
+// One single place that draws a round (admin side). Uses forced dice if present.
+function k3AdminDrawTx(rid, fair) {
+  return db.ref('k3/rounds/' + rid).transaction(c => {
+    if (c && (c.status === 'resolved' || c.status === 'settled') && c.resultSum != null) return; // never overwrite
+    const useForced = !fair && c && k3AdminValidDice(c.forcedDice);
+    const dice = useForced ? c.forcedDice.map(Number)
+      : (c && k3AdminValidDice(c.dice) ? c.dice.map(Number)
+        : [1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6)]);
+    const sum = dice[0] + dice[1] + dice[2];
+    return Object.assign({}, c || {}, {
+      roundId: String(rid),
+      status: 'resolved',
+      dice,
+      resultSum: sum,
+      size: sum >= 11 ? 'Big' : 'Small',
+      parity: sum % 2 === 0 ? 'Even' : 'Odd',
+      source: useForced ? 'forced' : 'random',
+      resolvedAt: k3AdminNow(),
+      resolvedBy: 'admin'
+    });
+  });
+}
+
+// Runs from the admin timer: the moment a period REALLY ends, the admin app itself draws it
+// (using the forced dice) and settles bets, so the admin never depends on a player's phone.
+const k3AdminAutoDone = new Set();
+// FIX ("Preview stopped: a loop ran longer than 400ms"): the previous version had a `for` loop with
+// database awaits inside it, so the loop guard timed the network waits as if it were an infinite loop.
+// Now there is NO loop around any await: one small async function per round, started independently.
+async function k3AdminAutoResolveRound(rid) {
+  if (k3AdminAutoDone.has(rid)) return;
+  k3AdminAutoDone.add(rid);
+  try {
+    let round = (await db.ref('k3/rounds/' + rid).once('value')).val();
+    const done = !!(round && (round.status === 'resolved' || round.status === 'settled') && round.resultSum != null);
+    if (!done) {
+      let need = !!round; // a forced / existing node
+      if (!need) {
+        const es = await db.ref('k3/entries').orderByChild('roundId').equalTo(rid).limitToFirst(1).once('value');
+        need = es.exists();
+      }
+      if (!need) return;
+      round = (await k3AdminDrawTx(rid, k3AdminCfg.fairRandomOnly === true)).snapshot.val();
+    }
+    if (round && round.resultSum != null) await settleK3AdminEntries(rid, round);
+  } catch (e) { k3AdminAutoDone.delete(rid); }
+}
+function k3AdminAutoResolve() {
+  if (k3AdminCfg.autoResult === false) return;
+  const idx = Math.floor(k3AdminNow() / k3AdminCycleMs());
+  const ids = [];
+  if (idx - 1 >= 0) ids.push(String(idx));       // period that ended most recently
+  if (idx - 2 >= 0) ids.push(String(idx - 1));   // and the one before it
+  ids.forEach(function (rid) { k3AdminAutoResolveRound(rid); });
+}
+
 function k3AdminValidDice(d) {
   return Array.isArray(d) && d.length === 3 && d.every(x => Number.isInteger(Number(x)) && Number(x) >= 1 && Number(x) <= 6);
 }
@@ -8675,14 +8737,17 @@ async function forceK3Result() {
     // FIX: pick a round that is still UNRESOLVED. If the current one is already drawn
     // (or is being drawn right now in cooldown) the force would be silently ignored,
     // so we move to the next period and tell the admin exactly which one.
+    // The result is only drawn when the period fully ends, so the CURRENT round can be forced
+    // right up to its last moment. Only if it is already locked (or ends within ~1.5s) do we offer the next one.
     let r = k3AdminRoundState();
     let rid = String(r.roundId);
     const curSnap = await db.ref('k3/rounds/' + rid).once('value');
     const cur = curSnap.val();
     const curDone = !!(cur && (cur.status === 'resolved' || cur.status === 'settled') && cur.resultSum != null);
-    if (curDone || r.phase === 'cooldown') {
+    const msLeft = k3AdminRoundEndMs(rid) - k3AdminNow();
+    if (curDone || msLeft < 1500) {
       const nextId = String(Number(rid) + 1);
-      if (!confirm('Current period #' + rid + (curDone ? ' is already drawn.' : ' is already closing (being drawn).') +
+      if (!confirm('Current period #' + rid + (curDone ? ' is already locked/drawn.' : ' is ending right now (too late to be safe).') +
           '\n\nApply forced dice ' + d1 + ',' + d2 + ',' + d3 + ' to the NEXT period #' + nextId + ' instead?')) return;
       rid = nextId;
     }
@@ -8718,41 +8783,22 @@ async function resolveK3AdminNow() {
     const fair = cfg.fairRandomOnly === true;
     const r = k3AdminRoundState();
     const rid = String(r.roundId);
-    // FIX: resolving while bets are still open lets players bet on a known result.
-    if (r.phase === 'open' && !confirm('Entries for round #' + rid + ' are still OPEN.\n\nResolving now ends this period early. Continue?')) return;
-
-    const res = await db.ref('k3/rounds/' + rid).transaction(c => {
-      if (c && (c.status === 'resolved' || c.status === 'settled') && c.resultSum != null) return;
-      const useForced = !fair && c && k3AdminValidDice(c.forcedDice);
-      const dice = useForced ? c.forcedDice.map(Number)
-        : (c && k3AdminValidDice(c.dice) ? c.dice.map(Number)
-          : [1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6)]);
-      const sum = dice[0] + dice[1] + dice[2];
-      return Object.assign({}, c || {}, {
-        roundId: rid,
-        status: 'resolved',
-        dice,
-        resultSum: sum,
-        size: sum >= 11 ? 'Big' : 'Small',
-        parity: sum % 2 === 0 ? 'Even' : 'Odd',
-        source: useForced ? 'forced' : 'random',
-        resolvedAt: k3AdminNow(),
-        resolvedBy: 'admin'
-      });
-    });
+    if (!confirm('Lock the result of round #' + rid + ' now?\n\nPlayers will NOT see it (and no balances change) until the round timer fully ends. New bets on this round will be refused.')) return;
+    const res = await k3AdminDrawTx(rid, fair);
     const round = res.snapshot.val();
-    if (!round || round.resultSum == null) { alert('Could not resolve round.'); return; }
-    if (!res.committed) { alert('Round #' + rid + ' was already resolved: sum ' + round.resultSum + ' (' + (round.dice || []).join(',') + ')'); }
-    await settleK3AdminEntries(rid, round);
-    if (res.committed) alert('Round #' + rid + ' resolved: sum ' + round.resultSum + ' (' + (round.dice || []).join(',') + ')');
+    if (!round || round.resultSum == null) { alert('Could not lock round.'); return; }
+    const secs = Math.max(0, Math.ceil((k3AdminRoundEndMs(rid) - k3AdminNow()) / 1000));
+    alert((res.committed ? 'Round #' + rid + ' locked: ' : 'Round #' + rid + ' was already locked: ') +
+      'sum ' + round.resultSum + ' (' + (round.dice || []).join(',') + ').\nIt will be shown to players and settled in ~' + secs + 's.');
     loadK3AdminHistory();
-    loadK3AdminAllEntries();
     refreshK3AdminLive();
-  } catch (e) { alert('Resolve failed: ' + (e && e.message ? e.message : e)); }
+  } catch (e) { alert('Lock failed: ' + (e && e.message ? e.message : e)); }
 }
 
 function settleK3AdminEntries(roundId, round) {
   const rid = String(roundId);
+  // FIX: never pay/settle (balances change = result leak) before the period has fully ended.
+  if (k3AdminNow() < k3AdminRoundEndMs(rid)) return Promise.resolve();
   const sum = Number(round.resultSum);
   const size = String(round.size || (sum >= 11 ? 'Big' : 'Small'));
   const parity = String(round.parity || (sum % 2 === 0 ? 'Even' : 'Odd'));
