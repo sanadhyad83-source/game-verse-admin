@@ -1,4 +1,4 @@
-<html lang="en" style="--bg-darkblue: #08052a; --panel-blue: #18104a; --border-blue: #8b5cf6; --glow-blue: rgba(139, 92, 246, 0.78); --accent-cyan: #22d3ee; --accent-gold: #f5d0fe; --text-muted: #c4b5fd; --accent-rgb: 139, 92, 246; --theme-glow-scale: 0.5;"><head>
+<html lang="en" style="--bg-darkblue: #020817; --panel-blue: #071426; --border-blue: #2563eb; --glow-blue: rgba(37, 99, 235, 0.58); --accent-cyan: #0ea5e9; --accent-gold: #fbbf24; --text-muted: #93a4ba; --accent-rgb: 37, 99, 235; --theme-glow-scale: 0.5;"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Titan GameVerse - Admin Panel</title>
@@ -863,6 +863,7 @@
             <div class="sidebar-nav-item" onclick="navTo('Withdrawals', openWithdrawRequestsModal, this)"><span class="icon">💸</span> Withdrawals</div>
             <div class="sidebar-nav-item" onclick="navTo('Games Management', openGamesManagementAdminModal, this)"><span class="icon">🎮</span> Games Management</div>
             <div class="sidebar-nav-item" onclick="return gvOpenColourClashAdmin(this)"><span class="icon">🎨</span> WINGO</div>
+            <div class="sidebar-nav-item" onclick="return openK3Admin(this)"><span class="icon">🎲</span> K3</div>
             <div class="sidebar-nav-item" onclick="navTo('Mines Control', openMinesAdminModal, this)"><span class="icon">💣</span> Mines Control</div>
             <div class="sidebar-nav-item" onclick="navTo('Tournaments', openTournamentsAdminModal, this)"><span class="icon">🏆</span> Tournaments</div>
             <div class="sidebar-nav-item" onclick="navTo('Predictions', openPredictionsAdminModal, this)"><span class="icon">📊</span> Predictions</div>
@@ -931,7 +932,7 @@
                 </div>
                 <div class="kpi-card kpi-yellow">
                     <div class="kpi-label">👑 TOTAL PROFIT</div>
-                    <div class="kpi-value" id="kpiTotalProfit">₹24.90</div>
+                    <div class="kpi-value" id="kpiTotalProfit">₹-7.50</div>
                     <div class="kpi-sub" id="kpiTotalProfitUsdt">USDT: 0.0000</div>
                     <div class="kpi-sub">Wagered − paid out, all games</div>
                     <div class="kpi-clear-link" onclick="clearPlayHistoryDigest()">🗑️ Clear Records</div>
@@ -947,7 +948,7 @@
             <!-- Game Command Center: live daily ledger -->
             <div class="dash-panel">
                 <div class="dash-panel-head">
-                    <h4>🎮 Game Command Center</h4><span id="dashboardGlobalGameState" style="float:right;font-size:11px;color:var(--text-muted);">Global switch: PAUSED</span>
+                    <h4>🎮 Game Command Center</h4><span id="dashboardGlobalGameState" style="float:right;font-size:11px;color:var(--text-muted);">Global switch: ACTIVE</span>
                     <span class="view-all-link" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">Manage Games →</span>
                 </div>
                 <div class="gcc-table-wrap" style="overflow-x:auto;">
@@ -955,49 +956,56 @@
                         <thead><tr><th>Game</th><th>Status</th><th>Players Today</th><th>Entries Today</th><th>INR Amount Today</th><th>USDT Amount Today</th></tr></thead>
                         <tbody id="gameCommandCenterBody"><tr>
                         <td>🚀 Rocket Jump</td>
-                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>1</td>
-                        <td>3</td>
-                        <td style="color:#34d399">₹30.00</td>
+                        <td>1</td>
+                        <td style="color:#34d399">₹5.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🃏 High Card</td>
-                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🎡 Fortune Wheel</td>
-                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🪙 Coin Flip</td>
-                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🎯 Number Master</td>
-                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>💣 Mines</td>
-                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td style="color:#34d399">₹5.00</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🎨 WINGO</td>
-                        <td><span class="cc-status-pill cc-status-paused">● PAUSED</span></td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>🎲 K3</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>0</td>
                         <td>0</td>
                         <td style="color:#34d399">₹0.00</td>
@@ -1101,13 +1109,13 @@
             </div>
 
             <div class="dash2-grid">
-                <div class="dash2-stat"><span>🟢 Online Now</span><b id="d20OnlineNow">1</b><small>Presence heartbeat / last 5 minutes</small></div>
+                <div class="dash2-stat"><span>🟢 Online Now</span><b id="d20OnlineNow">0</b><small>Presence heartbeat / last 5 minutes</small></div>
                 <div class="dash2-stat"><span>Online / Recently Active</span><b id="d20ActiveUsers">1</b><small>Users active in the last 15 minutes</small></div>
                 <div class="dash2-stat"><span>Blocked Users</span><b id="d20BlockedUsers">0</b><small>Accounts currently marked blocked</small></div>
                 <div class="dash2-stat"><span>Pending Deposits</span><b id="d20PendingDeposits">0</b><small>Requests waiting for admin review</small></div>
                 <div class="dash2-stat"><span>Pending Withdrawals</span><b id="d20PendingWithdrawals">0</b><small>Requests waiting for admin review</small></div>
                 <div class="dash2-stat"><span>G Badge Users</span><b id="d20GBadgeUsers">0</b><small>Users with an active G badge</small></div>
-                <div class="dash2-stat"><span>Referral Network</span><b id="d20ReferralUsers">0</b><small>Users with at least one referral</small></div>
+                <div class="dash2-stat"><span>Referral Network</span><b id="d20ReferralUsers">0</b><small>Live referrers with ≥1 active downline</small></div>
             </div>
 
             <div class="dash-panel">
@@ -1279,9 +1287,9 @@
             <div class="global-game-control">
                 <div>
                     <div class="gg-title">🎮 Global Games Switch</div>
-                    <div class="gg-sub" id="globalGamesStatusText">Global switch is PAUSED — all games are temporarily unavailable to users.</div>
+                    <div class="gg-sub" id="globalGamesStatusText">Global switch is ACTIVE — individual game settings still apply.</div>
                 </div>
-                <button id="globalGamesToggleBtn" onclick="toggleAllGamesStatus()" class="btn-green">▶ Activate All Games</button>
+                <button id="globalGamesToggleBtn" onclick="toggleAllGamesStatus()" class="btn-red">⏸ Pause All Games</button>
             </div>
 
             <div class="admin-section-card control-group" style="border-top:none; margin-top:0; padding-top:12px;">
@@ -1339,22 +1347,22 @@
                         <div style="grid-column:1/-1"><label>Crash Range — single value</label><input id="gameCrashRangeAdvanced" type="text" inputmode="decimal" autocomplete="off" placeholder="2.20 - 5.00"><small style="display:block;color:var(--text-muted);margin-top:4px">Enter one range only, for example: 2.20 - 5.00. Each round crashes at a random point inside this range.</small></div>
                         <div style="grid-column:1/-1"><label>Next Round Crash Override (optional)</label><input id="rocketNextCrash" type="number" min="1" step="0.01" placeholder="Leave blank for random"><small style="display:block;color:var(--text-muted);margin-top:4px">If set, the next round that starts will crash exactly here, then this field clears itself. Use 1.00 for an instant crash.</small></div>
                     </div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-                        <button type="button" class="btn-yellow" onclick="resetRocketJumpRound()" style="margin:0;flex:1 1 220px;">🔄 Reset Round to #1</button>
-                    </div>
-                    <div class="gv-gm-help" style="margin-top:7px;color:#facc15;">Reset clears Rocket Jump round history/bets and starts the shared round counter again from Round #1. Any active bets are refunded before the reset.</div>
                     <div class="gv-gm-card-title" style="margin-top:14px;">📡 Live Monitor</div>
                     <div id="rocketMonitorNow" class="live-status">Waiting for data…</div>
                     <div id="rocketMonitorHistory" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;"></div>
+                    <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(var(--accent-rgb),.18);">
+                        <div class="gv-gm-card-title" style="margin:0 0 6px;">🔄 Restart Sequence</div>
+                        <p class="hint-text" style="margin:0 0 10px;">Reset the live round counter so the next round starts as <b>#1</b>. History rounds are kept. Confirm before using on a live table.</p>
+                        <button type="button" class="btn-yellow" onclick="resetRocketJumpToRound1()" style="margin:0;">🔄 Reset to Round #1</button>
+                    </div>
                 </div>
                 <div id="numberMasterAdvancedControls" class="gv-gm-card hidden" style="margin-top:10px;">
                     <div class="gv-gm-card-title">🎯 Number Master Controls</div>
                     <div class="two-cols">
-                        <div><label>Minimum Number</label><input id="numberMinValue" type="number" min="1" max="99" step="1" placeholder="1"></div>
-                        <div><label>Maximum Number</label><input id="numberMaxValue" type="number" min="1" max="99" step="1" placeholder="10"></div>
                         <div><label>Attempts Per Round</label><input id="numberAttempts" type="number" min="1" max="10" step="1" placeholder="3"></div>
                         <div><label>Win Payout Multiplier</label><input id="numberPayoutMultiplier" type="number" min="1" max="20" step="0.1" placeholder="2"></div>
                     </div>
+                    <p class="hint-text" style="margin:8px 0 0;">Number range is fixed by the game (system default). Only attempts and payout are adjustable here.</p>
                 </div>
                 <div id="gamePrizeWrapper" class="hidden" style="margin-top:10px;">
                     <label>Win Chance (%) — 0 always lose · 100 always win · Win pays 2× bet</label>
@@ -1595,7 +1603,7 @@
                 <label>🎨 App Theme — switches the color theme for both the Admin Panel and the User App:</label>
                 <div class="action-row" style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                     <button id="themeBlackBtn" onclick="setAppTheme('black')" class="btn-gray">⚫ Black (Silver)</button>
-                    <button id="themeDarkBlueBtn" onclick="setAppTheme('darkblue')" class="btn-gray">🔷 Dark Blue</button>
+                    <button id="themeDarkBlueBtn" onclick="setAppTheme('darkblue')" class="btn-green">🔷 Dark Blue</button>
                     <button id="themeGoldenBtn" onclick="setAppTheme('golden')" class="btn-gray">🟡 Golden</button>
                     <button id="themeNeonBtn" onclick="setAppTheme('neon')" class="btn-gray">💚 Neon</button>
                     <button id="themeRedBtn" onclick="setAppTheme('red')" class="btn-gray">🟠 Orange</button>
@@ -1603,7 +1611,7 @@
                     <button id="themeSkyBlueBtn" onclick="setAppTheme('skyblue')" class="btn-gray">🌤️ Sky Blue</button>
                     <button id="themeBloodMoonBtn" onclick="setAppTheme('bloodmoon')" class="btn-gray">🌑 Blood Moon</button>
                     <button id="themeEmeraldBtn" onclick="setAppTheme('emerald')" class="btn-gray">💎 Emerald</button>
-                    <button id="themeAuroraBtn" onclick="setAppTheme('aurora')" class="btn-green">🌌 Aurora</button>
+                    <button id="themeAuroraBtn" onclick="setAppTheme('aurora')" class="btn-gray">🌌 Aurora</button>
                 </div>
                 <p class="hint-text">Applies instantly to every user app and this admin panel.</p>
             </div>
@@ -1736,6 +1744,90 @@
         </div>
 
         <!-- User Play History Digest Section -->
+        
+        
+        <div id="k3AdminSection" class="hidden">
+            <h3 style="color:var(--accent-cyan);margin-top:0;font-size:16px;">🎲 K3 Settings &amp; Live Entries</h3>
+            <p class="hint-text">K3 uses the same period engine as WINGO. Result = sum of 3 dice (3–18). Players bet on Total, Big/Small, or Even/Odd.</p>
+
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom:14px;">
+                <div class="kpi-card kpi-blue"><div class="kpi-label">🎲 CURRENT ROUND</div><div class="kpi-value" id="k3AdminRound" style="font-size:18px;">—</div></div>
+                <div class="kpi-card kpi-purple"><div class="kpi-label">⏱️ PHASE</div><div class="kpi-value" id="k3AdminPhase" style="font-size:18px;">—</div></div>
+                <div class="kpi-card kpi-green"><div class="kpi-label">👥 TOTAL ENTRIES</div><div class="kpi-value" id="k3AdminEntryCount" style="font-size:18px;">0</div></div>
+                <div class="kpi-card kpi-yellow"><div class="kpi-label">💰 TOTAL AMOUNT</div><div class="kpi-value" id="k3AdminTotalAmount" style="font-size:18px;">₹0</div></div>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>⚙️ Game Settings</h4></div>
+                <div class="control-group" style="margin-top:0;border-top:none;padding-top:0;">
+                    <label>Game Availability:</label>
+                    <select id="k3AdminEnabled"><option value="true">ON — Players Can Play</option><option value="false">OFF — Game Locked</option></select>
+                    <div class="two-cols">
+                        <input id="k3AdminEntrySeconds" type="number" min="5" placeholder="Entry Seconds">
+                        <input id="k3AdminCooldownSeconds" type="number" min="2" placeholder="Cooldown Seconds">
+                    </div>
+                    <div class="two-cols">
+                        <input id="k3AdminMinBet" type="number" min="1" placeholder="Minimum Bet ₹">
+                        <input id="k3AdminMaxBet" type="number" min="1" placeholder="Maximum Bet ₹">
+                    </div>
+                    <div style="font-size:11px;font-weight:800;color:var(--accent-cyan);margin-top:8px;margin-bottom:4px;">₮ USDT BET LIMITS</div>
+                    <div class="two-cols">
+                        <input id="k3AdminMinBetUsdt" type="number" min="0.0001" step="0.0001" placeholder="Minimum Bet USDT">
+                        <input id="k3AdminMaxBetUsdt" type="number" min="0.0001" step="0.0001" placeholder="Maximum Bet USDT">
+                    </div>
+                    <div class="two-cols">
+                        <input id="k3AdminSizeMult" type="number" min="1" step="0.01" placeholder="Big/Small Multiplier">
+                        <input id="k3AdminParityMult" type="number" min="1" step="0.01" placeholder="Even/Odd Multiplier">
+                    </div>
+                    <label style="margin-top:10px;">Automatic Result</label>
+                    <select id="k3AdminAuto"><option value="true">Automatic Dice Roll: ON</option><option value="false">Manual Result Only</option></select>
+                    <label style="margin-top:8px;">Fairness Lock</label>
+                    <select id="k3AdminFairness"><option value="false">🔓 Fairness Lock: OFF</option><option value="true">🔒 Fairness Lock: ON</option></select>
+                    <button type="button" class="btn-green" onclick="saveK3AdminSettings()" style="margin-top:12px;">💾 Save K3 Settings</button>
+                    <div id="k3AdminSaveStatus" class="live-status" style="margin-top:8px;">—</div>
+                </div>
+            </div>
+
+            <div class="dash-panel" style="margin-top:12px;">
+                <div class="dash-panel-head"><h4>🎯 Force Result (current round)</h4></div>
+                <p class="hint-text">Set three dice (1–6). Applied if the round is not resolved yet. Disabled when Fairness Lock is ON.</p>
+                <div class="two-cols">
+                    <div><label>Die 1</label><input id="k3ForceD1" type="number" min="1" max="6" placeholder="1–6"></div>
+                    <div><label>Die 2</label><input id="k3ForceD2" type="number" min="1" max="6" placeholder="1–6"></div>
+                    <div><label>Die 3</label><input id="k3ForceD3" type="number" min="1" max="6" placeholder="1–6"></div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn-yellow" onclick="forceK3Result()">Apply Forced Dice</button>
+                    <button type="button" class="btn-green" onclick="resolveK3AdminNow()">Resolve Current Round Now</button>
+                </div>
+                <div id="k3ForceStatus" class="live-status">No force set.</div>
+            </div>
+
+            <div class="dash-panel" style="margin-top:12px;">
+                <div class="dash-panel-head"><h4>📋 Live Entries (current round)</h4></div>
+                <div id="k3AdminEntriesContainer" style="max-height:280px;overflow-y:auto;">Loading entries...</div>
+            </div>
+
+            <div class="dash-panel" style="margin-top:12px;">
+                <div class="dash-panel-head">
+                    <h4>📜 Round History</h4>
+                    <span class="view-all-link" style="color:#f87171;cursor:pointer;" onclick="clearK3RoundHistory()">🗑️ Clear History</span>
+                </div>
+                <div id="k3AdminHistory" style="max-height:260px;overflow:auto;">Loading…</div>
+            </div>
+
+            <div class="dash-panel" style="margin-top:12px;">
+                <div class="dash-panel-head">
+                    <h4>📋 Users' Entry History</h4>
+                    <span class="view-all-link" style="color:#f87171;cursor:pointer;" onclick="clearK3EntriesHistory()">🗑️ Delete All Entries</span>
+                </div>
+                <input id="k3EntriesSearchUid" type="text" placeholder="🔍 Search by UID..." oninput="renderK3EntriesHistory()" style="margin-bottom:10px;">
+                <div id="k3AdminAllEntriesContainer" style="max-height:320px;overflow-y:auto;">Loading…</div>
+            </div>
+
+            <button type="button" class="btn-gray" onclick="hideAllAdminSections();document.getElementById('mainAdminMenu').classList.remove('hidden');">⬅ Back</button>
+        </div>
+
         <div id="playHistoryDigestSection" class="hidden">
             <div style="display:flex; align-items:center; justify-content:space-between;">
                 <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">📊 User Play History Digest</h3>
@@ -2752,7 +2844,8 @@ function formatAdminMoney(value){
             {id:'coin_flip',name:'🪙 Coin Flip'},
             {id:'number_guess',name:'🎯 Number Master'},
             {id:'mines',name:'💣 Mines'},
-            {id:'colour_clash',name:'🎨 WINGO'}
+            {id:'colour_clash',name:'🎨 WINGO'},
+            {id:'k3',name:'🎲 K3'}
         ];
 
         function openDashboard20(){
@@ -2848,9 +2941,9 @@ function formatAdminMoney(value){
             const read = path => db.ref(path).once('value').catch(()=>null);
             Promise.all([
                 read('users'), read('deposits'), read('withdrawals'), read('games'),
-                read('control/minesConfig'), read('control/colourClashConfig'),
+                read('control/minesConfig'), read('control/colourClashConfig'), read('control/k3Config'),
                 read('control/globalGamesStatus'), read('control/dashboard20')
-            ]).then(([usersSnap,depositsSnap,withdrawalsSnap,gamesSnap,minesSnap,ccSnap,globalSnap,cfgSnap])=>{
+            ]).then(([usersSnap,depositsSnap,withdrawalsSnap,gamesSnap,minesSnap,ccSnap,k3Snap,globalSnap,cfgSnap])=>{
                 window.__globalGamesState=window.__globalGamesPending || ((globalSnap&&globalSnap.val()==='paused')?'paused':'active');
                 let activeUsers=0, activeHour=0, newUsersToday=0, blockedUsers=0, gBadgeUsers=0, referralUsers=0;
                 const now=Date.now(); const todayStart=new Date(); todayStart.setHours(0,0,0,0); const todayMs=todayStart.getTime();
@@ -2862,7 +2955,33 @@ function formatAdminMoney(value){
                 __sessionControls.presenceRefreshMs=Math.max(5000,Number(cfg.presenceRefreshMs)||10000);
                 __sessionControls.presenceMonitor=cfg.presenceMonitor!==false;
                 const presence=calculateLiveUserPresence(usersSnap); activeUsers=presence.recent; activeHour=presence.hourly; const active5=presence.online;
-                if(usersSnap && usersSnap.exists()) usersSnap.forEach(ch=>{const u=ch.val()||{};if(String(u.status||'').toLowerCase()==='blocked')blockedUsers++;const created=Number(u.createdAt||u.registeredAt||u.timestamp||u.joinedAt||0);if(created>=todayMs)newUsersToday++;if(u.gBadge&&u.gBadge.active!==false)gBadgeUsers++;if(Number(u.referredCount||0)>0)referralUsers++;});
+                if(usersSnap && usersSnap.exists()){
+                    const liveCustomUids=new Set();
+                    const referrersWithLiveDownline=new Set();
+                    usersSnap.forEach(ch=>{
+                        const u=ch.val()||{};
+                        const st=String(u.status||'').toLowerCase();
+                        if(st==='deleted') return;
+                        const cuid=String(u.customUid||'').trim();
+                        if(cuid) liveCustomUids.add(cuid);
+                        if(st==='blocked') blockedUsers++;
+                        const created=Number(u.createdAt||u.registeredAt||u.timestamp||u.joinedAt||0);
+                        if(created>=todayMs) newUsersToday++;
+                        if(u.gBadge&&u.gBadge.active!==false) gBadgeUsers++;
+                    });
+                    // Live referral network: only count referrers who still have at least one
+                    // non-deleted, non-blocked downline user (ignore stale referredCount).
+                    usersSnap.forEach(ch=>{
+                        const u=ch.val()||{};
+                        const st=String(u.status||'').toLowerCase();
+                        if(st==='deleted'||st==='blocked') return;
+                        const rb=String(u.referredBy||'').trim();
+                        if(rb && rb.toUpperCase()!=='ADMIN' && liveCustomUids.has(rb)){
+                            referrersWithLiveDownline.add(rb);
+                        }
+                    });
+                    referralUsers=referrersWithLiveDownline.size;
+                }
                 let pendingDep=0,pendingWd=0,oldestDep=0,oldestWd=0;
                 const getTs=o=>{const v=o&&(o.timestamp??o.createdAt??o.created_at??o.time);const n=Number(v);return n>0?n:(typeof v==='string'&&Date.parse(v)?Date.parse(v):0);};
                 if(depositsSnap&&depositsSnap.exists())depositsSnap.forEach(ch=>{const o=ch.val()||{};if(String(o.status||'').toLowerCase()==='pending'){pendingDep++;const t=getTs(o);if(t&&(oldestDep===0||t<oldestDep))oldestDep=t;}});
@@ -2876,7 +2995,7 @@ function formatAdminMoney(value){
                 const sel=(id,val,def)=>{const el=document.getElementById(id);if(el)el.value=(val===undefined||val===null)?def:String(val);};
                 setCheck('d20StrictPresence',__sessionControls.strictPresence);sel('d20PresenceTimeout',__sessionControls.presenceTimeoutMinutes,5);sel('d20PresenceRefresh',__sessionControls.presenceRefreshMs,10000);setCheck('d20PresenceMonitor',__sessionControls.presenceMonitor);renderSessionFlags();
                 const globalActive=window.__globalGamesState!=='paused'; const body=document.getElementById('d20GameMatrixBody'); let effectiveActiveCount=0;
-                if(body){const games=(gamesSnap&&gamesSnap.val())||{};body.innerHTML=DASH20_GAME_LIST.map(g=>{let individual='active';if(g.id==='mines')individual=((minesSnap&&minesSnap.val()||{}).enabled!==false)?'active':'paused';else if(g.id==='colour_clash')individual=((ccSnap&&ccSnap.val()||{}).enabled!==false)?'active':'paused';else individual=((games[g.id]||{}).status==='active')?'active':'paused';const effective=globalActive&&individual==='active'?'active':'paused';if(effective==='active')effectiveActiveCount++;return `<tr><td>${g.name}</td><td><span class="dash2-pill ${individual==='active'?'on':'off'}">${individual.toUpperCase()}</span></td><td><span class="dash2-pill ${globalActive?'on':'off'}">${globalActive?'ACTIVE':'PAUSED'}</span></td><td><span class="dash2-pill ${effective==='active'?'on':'off'}">${effective.toUpperCase()}</span></td></tr>`;}).join('');}
+                if(body){const games=(gamesSnap&&gamesSnap.val())||{};body.innerHTML=DASH20_GAME_LIST.map(g=>{let individual='active';if(g.id==='mines')individual=((minesSnap&&minesSnap.val()||{}).enabled!==false)?'active':'paused';else if(g.id==='colour_clash')individual=((ccSnap&&ccSnap.val()||{}).enabled!==false)?'active':'paused';else if(g.id==='k3')individual=((k3Snap&&k3Snap.val()||{}).enabled!==false)?'active':'paused';else individual=((games[g.id]||{}).status==='active')?'active':'paused';const effective=globalActive&&individual==='active'?'active':'paused';if(effective==='active')effectiveActiveCount++;return `<tr><td>${g.name}</td><td><span class="dash2-pill ${individual==='active'?'on':'off'}">${individual.toUpperCase()}</span></td><td><span class="dash2-pill ${globalActive?'on':'off'}">${globalActive?'ACTIVE':'PAUSED'}</span></td><td><span class="dash2-pill ${effective==='active'?'on':'off'}">${effective.toUpperCase()}</span></td></tr>`;}).join('');}
                 set('d20GamesAvailable',effectiveActiveCount+' / '+DASH20_GAME_LIST.length);
                 const svc=(id,on)=>{const el=document.getElementById(id);if(el)el.textContent=on?'ON':'OFF';};svc('d20DepositService',cfg.depositsEnabled!==false);svc('d20WithdrawalService',cfg.withdrawalsEnabled!==false);svc('d20RegistrationService',cfg.registrationEnabled!==false);
                 const ql=document.getElementById('d20QueueHealthLabel');if(ql)ql.textContent=(pendingDep+pendingWd)>0?'Queue has '+(pendingDep+pendingWd)+' pending item(s)':'Queues clear';
@@ -2983,7 +3102,7 @@ function formatAdminMoney(value){
         // flow), we must hide every section before opening a new one — otherwise
         // jumping straight from one section to another via the sidebar would leave
         // both visible at once.
-        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','dashboard20Section','colourClashAdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','tournamentsAdminSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
+        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','dashboard20Section','colourClashAdminSection','k3AdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','tournamentsAdminSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
 
         function hideAllAdminSections() {
             ALL_ADMIN_SECTION_IDS.forEach(id => {
@@ -3273,7 +3392,8 @@ function formatAdminMoney(value){
             { id: 'coin_flip', name: '🪙 Coin Flip' },
             { id: 'number_guess', name: '🎯 Number Master' },
             { id: 'mines', name: '💣 Mines' },
-            { id: 'colour_clash', name: '🎨 WINGO' }
+            { id: 'colour_clash', name: '🎨 WINGO' },
+            { id: 'k3', name: '🎲 K3' }
         ];
 
         function loadDashboardHome() {
@@ -3461,10 +3581,12 @@ function formatAdminMoney(value){
                 read('games'),
                 read('control/minesConfig'),
                 read('control/colourClashConfig'),
+                read('control/k3Config'),
                 read('control/globalGamesStatus'),
                 read('game_rounds'),
-                read('colour_clash/entries')
-            ]).then(([gamesSnap,minesCfgSnap,ccCfgSnap,globalSnap,roundsSnap,ccSnap]) => {
+                read('colour_clash/entries'),
+                read('k3/entries')
+            ]).then(([gamesSnap,minesCfgSnap,ccCfgSnap,k3CfgSnap,globalSnap,roundsSnap,ccSnap,k3Snap]) => {
                 const gamesData = (gamesSnap && gamesSnap.val()) || {};
                 const globalActive = !globalSnap || globalSnap.val() !== 'paused';
                 const perGame = {};
@@ -3485,7 +3607,8 @@ function formatAdminMoney(value){
                         'lucky coin flip':'coin_flip',
                         'number master':'number_guess',
                         'mines':'mines',
-                        'wingo':'colour_clash'
+                        'wingo':'colour_clash',
+                        'k3':'k3'
                     };
                     return byName[name] || '';
                 };
@@ -3554,6 +3677,22 @@ function formatAdminMoney(value){
                     );
                 });
 
+                // K3 has its own entry ledger (same pattern as WINGO)
+                if (k3Snap && k3Snap.exists()) k3Snap.forEach(ch => {
+                    const r = ch.val() || {};
+                    const key = 'k3:' + String(ch.key || r.id || r.roundId || r.timestamp || '');
+                    add(
+                        'k3',
+                        r,
+                        r.amount ?? r.betAmount ?? r.fee,
+                        r.winAmount ?? r.payout ?? 0,
+                        r.customUid || r.userId || r.uid,
+                        r.timestamp ?? r.createdAt ?? r.time,
+                        r.currency,
+                        key
+                    );
+                });
+
                 const globalLabel = document.getElementById('dashboardGlobalGameState');
                 if (globalLabel) globalLabel.textContent = 'Global switch: ' + (globalActive ? 'ACTIVE' : 'PAUSED');
 
@@ -3561,6 +3700,7 @@ function formatAdminMoney(value){
                     if (!globalActive) return 'paused';
                     if (id === 'mines') return minesCfgSnap && (minesCfgSnap.val() || {}).enabled !== false ? 'active' : 'paused';
                     if (id === 'colour_clash') return ccCfgSnap && (ccCfgSnap.val() || {}).enabled !== false ? 'active' : 'paused';
+                    if (id === 'k3') return k3CfgSnap && (k3CfgSnap.val() || {}).enabled !== false ? 'active' : 'paused';
                     return (gamesData[id] || {}).status === 'active' ? 'active' : 'paused';
                 };
                 const money = (v,c) => c === 'USDT' ? `₮ ${Number(v||0).toFixed(4)}` : `₹${Number(v||0).toFixed(2)}`;
@@ -3931,7 +4071,7 @@ function formatAdminMoney(value){
                     setVal('rocketInstantCrashPercent',data.instantCrashPercent ?? 0); setVal('rocketNextCrash',data.nextCrashOverride ?? '');
                     setVal('rocketAutoRun',data.autoRun===false?'off':'on');
                 }
-                if(gameId==='number_guess'){ setVal('numberMinValue',data.minNumber ?? 1); setVal('numberMaxValue',data.maxNumber ?? 10); setVal('numberAttempts',data.attempts ?? 3); setVal('numberPayoutMultiplier',data.payoutMultiplier ?? 2); }
+                if(gameId==='number_guess'){ setVal('numberAttempts',data.attempts ?? 3); setVal('numberPayoutMultiplier',data.payoutMultiplier ?? 2); }
                 const winChanceInfo = gameId === 'rocket_jump' ? '' : ` | Win Chance: ${(data.winChancePercent !== undefined && data.winChancePercent !== null) ? data.winChancePercent : 50}% | Bet Scaling: -${data.betScalingPercent || 0}% per ₹100`;
                 document.getElementById('liveGameStatus').innerText = `Status: ${(data.status||'active').toUpperCase()} | Mode: ${data.allowUserAmount ? 'Allow User Own Amount' : 'Fixed Fee'} | INR: ₹${data.entryFee || 0} | USDT: ${Number(data.usdtEntryFee || data.entryFee || 0).toFixed(4)}${winChanceInfo}`;
             });
@@ -3982,9 +4122,7 @@ function formatAdminMoney(value){
                 }
                 updatePayload.name = 'Rocket Jump';
             } else if(gameId==='number_guess') {
-                const nmin=Math.max(1,Math.floor(Number(document.getElementById('numberMinValue')?.value)||1));
-                const nmax=Math.max(nmin,Math.floor(Number(document.getElementById('numberMaxValue')?.value)||10));
-                updatePayload.minNumber=nmin; updatePayload.maxNumber=Math.min(99,nmax);
+                // minNumber / maxNumber are system-fixed — not editable in admin
                 updatePayload.attempts=Math.min(10,Math.max(1,Math.floor(Number(document.getElementById('numberAttempts')?.value)||3)));
                 updatePayload.payoutMultiplier=Math.min(20,Math.max(1,Number(document.getElementById('numberPayoutMultiplier')?.value)||2));
                 let winChance = Number(document.getElementById('gameWinChance').value);
@@ -4015,71 +4153,35 @@ function formatAdminMoney(value){
             });
         }
 
-        /* --- ROCKET JUMP ROUND RESET --- */
-        async function resetRocketJumpRound() {
-            if (!db) return alert('Firebase is not connected.');
-            const ok = confirm('Reset Rocket Jump to Round #1? Active bets will be refunded and Rocket Jump round history/bets will be cleared.');
-            if (!ok) return;
-
-            const btn = document.querySelector('#rocketAdvancedControls button[onclick="resetRocketJumpRound()"]');
-            if (btn) { btn.disabled = true; btn.innerText = '⏳ Resetting…'; }
-
-            try {
-                const betsSnap = await db.ref('rocket_live/bets').once('value');
-                const active = [];
-                betsSnap.forEach(ch => {
-                    const b = ch.val() || {};
-                    if (b.status === 'active' && b.userId && Number(b.amount) > 0) {
-                        active.push({ id: ch.key, bet: b });
-                    }
-                });
-
-                // Refund each active bet with a per-bet guard on the user record.
-                // This prevents a reset and normal Rocket Jump settlement from
-                // crediting the same amount twice if they race.
-                for (const item of active) {
-                    const b = item.bet;
-                    const cur = String(b.currency || 'INR').toUpperCase() === 'USDT' ? 'USDT' : 'INR';
-                    const field = cur === 'USDT' ? 'usdtBalance' : 'balance';
-                    const dec = cur === 'USDT' ? 4 : 2;
-                    const amount = Number(b.amount) || 0;
-                    const guardKey = 'admin_reset_refund_' + item.id;
-
-                    const userRes = await db.ref('users/' + b.userId).transaction(user => {
-                        if (!user) return user;
-                        const guards = (user.rocketPayouts && typeof user.rocketPayouts === 'object') ? user.rocketPayouts : {};
-                        if (guards[guardKey]) return user;
-                        const next = Object.assign({}, user);
-                        next[field] = Number((Number(user[field] || 0) + amount).toFixed(dec));
-                        next.rocketPayouts = Object.assign({}, guards, {
-                            [guardKey]: { amount:Number(amount.toFixed(dec)), currency:cur, reason:'admin_round_reset', creditedAt:Date.now() }
-                        });
-                        return next;
-                    });
-
-                    if (!userRes.committed) throw new Error('Could not refund active bet ' + item.id + '.');
-                }
-
-                // Remove live round state. Existing user-app listeners see the null
-                // current round, and the existing shared engine then creates Round #1.
-                await db.ref('rocket_live').set({
-                    resetAt: Date.now(),
-                    resetBy: (firebase.auth().currentUser && firebase.auth().currentUser.uid) || 'admin'
-                });
-
-                alert('Rocket Jump has been reset. The next shared round is Round #1.');
-                loadSelectedGameData();
-            } catch (err) {
-                console.error('[Rocket Jump] Reset failed:', err);
-                alert('Rocket Jump reset failed: ' + (err && err.message ? err.message : 'Please check Firebase permissions.'));
-            } finally {
-                if (btn) { btn.disabled = false; btn.innerText = '🔄 Reset Round to #1'; }
-            }
-        }
-
         /* --- ROCKET JUMP LIVE MONITOR (admin) --- */
         let rocketMonRefs = { cur:null, rounds:null, bets:null, betsRound:null, timer:null };
         let rocketMonData = { cur:null, rounds:[], bets:[] };
+        function resetRocketJumpToRound1() {
+            if (!confirm('Reset Rocket Jump so the NEXT round becomes #1?\n\n• Current live round will end immediately\n• Round history is kept\n• Players should wait for the new #1 round')) return;
+            const now = Date.now();
+            const seed = {
+                id: 0,
+                bettingStart: now - 5000,
+                launchAt: now - 4000,
+                crashAt: now - 2000,
+                endAt: now - 500,
+                crashPoint: 1.00,
+                tickMs: 90,
+                step: 0.03,
+                overridden: false,
+                createdAt: now,
+                resetMarker: true
+            };
+            Promise.all([
+                db.ref('rocket_live/current').set(seed),
+                db.ref('games/rocket_jump/nextCrashOverride').remove().catch(function(){})
+            ]).then(function(){
+                alert('Rocket Jump reset. The next round will start as #1.');
+                try { renderRocketMonitor(); } catch(e) {}
+            }).catch(function(err){
+                alert('Could not reset: ' + (err && err.message ? err.message : err));
+            });
+        }
         function stopRocketMonitor() {
             try { if (rocketMonRefs.cur) rocketMonRefs.cur.off('value'); } catch(e) {}
             try { if (rocketMonRefs.rounds) rocketMonRefs.rounds.off('value'); } catch(e) {}
@@ -8370,5 +8472,576 @@ html, body { max-width: 100%; }
 
 <script>
 setTimeout(function(){if(typeof startTransactionAutoCleanup==='function')startTransactionAutoCleanup();},1500);
+
+
+/* ===== K3 Admin (WINGO-parity) ===== */
+let k3AdminEntriesCache = [];
+let k3AdminCfg = { entrySeconds: 60, cooldownSeconds: 5, autoResult: true, fairRandomOnly: false };
+
+function k3AdminCycleMs() {
+  const entry = Math.max(5, Number(k3AdminCfg.entrySeconds) || 60);
+  const cool = Math.max(2, Number(k3AdminCfg.cooldownSeconds) || 5);
+  return (entry + cool) * 1000;
+}
+// FIX: same SERVER clock as the user app, so admin and players always talk about the same period id.
+let k3AdminServerOffset = 0;
+try { db.ref('.info/serverTimeOffset').on('value', s => { k3AdminServerOffset = Number(s.val()) || 0; }, () => {}); } catch(e) {}
+function k3AdminNow() { return Date.now() + k3AdminServerOffset; }
+function k3AdminRoundState(now) {
+  now = now || k3AdminNow();
+  const cycle = k3AdminCycleMs();
+  const idx = Math.floor(now / cycle);
+  const roundId = String(idx + 1);
+  const start = idx * cycle;
+  const elapsed = now - start;
+  const phase = elapsed < (Number(k3AdminCfg.entrySeconds) || 60) * 1000 ? 'open' : 'cooldown';
+  const phaseEnd = phase === 'open' ? start + (Number(k3AdminCfg.entrySeconds) || 60) * 1000 : start + cycle;
+  return { roundId, phase, phaseEnd };
+}
+
+function openK3Admin(el) {
+  try { if (typeof hideAllAdminSections === 'function') hideAllAdminSections(); } catch(e) {}
+  const sec = document.getElementById('k3AdminSection');
+  if (sec) sec.classList.remove('hidden');
+  try { setActiveSidebar(el || null); } catch(e) {}
+  const t = document.getElementById('topbarTitle'); if (t) t.innerText = 'K3';
+  const c = document.getElementById('topbarBreadcrumb'); if (c) c.innerHTML = 'Home &gt; K3';
+  loadK3Admin();
+  return false;
+}
+
+function loadK3Admin() {
+  db.ref('control/k3Config').once('value').then(snap => {
+    const d = snap.val() || {};
+    k3AdminCfg = {
+      entrySeconds: Math.max(5, Number(d.entrySeconds) || 60),
+      cooldownSeconds: Math.max(2, Number(d.cooldownSeconds) || 5),
+      autoResult: d.autoResult !== false,
+      fairRandomOnly: d.fairRandomOnly === true
+    };
+    const set = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
+    set('k3AdminEnabled', d.enabled === false ? 'false' : 'true');
+    set('k3AdminEntrySeconds', k3AdminCfg.entrySeconds);
+    set('k3AdminCooldownSeconds', k3AdminCfg.cooldownSeconds);
+    set('k3AdminMinBet', d.minBet || 10);
+    set('k3AdminMaxBet', d.maxBet || 5000);
+    set('k3AdminMinBetUsdt', d.minBetUsdt || 0.1);
+    set('k3AdminMaxBetUsdt', d.maxBetUsdt || 5000);
+    set('k3AdminSizeMult', d.sizeMultiplier || 2);
+    set('k3AdminParityMult', d.parityMultiplier || 2);
+    set('k3AdminAuto', d.autoResult === false ? 'false' : 'true');
+    set('k3AdminFairness', d.fairRandomOnly === true ? 'true' : 'false');
+  });
+  refreshK3AdminLive();
+  loadK3AdminHistory();
+  loadK3AdminAllEntries();
+  // Auto-settle any pending bets for already-resolved rounds so admin sees WIN/LOSS
+  settleAllPendingK3Entries();
+  if (!window.__k3AdminTimer) window.__k3AdminTimer = setInterval(function(){
+    refreshK3AdminLive();
+  }, 800);
+  // Realtime feed of ALL recent entries into live panel area as well
+  if (!window.__k3LiveEntriesOn) {
+    window.__k3LiveEntriesOn = true;
+    db.ref('k3/entries').limitToLast(80).on('value', function() {
+      try { refreshK3AdminLive(); } catch(e) {}
+      try { /* cache already updated by loadK3AdminAllEntries listener */ } catch(e) {}
+    });
+  }
+}
+
+function refreshK3AdminLive() {
+  db.ref('control/k3Config').once('value').then(snap => {
+    const d = snap.val() || {};
+    k3AdminCfg.entrySeconds = Math.max(5, Number(d.entrySeconds) || 60);
+    k3AdminCfg.cooldownSeconds = Math.max(2, Number(d.cooldownSeconds) || 5);
+    k3AdminCfg.autoResult = d.autoResult !== false;
+    k3AdminCfg.fairRandomOnly = d.fairRandomOnly === true;
+    const r = k3AdminRoundState();
+    const left = Math.max(0, Math.ceil((r.phaseEnd - k3AdminNow()) / 1000));
+    const pEl = document.getElementById('k3AdminRound'); if (pEl) pEl.innerText = '#' + r.roundId;
+    const phEl = document.getElementById('k3AdminPhase'); if (phEl) phEl.innerText = (r.phase === 'open' ? 'OPEN ' : 'COOL ') + left + 's';
+    const rid = String(r.roundId);
+
+    // Prefer full in-memory cache (every entry), then merge with a live scan.
+    // Never collapse multiple bets from the same user into one row.
+    const paintFromList = (list) => {
+      let n = 0, total = 0;
+      const lines = [];
+      (list || []).forEach(e => {
+        if (!e) return;
+        if (String(e.roundId) !== rid) return;
+        n++;
+        if (String(e.currency || 'INR').toUpperCase() !== 'USDT') total += Number(e.amount) || 0;
+        const st = String(e.status || 'pending').toLowerCase();
+        const col = st === 'win' ? '#34d399' : (st === 'loss' ? '#f87171' : '#fbbf24');
+        const label = st === 'win' ? ('WON +' + (e.winAmount || 0)) : (st === 'loss' ? 'LOST' : 'PENDING');
+        const keyHint = e.key ? (' · <span style="color:var(--text-muted);font-size:10px;">' + String(e.key).slice(-6) + '</span>') : '';
+        lines.push('<div class="user-item" style="font-size:11px;"><b>' + (e.customUid || e.userId || '—') + '</b> · ' + e.betType + ' <b>' + e.target + '</b> · ' + (e.currency || 'INR') + ' ' + e.amount + ' · <span style="color:' + col + ';font-weight:900;">' + label + '</span>' + keyHint + '</div>');
+      });
+      const cEl = document.getElementById('k3AdminEntryCount'); if (cEl) cEl.innerText = n;
+      const aEl = document.getElementById('k3AdminTotalAmount'); if (aEl) aEl.innerText = '₹' + total.toFixed(2);
+      const box = document.getElementById('k3AdminEntriesContainer');
+      if (box) box.innerHTML = lines.length ? lines.join('') : '<p style="color:var(--text-muted);font-size:12px;">No entries this round.</p>';
+    };
+
+    // 1) Paint immediately from cache (all known entries)
+    if (Array.isArray(k3AdminEntriesCache) && k3AdminEntriesCache.length) {
+      paintFromList(k3AdminEntriesCache);
+    }
+
+    // 2) Live scan: pull a large slice and keep EVERY matching entry (no per-user merge)
+    db.ref('k3/entries').limitToLast(1000).once('value').then(es => {
+      const list = [];
+      if (es && es.exists()) es.forEach(ch => {
+        const e = ch.val() || {};
+        list.push(Object.assign({ key: ch.key }, e));
+      });
+      // Merge into cache so history also has them
+      const byKey = {};
+      (k3AdminEntriesCache || []).forEach(e => { if (e && e.key) byKey[e.key] = e; });
+      list.forEach(e => { if (e && e.key) byKey[e.key] = e; });
+      k3AdminEntriesCache = Object.values(byKey);
+      paintFromList(k3AdminEntriesCache);
+      try { renderK3EntriesHistory(); } catch (err) {}
+    }).catch(() => {
+      // Fallback: try indexed query (may miss mixed string/number roundId)
+      db.ref('k3/entries').orderByChild('roundId').equalTo(rid).once('value').then(es => {
+        const list = [];
+        if (es && es.exists()) es.forEach(ch => list.push(Object.assign({ key: ch.key }, ch.val() || {})));
+        // Also try numeric roundId
+        const ridNum = Number(rid);
+        const finish = (extra) => {
+          if (extra && extra.exists()) extra.forEach(ch => list.push(Object.assign({ key: ch.key }, ch.val() || {})));
+          const byKey = {};
+          list.forEach(e => { if (e && e.key) byKey[e.key] = e; });
+          paintFromList(Object.values(byKey));
+        };
+        if (isFinite(ridNum)) {
+          db.ref('k3/entries').orderByChild('roundId').equalTo(ridNum).once('value').then(finish).catch(() => finish(null));
+        } else finish(null);
+      }).catch(() => {});
+    });
+  });
+}
+
+function saveK3AdminSettings() {
+  const n = id => Number(document.getElementById(id).value);
+  const payload = {
+    enabled: document.getElementById('k3AdminEnabled').value === 'true',
+    entrySeconds: Math.max(5, n('k3AdminEntrySeconds') || 60),
+    cooldownSeconds: Math.max(2, n('k3AdminCooldownSeconds') || 5),
+    minBet: Math.max(1, n('k3AdminMinBet') || 10),
+    maxBet: Math.max(1, n('k3AdminMaxBet') || 5000),
+    minBetUsdt: Math.max(0.0001, n('k3AdminMinBetUsdt') || 0.1),
+    maxBetUsdt: Math.max(0.0001, n('k3AdminMaxBetUsdt') || 5000),
+    sizeMultiplier: Math.max(1, n('k3AdminSizeMult') || 2),
+    parityMultiplier: Math.max(1, n('k3AdminParityMult') || 2),
+    autoResult: document.getElementById('k3AdminAuto').value === 'true',
+    fairRandomOnly: document.getElementById('k3AdminFairness').value === 'true',
+    updatedAt: Date.now()
+  };
+  db.ref('control/k3Config').update(payload).then(() => {
+    k3AdminCfg.entrySeconds = payload.entrySeconds;
+    k3AdminCfg.cooldownSeconds = payload.cooldownSeconds;
+    k3AdminCfg.autoResult = payload.autoResult;
+    k3AdminCfg.fairRandomOnly = payload.fairRandomOnly;
+    const s = document.getElementById('k3AdminSaveStatus');
+    if (s) s.innerText = 'Saved at ' + new Date().toLocaleTimeString();
+    alert('K3 settings saved.');
+  }).catch(e => alert('Save failed: ' + e.message));
+}
+
+function k3AdminValidDice(d) {
+  return Array.isArray(d) && d.length === 3 && d.every(x => Number.isInteger(Number(x)) && Number(x) >= 1 && Number(x) <= 6);
+}
+
+async function forceK3Result() {
+  const d1 = Number(document.getElementById('k3ForceD1').value);
+  const d2 = Number(document.getElementById('k3ForceD2').value);
+  const d3 = Number(document.getElementById('k3ForceD3').value);
+  if (!k3AdminValidDice([d1, d2, d3])) { alert('Enter three whole dice values from 1 to 6.'); return; }
+  const statusEl = document.getElementById('k3ForceStatus');
+  try {
+    // FIX: always read the LIVE config (the cached flag could be stale)
+    const cfgSnap = await db.ref('control/k3Config').once('value');
+    const cfg = cfgSnap.val() || {};
+    k3AdminCfg.entrySeconds = Math.max(5, Number(cfg.entrySeconds) || 60);
+    k3AdminCfg.cooldownSeconds = Math.max(2, Number(cfg.cooldownSeconds) || 5);
+    k3AdminCfg.fairRandomOnly = cfg.fairRandomOnly === true;
+    k3AdminCfg.autoResult = cfg.autoResult !== false;
+    if (k3AdminCfg.fairRandomOnly) { alert('Fairness Lock is ON — manual results are disabled.'); return; }
+
+    // FIX: pick a round that is still UNRESOLVED. If the current one is already drawn
+    // (or is being drawn right now in cooldown) the force would be silently ignored,
+    // so we move to the next period and tell the admin exactly which one.
+    let r = k3AdminRoundState();
+    let rid = String(r.roundId);
+    const curSnap = await db.ref('k3/rounds/' + rid).once('value');
+    const cur = curSnap.val();
+    const curDone = !!(cur && (cur.status === 'resolved' || cur.status === 'settled') && cur.resultSum != null);
+    if (curDone || r.phase === 'cooldown') {
+      const nextId = String(Number(rid) + 1);
+      if (!confirm('Current period #' + rid + (curDone ? ' is already drawn.' : ' is already closing (being drawn).') +
+          '\n\nApply forced dice ' + d1 + ',' + d2 + ',' + d3 + ' to the NEXT period #' + nextId + ' instead?')) return;
+      rid = nextId;
+    }
+
+    const tx = await db.ref('k3/rounds/' + rid).transaction(c => {
+      const base = c || { roundId: rid, status: 'open', createdAt: k3AdminNow() };
+      if ((base.status === 'resolved' || base.status === 'settled') && base.resultSum != null) return; // too late -> abort
+      return Object.assign({}, base, { roundId: rid, forcedDice: [d1, d2, d3], forcedAt: k3AdminNow(), forcedBy: 'admin' });
+    });
+    if (!tx.committed) {
+      if (statusEl) statusEl.innerText = '⚠️ NOT applied: round #' + rid + ' was already drawn.';
+      alert('NOT applied — round #' + rid + ' was already drawn. Try again for the next period.');
+      return;
+    }
+    // verify what is really stored
+    const back = (await db.ref('k3/rounds/' + rid + '/forcedDice').once('value')).val();
+    if (!k3AdminValidDice(back) || Number(back[0]) !== d1 || Number(back[1]) !== d2 || Number(back[2]) !== d3) {
+      if (statusEl) statusEl.innerText = '⚠️ Could not verify forced dice for round #' + rid + '.';
+      alert('Could not verify the forced dice. Please try again.');
+      return;
+    }
+    if (statusEl) statusEl.innerText = '✅ Forced dice ' + d1 + ',' + d2 + ',' + d3 + ' (sum ' + (d1 + d2 + d3) + ') confirmed for round #' + rid;
+    alert('Forced dice ' + d1 + ',' + d2 + ',' + d3 + ' confirmed for round #' + rid + '.');
+    loadK3AdminHistory();
+  } catch (e) { alert('Force failed: ' + (e && e.message ? e.message : e)); }
+}
+
+async function resolveK3AdminNow() {
+  try {
+    const cfg = (await db.ref('control/k3Config').once('value')).val() || {};
+    k3AdminCfg.entrySeconds = Math.max(5, Number(cfg.entrySeconds) || 60);
+    k3AdminCfg.cooldownSeconds = Math.max(2, Number(cfg.cooldownSeconds) || 5);
+    const fair = cfg.fairRandomOnly === true;
+    const r = k3AdminRoundState();
+    const rid = String(r.roundId);
+    // FIX: resolving while bets are still open lets players bet on a known result.
+    if (r.phase === 'open' && !confirm('Entries for round #' + rid + ' are still OPEN.\n\nResolving now ends this period early. Continue?')) return;
+
+    const res = await db.ref('k3/rounds/' + rid).transaction(c => {
+      if (c && (c.status === 'resolved' || c.status === 'settled') && c.resultSum != null) return;
+      const useForced = !fair && c && k3AdminValidDice(c.forcedDice);
+      const dice = useForced ? c.forcedDice.map(Number)
+        : (c && k3AdminValidDice(c.dice) ? c.dice.map(Number)
+          : [1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6)]);
+      const sum = dice[0] + dice[1] + dice[2];
+      return Object.assign({}, c || {}, {
+        roundId: rid,
+        status: 'resolved',
+        dice,
+        resultSum: sum,
+        size: sum >= 11 ? 'Big' : 'Small',
+        parity: sum % 2 === 0 ? 'Even' : 'Odd',
+        source: useForced ? 'forced' : 'random',
+        resolvedAt: k3AdminNow(),
+        resolvedBy: 'admin'
+      });
+    });
+    const round = res.snapshot.val();
+    if (!round || round.resultSum == null) { alert('Could not resolve round.'); return; }
+    if (!res.committed) { alert('Round #' + rid + ' was already resolved: sum ' + round.resultSum + ' (' + (round.dice || []).join(',') + ')'); }
+    await settleK3AdminEntries(rid, round);
+    if (res.committed) alert('Round #' + rid + ' resolved: sum ' + round.resultSum + ' (' + (round.dice || []).join(',') + ')');
+    loadK3AdminHistory();
+    loadK3AdminAllEntries();
+    refreshK3AdminLive();
+  } catch (e) { alert('Resolve failed: ' + (e && e.message ? e.message : e)); }
+}
+
+function settleK3AdminEntries(roundId, round) {
+  const rid = String(roundId);
+  const sum = Number(round.resultSum);
+  const size = String(round.size || (sum >= 11 ? 'Big' : 'Small'));
+  const parity = String(round.parity || (sum % 2 === 0 ? 'Even' : 'Odd'));
+  // FIX: use the multipliers saved in control/k3Config (same ones the user app shows/pays),
+  // not hard-coded defaults / whatever is typed in the form. Otherwise payout differed
+  // depending on whether admin or a player device settled the bet first.
+  const processSnap = (snap, cfg) => {
+    cfg = cfg || {};
+    const tmDefault = (cfg.totalMultipliers && typeof cfg.totalMultipliers === 'object') ? cfg.totalMultipliers
+      : {3:207.36,4:69.12,5:34.56,6:20.74,7:13.83,8:9.88,9:8.3,10:7.68,11:7.68,12:8.3,13:9.88,14:13.83,15:20.74,16:34.56,17:69.12,18:207.36};
+    const sizeMult = Math.max(1, Number(cfg.sizeMultiplier) || 2);
+    const parityMult = Math.max(1, Number(cfg.parityMultiplier) || 2);
+    if (!snap || !snap.exists()) return Promise.resolve();
+    const jobs = [];
+    snap.forEach(ch => {
+      const e = ch.val();
+      if (!e) return;
+      if (String(e.roundId) !== rid) return;
+      const st = String(e.status || 'pending').toLowerCase();
+      if (st === 'win' || st === 'loss' || st === 'settled') return;
+      const cur = String(e.currency || 'INR').toUpperCase();
+      const amt = Number(e.amount) || 0;
+      let win = false, mult = 0;
+      const bt = String(e.betType || '');
+      if (bt === 'total') {
+        mult = Number(tmDefault[e.target] ?? tmDefault[String(e.target)] ?? tmDefault[Number(e.target)]) || 0;
+        win = Number(e.target) === sum;
+      } else if (bt === 'size') {
+        mult = sizeMult;
+        win = String(e.target).toLowerCase() === size.toLowerCase();
+      } else if (bt === 'parity') {
+        mult = parityMult;
+        win = String(e.target).toLowerCase() === parity.toLowerCase();
+      }
+      const winAmt = win ? Number((amt * mult).toFixed(cur === 'USDT' ? 4 : 2)) : 0;
+      const userId = e.userId;
+      const entryKey = ch.key;
+      jobs.push(
+        ch.ref.transaction(curE => {
+          if (!curE) return;
+          const s = String(curE.status || 'pending').toLowerCase();
+          if (s === 'win' || s === 'loss' || s === 'settled') return;
+          return Object.assign({}, curE, {
+            status: win ? 'win' : 'loss',
+            winAmount: winAmt,
+            resultSum: sum,
+            resultDice: round.dice || null,
+            resultSize: size,
+            resultParity: parity,
+            timestampResolved: Date.now()
+          });
+        }).then(tr => {
+          if (!tr.committed || !win || !(winAmt > 0) || !userId) return;
+          const field = cur === 'USDT' ? 'usdtBalance' : 'balance';
+          const creditKey = 'k3_credit_' + entryKey;
+          return db.ref('k3/credits/' + creditKey).transaction(x => x ? undefined : { userId, amount: winAmt, at: Date.now() })
+            .then(cr => {
+              if (!cr.committed) return;
+              return db.ref('users/' + userId + '/' + field).transaction(v =>
+                Number(((Number(v) || 0) + winAmt).toFixed(cur === 'USDT' ? 4 : 2))
+              );
+            });
+        }).catch(() => {})
+      );
+    });
+    return Promise.all(jobs);
+  };
+
+  return db.ref('control/k3Config').once('value').then(cs => {
+    const cfg = cs.val() || {};
+    return db.ref('k3/entries').orderByChild('roundId').equalTo(rid).once('value')
+      .then(sn => processSnap(sn, cfg))
+      .catch(() => db.ref('k3/entries').limitToLast(400).once('value').then(sn => processSnap(sn, cfg)));
+  });
+}
+
+/** Settle any pending entries whose rounds are already resolved */
+function settleAllPendingK3Entries() {
+  return db.ref('k3/rounds').limitToLast(40).once('value').then(rsnap => {
+    const rounds = {};
+    if (rsnap.exists()) rsnap.forEach(ch => {
+      const v = ch.val();
+      if (v && v.resultSum != null && (v.status === 'resolved' || v.status === 'settled')) {
+        rounds[String(v.roundId || ch.key)] = v;
+      }
+    });
+    if (!Object.keys(rounds).length) return;
+    return db.ref('k3/entries').limitToLast(400).once('value').then(esnap => {
+      if (!esnap.exists()) return;
+      const jobs = [];
+      esnap.forEach(ch => {
+        const e = ch.val();
+        if (!e) return;
+        const st = String(e.status || 'pending').toLowerCase();
+        if (st === 'win' || st === 'loss' || st === 'settled') return;
+        const rid = String(e.roundId);
+        const round = rounds[rid];
+        if (!round) return;
+        jobs.push(settleK3AdminEntries(rid, round));
+      });
+      // settleK3AdminEntries is per-round; group unique rounds
+      const unique = [...new Set(Object.keys(rounds).filter(rid => {
+        let has = false;
+        esnap.forEach(ch => {
+          const e = ch.val();
+          if (e && String(e.roundId) === rid) {
+            const st = String(e.status || 'pending').toLowerCase();
+            if (st !== 'win' && st !== 'loss' && st !== 'settled') has = true;
+          }
+        });
+        return has;
+      }))];
+      return Promise.all(unique.map(rid => settleK3AdminEntries(rid, rounds[rid])));
+    });
+  }).then(() => {
+    loadK3AdminAllEntries();
+    refreshK3AdminLive();
+  }).catch(() => {});
+}
+
+let __k3HistoryLiveAttached = false;
+function renderK3AdminHistoryRows(snap) {
+  const el = document.getElementById('k3AdminHistory');
+  if (!el) return;
+  const rows = [];
+  if (snap && snap.exists()) {
+    snap.forEach(ch => {
+      const v = ch.val();
+      if (v) rows.push(Object.assign({ key: ch.key }, v));
+    });
+  }
+  rows.sort((a, b) => (Number(b.roundId != null ? b.roundId : b.key) || 0) - (Number(a.roundId != null ? a.roundId : a.key) || 0));
+  if (!rows.length) {
+    el.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">No periods yet. After a round is resolved, it will appear here automatically.</p>';
+    return;
+  }
+  el.innerHTML =
+    '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">' + rows.length + ' period(s)</div>' +
+    rows.map(r => {
+      const dice = Array.isArray(r.dice) ? r.dice.join(',') : '';
+      const pendingForce = (r.resultSum == null && Array.isArray(r.forcedDice)) ? (' · <span style="color:#fbbf24;">forced ' + r.forcedDice.join(',') + ' (waiting to be drawn)</span>') : '';
+      const src = r.source ? (' · <span style="color:var(--text-muted);">' + r.source + '</span>') : '';
+      return '<div class="user-item" style="font-size:11px;"><b>#' + (r.roundId != null ? r.roundId : r.key) + '</b> · ' +
+        (r.status || '—') + ' · sum <b>' + (r.resultSum != null ? r.resultSum : '—') + '</b> · ' +
+        dice + ' · ' + (r.size || '') + ' ' + (r.parity || '') + src + pendingForce + '</div>';
+    }).join('');
+}
+
+function loadK3AdminHistory() {
+  const el = document.getElementById('k3AdminHistory');
+  if (!el) return;
+  el.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">Loading…</p>';
+
+  // One-shot immediate paint
+  db.ref('k3/rounds').limitToLast(60).once('value')
+    .then(renderK3AdminHistoryRows)
+    .catch(err => {
+      el.innerHTML = '<p style="color:#f87171;">Failed to load history</p>';
+      console.warn(err);
+    });
+
+  // Realtime: history reappears automatically after delete when new rounds resolve
+  if (__k3HistoryLiveAttached) return;
+  __k3HistoryLiveAttached = true;
+  db.ref('k3/rounds').limitToLast(60).on('value', snap => {
+    renderK3AdminHistoryRows(snap);
+  }, err => {
+    console.warn('K3 history live failed', err);
+    __k3HistoryLiveAttached = false;
+  });
+}
+
+let __k3EntriesLiveAttached = false;
+function loadK3AdminAllEntries() {
+  const ingest = (snap) => {
+    const byKey = {};
+    // Keep previous cache keys so we never drop entries that fall outside limit window mid-session
+    (k3AdminEntriesCache || []).forEach(e => { if (e && e.key) byKey[e.key] = e; });
+    if (snap && snap.exists()) {
+      snap.forEach(ch => {
+        byKey[ch.key] = Object.assign({ key: ch.key }, ch.val() || {});
+      });
+    }
+    k3AdminEntriesCache = Object.values(byKey);
+    renderK3EntriesHistory();
+  };
+
+  db.ref('k3/entries').limitToLast(2000).once('value').then(ingest).catch(() => {});
+
+  if (__k3EntriesLiveAttached) return;
+  __k3EntriesLiveAttached = true;
+  db.ref('k3/entries').limitToLast(2000).on('value', snap => {
+    ingest(snap);
+    try { refreshK3AdminLive(); } catch (e) {}
+  }, err => {
+    console.warn('K3 entries live failed', err);
+    __k3EntriesLiveAttached = false;
+  });
+}
+
+function renderK3EntriesHistory() {
+  const el = document.getElementById('k3AdminAllEntriesContainer');
+  if (!el) return;
+  const q = (document.getElementById('k3EntriesSearchUid')?.value || '').trim().toLowerCase();
+  // Every entry is a separate row (never merge by user)
+  let rows = (k3AdminEntriesCache || []).slice();
+  if (q) {
+    rows = rows.filter(e =>
+      String(e.customUid || '').toLowerCase().includes(q) ||
+      String(e.userId || '').toLowerCase().includes(q) ||
+      String(e.roundId || '').toLowerCase().includes(q) ||
+      String(e.target || '').toLowerCase().includes(q)
+    );
+  }
+  rows.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+  if (!rows.length) {
+    el.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">No entries.</p>';
+    return;
+  }
+  el.innerHTML =
+    '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">Showing <b style="color:#fff;">' + rows.length + '</b> entries (each bet listed separately)</div>' +
+    rows.map(e => {
+      const st = String(e.status || 'pending').toLowerCase();
+      const col = st === 'win' ? '#34d399' : (st === 'loss' ? '#f87171' : '#fbbf24');
+      const label = st === 'win' ? ('WON +' + (e.winAmount || 0)) : (st === 'loss' ? 'LOST' : 'PENDING');
+      const res = e.resultSum != null ? (' · result sum ' + e.resultSum) : '';
+      const idHint = e.key ? (' <span style="color:var(--text-muted);font-size:10px;">#' + String(e.key).slice(-8) + '</span>') : '';
+      return '<div class="user-item" style="font-size:11px;"><b>' + (e.customUid || e.userId || '—') + '</b>' + idHint +
+        ' · #' + (e.roundId != null ? e.roundId : '—') + res +
+        '<br>' + (e.betType || '') + ' <b>' + (e.target != null ? e.target : '') + '</b> · ' +
+        (e.currency || 'INR') + ' ' + (e.amount != null ? e.amount : '') +
+        ' · <span style="color:' + col + ';font-weight:900;">' + label + '</span></div>';
+    }).join('');
+}
+
+function clearK3RoundHistory() {
+  if (!confirm('Delete old/past K3 round history?\n\n• Removes past resolved rounds from history\n• Keeps the current open period\n• Does not delete user bets/entries\n\nNew results will show here again automatically.')) return;
+  const currentId = String(k3AdminRoundState().roundId);
+  const el = document.getElementById('k3AdminHistory');
+  if (el) el.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">Deleting past history…</p>';
+
+  // FIX: keep the current + upcoming (possibly forced) rounds, and any past round that still has
+  // PENDING bets (deleting it made the player app re-roll a brand-new random result for it).
+  db.ref('k3/entries').limitToLast(2000).once('value').then(es => {
+    const pendingRounds = new Set();
+    if (es && es.exists()) es.forEach(ch => {
+      const e = ch.val() || {};
+      const st = String(e.status || 'pending').toLowerCase();
+      if (st !== 'win' && st !== 'loss' && st !== 'settled') pendingRounds.add(String(e.roundId));
+    });
+    return db.ref('k3/rounds').once('value').then(snap => {
+      const jobs = [];
+      let removed = 0;
+      if (snap.exists()) {
+        snap.forEach(ch => {
+          const v = ch.val() || {};
+          const rid = String(v.roundId != null ? v.roundId : ch.key);
+          const keep = (Number(rid) >= Number(currentId)) || pendingRounds.has(rid);
+          if (!keep) {
+            jobs.push(ch.ref.remove());
+            removed++;
+          }
+        });
+      }
+      return Promise.all(jobs).then(() => removed);
+    });
+  }).then(removed => {
+    alert('Deleted ' + removed + ' past round(s) from history.\nCurrent period #' + currentId + ' was kept.\nNew resolved rounds will appear here automatically.');
+    // Force re-load / re-attach so UI updates even if listener was stale
+    __k3HistoryLiveAttached = false;
+    try { db.ref('k3/rounds').off(); } catch (e) {}
+    loadK3AdminHistory();
+  }).catch(e => {
+    alert('Failed: ' + (e && e.message ? e.message : e));
+    loadK3AdminHistory();
+  });
+}
+function clearK3EntriesHistory() {
+  if (!confirm('Delete ALL K3 entries? This cannot be undone.')) return;
+  db.ref('k3/entries').remove().then(() => {
+    alert('K3 entries deleted.');
+    k3AdminEntriesCache = [];
+    const el = document.getElementById('k3AdminAllEntriesContainer');
+    if (el) el.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">No entries.</p>';
+    renderK3EntriesHistory();
+    refreshK3AdminLive();
+  }).catch(e => alert('Failed: ' + (e.message || e)));
+}
+
+
 </script>
 </body></html>
