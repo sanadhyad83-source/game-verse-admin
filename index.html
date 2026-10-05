@@ -8683,6 +8683,74 @@ function k3AdminDrawTx(rid, fair) {
 
 // Runs from the admin timer: the moment a period REALLY ends, the admin app itself draws it
 // (using the forced dice) and settles bets, so the admin never depends on a player's phone.
+// Draw (if missing) and settle one round. createIfMissing=true also creates rounds that have no node/bets yet.
+async function k3AdminFinishRound(rid, createIfMissing) {
+  let round = (await db.ref('k3/rounds/' + rid).once('value')).val();
+  const done = !!(round && (round.status === 'resolved' || round.status === 'settled') && round.resultSum != null);
+  if (!done) {
+    if (!round && !createIfMissing) {
+      const es = await db.ref('k3/entries').orderByChild('roundId').equalTo(String(rid)).limitToFirst(1).once('value');
+      if (!es.exists()) return;
+    }
+    round = (await k3AdminDrawTx(rid, k3AdminCfg.fairRandomOnly === true)).snapshot.val();
+  }
+  if (round && round.resultSum != null) await settleK3AdminEntries(rid, round);
+}
+
+// ===================== K3 CATCH-UP (admin app) =====================
+// Any time this admin panel is open (on ANY screen) it finishes everything that happened while
+// nobody was online: settles EVERY unsettled bet whose period ended, and fills missing recent periods.
+let k3AdminCatchBusy = false, k3AdminCatchAt = 0;
+async function k3AdminCatchUpRun() {
+  const cfg = (await db.ref('control/k3Config').once('value')).val() || {};
+  k3AdminCfg.entrySeconds = Math.max(5, Number(cfg.entrySeconds) || 60);
+  k3AdminCfg.cooldownSeconds = Math.max(2, Number(cfg.cooldownSeconds) || 5);
+  k3AdminCfg.autoResult = cfg.autoResult !== false;
+  k3AdminCfg.fairRandomOnly = cfg.fairRandomOnly === true;
+  const last = Math.floor(k3AdminNow() / k3AdminCycleMs());   // last fully ended period id
+  if (last < 1) return;
+
+  // 1) every pending bet of an ended period (any age)
+  let pend;
+  try { pend = await db.ref('k3/entries').orderByChild('status').equalTo('pending').limitToFirst(500).once('value'); }
+  catch (e) { pend = await db.ref('k3/entries').limitToLast(500).once('value'); }
+  const ids = {};
+  pend.forEach(function (ch) {
+    const e = ch.val() || {};
+    const st = String(e.status || 'pending').toLowerCase();
+    if (st === 'win' || st === 'loss' || st === 'settled') return;
+    const rid = Number(e.roundId);
+    if (rid >= 1 && rid <= last) ids[String(rid)] = 1;
+  });
+  await Promise.all(Object.keys(ids).slice(0, 60).map(function (rid) { return k3AdminFinishRound(rid, false).catch(function () {}); }));
+
+  // 2) missing recent periods (history never has holes); never rebuilds what admin cleared
+  if (cfg.enabled === false || !k3AdminCfg.autoResult) return;
+  const first = Math.max(1, last - 39, Number(cfg.historyFloor) || 0);
+  const rs = await db.ref('k3/rounds').limitToLast(80).once('value');
+  const have = {};
+  rs.forEach(function (ch) {
+    const v = ch.val() || {};
+    if (v.resultSum != null && (v.status === 'resolved' || v.status === 'settled')) have[String(v.roundId || ch.key)] = 1;
+  });
+  const todo = [];
+  for (let id = first; id <= last; id++) { if (!have[String(id)]) todo.push(String(id)); }
+  await Promise.all(todo.slice(-40).map(function (rid) { return k3AdminFinishRound(rid, true).catch(function () {}); }));
+}
+function k3AdminCatchUp() {
+  if (k3AdminCatchBusy || typeof db === 'undefined' || !db) return;
+  if (k3AdminNow() - k3AdminCatchAt < 25000) return;
+  k3AdminCatchAt = k3AdminNow();
+  k3AdminCatchBusy = true;
+  k3AdminCatchUpRun().catch(function () {}).then(function () {
+    k3AdminCatchBusy = false;
+    try { if (typeof loadK3AdminHistory === 'function' && document.getElementById('k3AdminSection') && !document.getElementById('k3AdminSection').classList.contains('hidden')) loadK3AdminHistory(); } catch (e) {}
+  });
+}
+setTimeout(function () { try { k3AdminCatchUp(); } catch (e) {} }, 6000);
+setInterval(function () { try { k3AdminCatchUp(); } catch (e) {} }, 30000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden) { try { k3AdminCatchUp(); } catch (e) {} } });
+
 const k3AdminAutoDone = new Set();
 // FIX ("Preview stopped: a loop ran longer than 400ms"): the previous version had a `for` loop with
 // database awaits inside it, so the loop guard timed the network waits as if it were an infinite loop.
@@ -8690,20 +8758,7 @@ const k3AdminAutoDone = new Set();
 async function k3AdminAutoResolveRound(rid) {
   if (k3AdminAutoDone.has(rid)) return;
   k3AdminAutoDone.add(rid);
-  try {
-    let round = (await db.ref('k3/rounds/' + rid).once('value')).val();
-    const done = !!(round && (round.status === 'resolved' || round.status === 'settled') && round.resultSum != null);
-    if (!done) {
-      let need = !!round; // a forced / existing node
-      if (!need) {
-        const es = await db.ref('k3/entries').orderByChild('roundId').equalTo(rid).limitToFirst(1).once('value');
-        need = es.exists();
-      }
-      if (!need) return;
-      round = (await k3AdminDrawTx(rid, k3AdminCfg.fairRandomOnly === true)).snapshot.val();
-    }
-    if (round && round.resultSum != null) await settleK3AdminEntries(rid, round);
-  } catch (e) { k3AdminAutoDone.delete(rid); }
+  try { await k3AdminFinishRound(rid, false); } catch (e) { k3AdminAutoDone.delete(rid); }
 }
 function k3AdminAutoResolve() {
   if (k3AdminCfg.autoResult === false) return;
@@ -9063,7 +9118,9 @@ function clearK3RoundHistory() {
           }
         });
       }
-      return Promise.all(jobs).then(() => removed);
+      return Promise.all(jobs)
+        .then(() => db.ref('control/k3Config').update({ historyFloor: Number(currentId) }))
+        .then(() => removed);
     });
   }).then(removed => {
     alert('Deleted ' + removed + ' past round(s) from history.\nCurrent period #' + currentId + ' was kept.\nNew resolved rounds will appear here automatically.');
