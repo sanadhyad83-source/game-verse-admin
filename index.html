@@ -962,7 +962,7 @@
                         <td style="color:#34d399">₹5.00</td>
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
-                        <td>🃏 High Card</td>
+                        <td>🐉 Dragon vs Tiger</td>
                         <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>0</td>
                         <td>0</td>
@@ -1296,7 +1296,7 @@
                 <label>Select Game</label>
                 <select id="gameSelect" onchange="loadSelectedGameData()">
                     <option value="rocket_jump">🚀 Rocket Jump</option>
-                    <option value="high_card">🃏 High Card</option>
+                    <option value="high_card">🐉 Dragon vs Tiger</option>
                     <option value="spin_wheel">🎡 Fortune Wheel</option>
                     <option value="coin_flip">🪙 Coin Flip</option>
                     <option value="number_guess">🎯 Number Master</option>
@@ -1355,6 +1355,20 @@
                         <p class="hint-text" style="margin:0 0 10px;">Reset the live round counter so the next round starts as <b>#1</b>. History rounds are kept. Confirm before using on a live table.</p>
                         <button type="button" class="btn-yellow" onclick="resetRocketJumpToRound1()" style="margin:0;">🔄 Reset to Round #1</button>
                     </div>
+                    <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                            <div style="font-size:11px;font-weight:900;color:#facc15;">📋 Rocket Jump — User Bets (My Bets)</div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <button type="button" class="btn-gray" style="margin:0;min-height:32px;font-size:10px;width:auto;padding:6px 10px;" onclick="loadAdminRocketUserBets()">🔄 Refresh</button>
+                                <button type="button" class="btn-red" style="margin:0;min-height:32px;font-size:10px;width:auto;padding:6px 10px;" onclick="clearAllAdminRocketBets()">🗑 Clear All Bets</button>
+                            </div>
+                        </div>
+                        <input id="adminRocketBetSearch" type="text" placeholder="Search by UID / custom UID / bet id…" style="margin:0 0 8px;font-size:12px;" oninput="renderAdminRocketUserBets()">
+                        <div id="adminRocketUserBetsList" style="max-height:320px;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;background:rgba(0,0,0,.25);">
+                            <p style="font-size:11px;color:var(--text-muted);margin:0;">Open Rocket Jump settings and click Refresh to load bets.</p>
+                        </div>
+                        <div style="font-size:9px;color:var(--text-muted);margin-top:6px;">Shows recent bets from <code>rocket_live/bets</code>. Delete removes the bet record only (does not auto-refund wallet).</div>
+                    </div>
                 </div>
                 <div id="numberMasterAdvancedControls" class="gv-gm-card hidden" style="margin-top:10px;">
                     <div class="gv-gm-card-title">🎯 Number Master Controls</div>
@@ -1375,15 +1389,18 @@
                     <input id="gameEntryFee" type="number" step="0.01" placeholder="INR Entry Fee (₹)" min="0">
                     <input id="gameEntryFeeUsdt" type="number" step="0.0001" placeholder="USDT Entry Fee" min="0">
                 </div>
-                <div id="highCardControls" class="hidden" style="margin-top:10px;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.025);">
-                    <div style="font-size:11px;font-weight:900;color:#facc15;margin-bottom:7px;">🃏 High Card Controls</div>
+                <div id="highCardControls" class="hidden" style="margin-top:10px;padding:12px;border:1px solid rgba(250,204,21,.2);border-radius:12px;background:linear-gradient(145deg,rgba(30,58,138,.12),rgba(127,29,29,.1));">
+                    <div style="font-size:12px;font-weight:900;color:#facc15;margin-bottom:8px;">🐉 Dragon vs Tiger Controls</div>
                     <div class="two-cols">
-                        <div><label>Payout Multiplier</label><input id="highCardPayoutMultiplier" type="number" step="0.1" min="1" max="10" value="2"></div>
-                        <div><label>Reveal Animation (ms)</label><input id="highCardAnimationMs" type="number" step="50" min="300" max="3000" value="900"></div>
+                        <div><label>Dragon Payout (×)</label><input id="highCardDragonMultiplier" type="number" step="0.05" min="1" max="20" value="1.95"></div>
+                        <div><label>Tiger Payout (×)</label><input id="highCardTigerMultiplier" type="number" step="0.05" min="1" max="20" value="1.95"></div>
+                        <div><label>Tie Payout (×)</label><input id="highCardTieMultiplier" type="number" step="0.1" min="1" max="50" value="8"></div>
+                        <div><label>Reveal Animation (ms)</label><input id="highCardAnimationMs" type="number" step="50" min="300" max="3000" value="1100"></div>
                     </div>
-                    <label>Tie Rule</label>
-                    <select id="highCardTieRule"><option value="loss">Tie = Lose</option><option value="push">Tie = Refund Bet</option></select>
-                    <div style="font-size:9px;color:var(--text-muted);margin-top:4px;">Win chance and bet scaling above still apply to the round outcome generation.</div>
+                    <label>Tie Rule (when player did not bet Tie)</label>
+                    <select id="highCardTieRule"><option value="loss">Tie = Lose (no refund)</option><option value="push">Tie = Refund Bet</option></select>
+                    <div style="font-size:9px;color:var(--text-muted);margin-top:6px;">Win chance &amp; bet scaling above still control the house edge. Legacy "Payout Multiplier" is kept in sync with Dragon payout for older clients.</div>
+                    <input type="hidden" id="highCardPayoutMultiplier" value="1.95">
                 </div>
                 <button onclick="updateGame()" class="btn-green" style="margin-top:10px;">💾 Save Game Settings</button>
                 <div id="liveGameStatus" class="live-status">Status: — | Mode: — | Fee: ₹0</div>
@@ -2822,6 +2839,7 @@ function formatAdminMoney(value){
                     loadInvestmentConfigSetting();
                     loadAppStatusSetting();
                     loadBroadcastHistory();
+                    try { ensureAdminRocketEngine(); } catch (e) {}
                 });
             }).catch(err => alert(err.message));
         }
@@ -2835,11 +2853,23 @@ function formatAdminMoney(value){
             });
         }
 
+        // Resume admin rocket host if page was refreshed while logged in
+        firebase.auth().onAuthStateChanged(function(user){
+            if(!user) return;
+            db.ref('users/'+user.uid).once('value').then(function(snap){
+                const data=snap.val();
+                if(data && (data.role==='admin' || user.email==='sanadhyad83@gmail.com')){
+                    try{ ensureAdminRocketEngine(); }catch(e){}
+                }
+            }).catch(function(){});
+        });
+
+
 
         // ===== Dashboard 2.0 / Operations Center =====
         const DASH20_GAME_LIST = [
             {id:'rocket_jump',name:'🚀 Rocket Jump'},
-            {id:'high_card',name:'🃏 High Card'},
+            {id:'high_card',name:'🐉 Dragon vs Tiger'},
             {id:'spin_wheel',name:'🎡 Fortune Wheel'},
             {id:'coin_flip',name:'🪙 Coin Flip'},
             {id:'number_guess',name:'🎯 Number Master'},
@@ -3387,7 +3417,7 @@ function formatAdminMoney(value){
         // ===== Dashboard Home: KPIs, Game Command Center, Overview chart, Recent Transactions, Alerts =====
         const DASH_GAME_LIST = [
             { id: 'rocket_jump', name: '🚀 Rocket Jump' },
-            { id: 'high_card', name: '🃏 High Card' },
+            { id: 'high_card', name: '🐉 Dragon vs Tiger' },
             { id: 'spin_wheel', name: '🎡 Fortune Wheel' },
             { id: 'coin_flip', name: '🪙 Coin Flip' },
             { id: 'number_guess', name: '🎯 Number Master' },
@@ -4051,6 +4081,19 @@ function formatAdminMoney(value){
                 prizeWrapper.classList.remove('hidden');
             }
             if (highCardControls) highCardControls.classList.toggle('hidden', gameId !== 'high_card');
+            if (gameId === 'high_card') {
+                db.ref('control/highCardConfig').once('value').then(function(s){
+                    const c = s.val() || {};
+                    const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+                    set('highCardDragonMultiplier', c.dragonMultiplier != null ? c.dragonMultiplier : (c.payoutMultiplier != null ? c.payoutMultiplier : 1.95));
+                    set('highCardTigerMultiplier', c.tigerMultiplier != null ? c.tigerMultiplier : 1.95);
+                    set('highCardTieMultiplier', c.tieMultiplier != null ? c.tieMultiplier : 8);
+                    set('highCardAnimationMs', c.animationMs != null ? c.animationMs : 1100);
+                    set('highCardPayoutMultiplier', c.payoutMultiplier != null ? c.payoutMultiplier : 1.95);
+                    const tr = document.getElementById('highCardTieRule');
+                    if (tr) tr.value = c.tieRule === 'push' ? 'push' : 'loss';
+                }).catch(function(){});
+            }
 
             db.ref('games/' + gameId).once('value', snap => {
                 const data = snap.val() || { status: 'active', prize: 0, entryFee: 10, usdtEntryFee: 0.1, crashRange: '2.20 - 5.00', allowUserAmount: false, winChancePercent: 50, betScalingPercent: 0 };
@@ -4121,6 +4164,15 @@ function formatAdminMoney(value){
                     updatePayload.nextCrashOverride = Number(ov.toFixed(2));
                 }
                 updatePayload.name = 'Rocket Jump';
+            } else if (gameId === 'high_card') {
+                updatePayload.name = 'Dragon vs Tiger';
+                let winChance = Number(document.getElementById('gameWinChance').value);
+                if (isNaN(winChance)) winChance = 50;
+                winChance = Math.min(100, Math.max(0, winChance));
+                updatePayload.winChancePercent = winChance;
+                let betScaling = Number(document.getElementById('gameBetScaling').value);
+                if (isNaN(betScaling) || betScaling < 0) betScaling = 0;
+                updatePayload.betScalingPercent = betScaling;
             } else if(gameId==='number_guess') {
                 // minNumber / maxNumber are system-fixed — not editable in admin
                 updatePayload.attempts=Math.min(10,Math.max(1,Math.floor(Number(document.getElementById('numberAttempts')?.value)||3)));
@@ -4141,16 +4193,205 @@ function formatAdminMoney(value){
 
             const saveGame = db.ref('games/' + gameId).update(updatePayload);
             const saveHighCard = gameId === 'high_card'
-                ? db.ref('control/highCardConfig').update({
-                    payoutMultiplier: Math.min(10, Math.max(1, Number(document.getElementById('highCardPayoutMultiplier').value) || 2)),
-                    animationMs: Math.min(3000, Math.max(300, Number(document.getElementById('highCardAnimationMs').value) || 900)),
-                    tieRule: document.getElementById('highCardTieRule').value || 'loss'
-                  })
+                ? (function(){
+                    const parseMult = (id, fallback) => {
+                        const el = document.getElementById(id);
+                        const n = Number(el && el.value !== '' ? el.value : NaN);
+                        return (isFinite(n) && n >= 1) ? n : fallback;
+                    };
+                    const dragonM = Math.min(20, Math.max(1, parseMult('highCardDragonMultiplier', parseMult('highCardPayoutMultiplier', 1.95))));
+                    const tigerM = Math.min(20, Math.max(1, parseMult('highCardTigerMultiplier', 1.95)));
+                    const tieM = Math.min(50, Math.max(1, parseMult('highCardTieMultiplier', 8)));
+                    const animEl = document.getElementById('highCardAnimationMs');
+                    const animRaw = Number(animEl && animEl.value !== '' ? animEl.value : 1100);
+                    const anim = Math.min(3000, Math.max(300, isFinite(animRaw) ? animRaw : 1100));
+                    const tieRule = (document.getElementById('highCardTieRule')?.value === 'push') ? 'push' : 'loss';
+                    const hidden = document.getElementById('highCardPayoutMultiplier');
+                    if (hidden) hidden.value = String(dragonM);
+                    // Use set so the node is always fully written for the user app
+                    return db.ref('control/highCardConfig').set({
+                        payoutMultiplier: Number(dragonM),
+                        dragonMultiplier: Number(dragonM),
+                        tigerMultiplier: Number(tigerM),
+                        tieMultiplier: Number(tieM),
+                        animationMs: Number(anim),
+                        tieRule: tieRule
+                    });
+                })()
                 : Promise.resolve();
             Promise.all([saveGame, saveHighCard]).then(() => {
-                alert('Game settings updated successfully!');
+                if (gameId === 'high_card') {
+                    const d = document.getElementById('highCardDragonMultiplier')?.value;
+                    const t = document.getElementById('highCardTigerMultiplier')?.value;
+                    const ti = document.getElementById('highCardTieMultiplier')?.value;
+                    alert('Dragon vs Tiger settings saved!\nDragon ×' + d + ' · Tiger ×' + t + ' · Tie ×' + ti + '\n\nUser app will pick these up live from control/highCardConfig.');
+                } else {
+                    alert('Game settings updated successfully!');
+                }
                 loadSelectedGameData();
             });
+        }
+
+        /* --- ROCKET JUMP HOST ENGINE (admin keeps rounds running continuously) ---
+           Same shared Firebase nodes as the user app. While ANY admin panel is open,
+           rounds advance and bets settle even if no player is on the Rocket screen.
+           (Pure client Firebase still needs at least one open browser — this host is that.) */
+        var arjCfg=null, arjCfgReady=false, arjOffset=0, arjRound=null, arjRoundLoaded=false;
+        var arjEngineStarted=false, arjEngineTimer=null, arjStarting=false, arjSettling={}, arjSettled={};
+        function arjNow(){ return Date.now()+arjOffset; }
+        function arjClamp(n,lo,hi,def){ n=Number(n); if(!isFinite(n)) n=def; return Math.min(hi,Math.max(lo,n)); }
+        function arjNormCfg(d){
+            d=d||{};
+            let lo=2.2, hi=5;
+            const m=String(d.crashRange==null?'2.20 - 5.00':d.crashRange).match(/^\s*(\d+(?:\.\d+)?)\s*(?:(?:-|–|to)\s*(\d+(?:\.\d+)?))?\s*$/i);
+            if(m){ lo=parseFloat(m[1]); hi=m[2]!==undefined?parseFloat(m[2]):lo; }
+            if(!(lo>=1)) lo=1; if(!(hi>=1)) hi=lo; if(lo>hi){ const t=lo; lo=hi; hi=t; }
+            return {
+                status:d.status||'active',
+                crashMin:lo, crashMax:hi,
+                tickMs:arjClamp(d.tickMs,40,1000,90), step:arjClamp(d.multiplierStep,0.001,1,0.03),
+                cap:arjClamp(d.maxMultiplierCap,1,10000,100),
+                bettingSeconds:arjClamp(d.bettingSeconds,3,60,10), crashPauseSeconds:arjClamp(d.crashPauseSeconds,2,30,4),
+                maxFlightSeconds:arjClamp(d.maxFlightSeconds,5,600,90),
+                autoRun:d.autoRun!==false, instantCrashPercent:arjClamp(d.instantCrashPercent,0,50,0),
+                nextCrashOverride:Number(d.nextCrashOverride)>=1?Number(d.nextCrashOverride):0
+            };
+        }
+        function arjEnabled(){ return !!arjCfg && arjCfg.status==='active'; }
+        function arjRand01(){ try{ const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]/4294967296; }catch(e){ return Math.random(); } }
+        function arjGenCrash(cfg,override){
+            if(override>=1) return Number(Math.min(override,cfg.cap).toFixed(2));
+            if(cfg.instantCrashPercent>0 && arjRand01()*100<cfg.instantCrashPercent) return 1.00;
+            let v; if(cfg.crashMax<=cfg.crashMin) v=cfg.crashMin; else v=cfg.crashMin+(cfg.crashMax-cfg.crashMin)*arjRand01();
+            v=Math.max(1,Math.min(v,cfg.cap));
+            return Number(v.toFixed(2));
+        }
+        function ensureAdminRocketEngine(){
+            if(arjEngineStarted) return;
+            arjEngineStarted=true;
+            const noop=function(){};
+            db.ref('.info/serverTimeOffset').on('value',function(s){ arjOffset=Number(s.val())||0; },noop);
+            db.ref('games/rocket_jump').on('value',function(s){ arjCfg=arjNormCfg(s.val()); arjCfgReady=true; },noop);
+            db.ref('rocket_live/current').on('value',function(s){
+                arjRound=s.val(); arjRoundLoaded=true;
+                try{ if(arjRound && arjNow()>=Number(arjRound.endAt||0)) arjEngineTick(); }catch(e){}
+            },noop);
+            if(arjEngineTimer) clearInterval(arjEngineTimer);
+            arjEngineTimer=setInterval(arjEngineTick,1000);
+            setTimeout(arjEngineTick,600);
+            document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ arjEngineTick(); }catch(e){} } });
+            console.log('[Rocket] Admin host engine started — rounds keep running while this panel is open.');
+        }
+        async function arjEngineTick(){
+            if(!arjCfgReady||!arjRoundLoaded) return;
+            try{
+                const canRun=arjEnabled() && arjCfg.autoRun!==false;
+                if(canRun){
+                    for(let i=0;i<10;i++){
+                        const r=arjRound;
+                        if(!r || arjNow()>=Number(r.endAt||0)) await arjStartNextRound();
+                        else break;
+                    }
+                }
+                const cur=arjRound;
+                if(cur && arjNow()>=Number(cur.crashAt||0)) arjSettleRound(cur);
+            }catch(e){}
+        }
+        async function arjStartNextRound(){
+            if(arjStarting) return;
+            arjStarting=true;
+            try{
+                const cfg=arjCfg;
+                const override=cfg.nextCrashOverride>=1?cfg.nextCrashOverride:0;
+                const crash=arjGenCrash(cfg,override);
+                const flightMs=Math.round(Math.max(0,(crash-1)/cfg.step)*cfg.tickMs);
+                const maxFlight=Math.round(cfg.maxFlightSeconds*1000);
+                const flight=Math.min(flightMs,maxFlight);
+                const res=await db.ref('rocket_live/current').transaction(function(cur){
+                    const n=arjNow();
+                    if(cur && cur.endAt && n<cur.endAt) return;
+                    const id=(cur&&Number(cur.id)>0?Number(cur.id):0)+1;
+                    const start=(cur&&cur.endAt&&n-cur.endAt<2500)?cur.endAt:n;
+                    const launchAt=start+Math.round(cfg.bettingSeconds*1000);
+                    const crashAt=launchAt+flight;
+                    const endAt=crashAt+Math.round(cfg.crashPauseSeconds*1000);
+                    return {id:id,bettingStart:start,launchAt:launchAt,crashAt:crashAt,endAt:endAt,crashPoint:crash,tickMs:cfg.tickMs,step:cfg.step,overridden:!!override,createdAt:n,host:'admin'};
+                });
+                if(res.committed){
+                    const v=res.snapshot.val();
+                    if(v){
+                        db.ref('rocket_live/rounds/'+v.id).set(v).catch(function(){});
+                        if(override>=1){
+                            db.ref('games/rocket_jump/nextCrashOverride').remove().catch(function(){});
+                        }
+                    }
+                }
+            }catch(e){}
+            finally{ arjStarting=false; }
+        }
+        async function arjSettleRound(round){
+            const id=String(round.id);
+            if(arjSettled[id]||arjSettling[id]) return;
+            arjSettling[id]=true;
+            try{
+                await db.ref('rocket_live/rounds/'+id).transaction(function(c){ return c||round; });
+                const snap=await db.ref('rocket_live/bets').orderByChild('roundId').equalTo(Number(round.id)).once('value');
+                const jobs=[];
+                snap.forEach(function(ch){ jobs.push(arjSettleBet(ch.key,ch.val(),round)); });
+                const results=await Promise.all(jobs);
+                if(results.every(function(x){ return x!==false; })){
+                    await db.ref('rocket_live/rounds/'+id+'/settledAt').transaction(function(v){ return v||Date.now(); });
+                    arjSettled[id]=true;
+                }
+            }catch(e){}
+            finally{ delete arjSettling[id]; }
+        }
+        async function arjSettleBet(id,bet,round){
+            try{
+                const st=bet.status, ref=db.ref('rocket_live/bets/'+id);
+                if(st==='win'||st==='loss'||st==='refunded'||st==='cancelled') return true;
+                if(st==='cashed'){ await arjFinalizeCashed(id,bet); return true; }
+                if(st!=='active') return true;
+                const cur=String(bet.currency||'INR').toUpperCase();
+                const dec=cur==='USDT'?4:2;
+                if(Number(bet.placedAt)>Number(round.launchAt)+1500){
+                    const r=await ref.transaction(function(c){ if(!c||c.status!=='active') return c; return Object.assign({},c,{status:'refunded',settledAt:Date.now()}); });
+                    const v=r.snapshot.val();
+                    if(v&&v.status==='refunded') await arjCreditOnce('rf_'+id,bet.userId,cur,bet.amount);
+                    return true;
+                }
+                const auto=Number(bet.autoCashout)||0;
+                if(auto>=1.01 && auto<=Number(round.crashPoint)+1e-9){
+                    const win=Number((Number(bet.amount)*auto).toFixed(dec));
+                    const r=await ref.transaction(function(c){ if(!c||c.status!=='active') return c; return Object.assign({},c,{status:'cashed',cashoutMultiplier:auto,winAmount:win,cashedAt:Date.now(),auto:true}); });
+                    const v=r.snapshot.val();
+                    if(v&&v.status==='cashed') await arjFinalizeCashed(id,v);
+                    return true;
+                }
+                await ref.transaction(function(c){ if(!c||c.status!=='active') return c; return Object.assign({},c,{status:'loss',winAmount:0,settledAt:Date.now()}); });
+                return true;
+            }catch(e){ return false; }
+        }
+        async function arjFinalizeCashed(id,bet){
+            const win=Number(bet.winAmount)||0;
+            await arjCreditOnce(id,bet.userId,bet.currency,win);
+            await db.ref('rocket_live/bets/'+id).transaction(function(c){ if(!c||c.status!=='cashed') return c; return Object.assign({},c,{status:'win',creditedAt:Date.now()}); });
+        }
+        function arjCreditOnce(key,userId,currency,amount){
+            amount=Number(amount)||0;
+            if(!key||!userId||amount<=0) return Promise.resolve(false);
+            const cur=String(currency||'INR').toUpperCase()==='USDT'?'USDT':'INR';
+            const field=cur==='USDT'?'usdtBalance':'balance';
+            const dec=cur==='USDT'?4:2;
+            return db.ref('users/'+userId).transaction(function(user){
+                if(!user) return user;
+                const guards=(user.rocketPayouts&&typeof user.rocketPayouts==='object')?user.rocketPayouts:{};
+                if(guards[key]) return user;
+                const next=Object.assign({},user);
+                next[field]=Number((Number(user[field]||0)+amount).toFixed(dec));
+                next.rocketPayouts=Object.assign({},guards,{[key]:{amount:Number(amount.toFixed(dec)),currency:cur,creditedAt:Date.now()}});
+                return next;
+            }).then(function(res){ return res.committed; });
         }
 
         /* --- ROCKET JUMP LIVE MONITOR (admin) --- */
@@ -4191,6 +4432,7 @@ function formatAdminMoney(value){
         }
         function startRocketMonitor() {
             stopRocketMonitor();
+            try { loadAdminRocketUserBets(); } catch(e) {}
             rocketMonRefs.cur = db.ref('rocket_live/current');
             rocketMonRefs.cur.on('value', snap => {
                 rocketMonData.cur = snap.val();
@@ -4217,6 +4459,74 @@ function formatAdminMoney(value){
             });
             rocketMonRefs.timer = setInterval(renderRocketMonitor, 1000);
         }
+        let adminRocketBetsCache = [];
+        function loadAdminRocketUserBets() {
+            const el = document.getElementById('adminRocketUserBetsList');
+            if (el) el.innerHTML = '<p style="font-size:11px;color:var(--text-muted);margin:0;">Loading bets…</p>';
+            db.ref('rocket_live/bets').limitToLast(200).once('value').then(snap => {
+                const arr = [];
+                if (snap && snap.exists()) snap.forEach(ch => {
+                    arr.push(Object.assign({ id: ch.key }, ch.val() || {}));
+                });
+                arr.sort((a,b) => (Number(b.placedAt || b.timestamp || b.createdAt) || 0) - (Number(a.placedAt || a.timestamp || a.createdAt) || 0));
+                adminRocketBetsCache = arr;
+                renderAdminRocketUserBets();
+            }).catch(err => {
+                if (el) el.innerHTML = '<p style="color:#f87171;font-size:11px;">Failed to load: ' + (err && err.message ? err.message : err) + '</p>';
+            });
+        }
+        function renderAdminRocketUserBets() {
+            const el = document.getElementById('adminRocketUserBetsList');
+            if (!el) return;
+            const q = (document.getElementById('adminRocketBetSearch')?.value || '').trim().toLowerCase();
+            let rows = adminRocketBetsCache.slice();
+            if (q) {
+                rows = rows.filter(b =>
+                    String(b.userId || '').toLowerCase().includes(q) ||
+                    String(b.customUid || '').toLowerCase().includes(q) ||
+                    String(b.id || '').toLowerCase().includes(q) ||
+                    String(b.roundId || '').toLowerCase().includes(q)
+                );
+            }
+            if (!rows.length) {
+                el.innerHTML = '<p style="font-size:11px;color:var(--text-muted);margin:0;">No bets found.</p>';
+                return;
+            }
+            el.innerHTML = '<div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;">Showing <b style="color:#fff;">' + rows.length + '</b> bet(s)</div>' +
+                rows.map(b => {
+                    const st = String(b.status || '—');
+                    const col = st === 'win' || st === 'cashed' ? '#34d399' : (st === 'loss' || st === 'crashed' ? '#f87171' : (st === 'cancelled' || st === 'refunded' ? '#94a3b8' : '#fbbf24'));
+                    const uid = b.customUid || (b.userId ? String(b.userId).slice(0, 10) : '—');
+                    const cur = String(b.currency || 'INR').toUpperCase();
+                    const amt = b.amount != null ? b.amount : '—';
+                    const mult = b.cashoutMultiplier != null ? (' · ' + Number(b.cashoutMultiplier).toFixed(2) + 'x') : '';
+                    const winA = b.winAmount != null ? (' · win ' + b.winAmount) : '';
+                    return '<div class="user-item" style="font-size:11px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">' +
+                        '<div style="min-width:0;flex:1;"><b>' + uid + '</b> · R#' + (b.roundId != null ? b.roundId : '—') +
+                        '<br>' + cur + ' ' + amt + mult + winA +
+                        ' · <span style="color:' + col + ';font-weight:900;">' + st.toUpperCase() + '</span>' +
+                        '<div style="font-size:9px;color:var(--text-muted);margin-top:2px;">#' + String(b.id || '').slice(-10) + (b.userId ? ' · ' + String(b.userId).slice(0, 12) : '') + '</div></div>' +
+                        '<button type="button" class="btn-red" style="margin:0;width:auto;min-width:64px;min-height:32px;padding:6px 8px;font-size:10px;" onclick="deleteAdminRocketBet(\'' + String(b.id).replace(/'/g, '') + '\')">Delete</button>' +
+                        '</div>';
+                }).join('');
+        }
+        function deleteAdminRocketBet(betId) {
+            if (!betId) return;
+            if (!confirm('Delete this Rocket Jump bet record?\n\nBet id: ' + betId + '\n\nThis does not refund the player wallet automatically.')) return;
+            db.ref('rocket_live/bets/' + betId).remove().then(() => {
+                adminRocketBetsCache = adminRocketBetsCache.filter(b => b.id !== betId);
+                renderAdminRocketUserBets();
+            }).catch(e => alert('Delete failed: ' + (e && e.message ? e.message : e)));
+        }
+        function clearAllAdminRocketBets() {
+            if (!confirm('Delete ALL Rocket Jump bets from rocket_live/bets?\n\nThis cannot be undone and does not refund wallets.')) return;
+            db.ref('rocket_live/bets').remove().then(() => {
+                adminRocketBetsCache = [];
+                renderAdminRocketUserBets();
+                alert('All Rocket Jump bets cleared.');
+            }).catch(e => alert('Failed: ' + (e && e.message ? e.message : e)));
+        }
+
         function renderRocketMonitor() {
             const nowEl = document.getElementById('rocketMonitorNow');
             const histEl = document.getElementById('rocketMonitorHistory');
