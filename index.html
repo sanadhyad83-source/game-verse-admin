@@ -370,7 +370,7 @@
         label { font-size: 12px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 6px; }
         
         @media(max-width:700px){#eventsAdminStats{grid-template-columns:repeat(2,minmax(0,1fr))!important;} }
-        .user-item, .withdraw-admin-item, .support-admin-item, .tournament-admin-item, .deposit-admin-item, .reward-admin-item, .prediction-admin-item, .membership-admin-item, .transaction-admin-item, .event-admin-item {
+        .user-item, .withdraw-admin-item, .support-admin-item, .deposit-admin-item, .reward-admin-item, .prediction-admin-item, .membership-admin-item, .transaction-admin-item, .event-admin-item {
             background: rgba(10, 10, 10, 0.85);
             padding: 15px;
             border-radius: 12px;
@@ -382,7 +382,7 @@
             word-break: break-word;
             transition: transform 0.15s ease, border-color 0.15s ease;
         }
-        .user-item:hover, .withdraw-admin-item:hover, .support-admin-item:hover, .tournament-admin-item:hover, .deposit-admin-item:hover, .reward-admin-item:hover, .prediction-admin-item:hover, .membership-admin-item:hover, .transaction-admin-item:hover, .event-admin-item:hover {
+        .user-item:hover, .withdraw-admin-item:hover, .support-admin-item:hover, .deposit-admin-item:hover, .reward-admin-item:hover, .prediction-admin-item:hover, .membership-admin-item:hover, .transaction-admin-item:hover, .event-admin-item:hover {
             border-color: rgba(var(--accent-rgb),0.5);
             transform: translateY(-1px);
         }
@@ -865,12 +865,12 @@
             <div class="sidebar-nav-item" onclick="return gvOpenColourClashAdmin(this)"><span class="icon">🎨</span> WINGO</div>
             <div class="sidebar-nav-item" onclick="return openK3Admin(this)"><span class="icon">🎲</span> K3</div>
             <div class="sidebar-nav-item" onclick="navTo('Mines Control', openMinesAdminModal, this)"><span class="icon">💣</span> Mines Control</div>
-            <div class="sidebar-nav-item" onclick="navTo('Tournaments', openTournamentsAdminModal, this)"><span class="icon">🏆</span> Tournaments</div>
             <div class="sidebar-nav-item" onclick="navTo('Predictions', openPredictionsAdminModal, this)"><span class="icon">📊</span> Predictions</div>
             <div class="sidebar-nav-item" onclick="navTo('Investments', openInvestmentAdminModal, this)"><span class="icon">📈</span> Investments</div>
             <div class="sidebar-nav-item" onclick="navTo('Memberships', openMembershipAdminModal, this)"><span class="icon">⭐</span> Memberships</div>
             <div class="sidebar-nav-item" onclick="navTo('Rewards &amp; Bonuses', openDailyRewardsAdminModal, this)"><span class="icon">🎁</span> Rewards &amp; Bonuses</div>
             <div class="sidebar-nav-item" onclick="navTo('Missions', openMissionsAdminModal, this)"><span class="icon">🎯</span> Missions</div>
+            <div class="sidebar-nav-item" onclick="navTo('Refer &amp; Earn', openReferAdminModal, this)"><span class="icon">🤝</span> Refer &amp; Earn</div>
             <div class="sidebar-nav-item" onclick="navTo('Events &amp; Activity', openEventsAdminModal, this)"><span class="icon">🎉</span> Events &amp; Activity</div>
             <div class="sidebar-nav-item" onclick="navTo('Support Tickets', openSupportRequestsModal, this)"><span class="icon">📞</span> Support Tickets</div>
 
@@ -1600,13 +1600,9 @@
         <div id="settingsAdminSection" class="hidden">
             <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">⚙️ System Settings</h3>
             <div class="control-group" style="border-top:none; padding-top:0;">
-                <label>Referral Reward Control (Per Refer):</label>
-                <input id="referBonusInput" type="number" placeholder="Amount per refer (₹)">
-                <button onclick="updateReferBonus()" class="btn-green">Update Refer Reward</button>
-
-                <label style="margin-top:10px;">Referral Deposit Commission — % of every approved downline deposit credited to the referrer:</label>
-                <input id="referDepositCommissionInput" type="number" placeholder="Commission % e.g. 5" min="0" max="100">
-                <button onclick="updateReferDepositCommission()" class="btn-green">Update Deposit Commission</button>
+                <label>Refer &amp; Earn:</label>
+                <p class="hint-text">Reward amount, when it is paid, milestone bonuses and the share message are managed in the Refer &amp; Earn section.</p>
+                <button onclick="navTo('Refer &amp; Earn', openReferAdminModal, null)" class="btn-green">Open Refer &amp; Earn Settings</button>
             </div>
             <div class="control-group">
                 <label>App Availability Control:</label>
@@ -2408,19 +2404,71 @@
             <div id="supportRequestsContainer" class="gv-support-list">Loading support tickets...</div>
         </div>
 
-        <!-- Tournaments Management Section -->
-        <div id="tournamentsAdminSection" class="hidden">
-            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🏆 Manage Tournaments &amp; Participants</h3>
-            <div class="control-group" style="border-top:none; padding-top:0;">
-                <label>Create / Host Tournament:</label>
-                <input id="tourneyTitle" type="text" placeholder="Tournament Name (e.g. Free Fire Cup)">
-                <input id="tourneyPrize" type="number" placeholder="Prize Pool (₹)">
-                <input id="tourneyFee" type="number" placeholder="Entry Fee (₹) [Set 0 for Free]">
-                <input id="tourneyDesc" type="text" placeholder="Short description / rules">
-                <button onclick="createTournament()" class="btn-green">Publish Tournament</button>
+        <!-- Refer & Earn Management Section -->
+        <div id="referAdminSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🤝 Refer &amp; Earn</h3>
+            <p class="hint-text" style="margin-bottom:12px;">Control referral rewards, when they are paid, milestone bonuses and the share message shown to users.</p>
+
+            <div id="rfaStats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin-bottom:14px;">Loading stats...</div>
+
+            <div class="admin-section-card control-group" style="margin-top:0; border-top:none;">
+                <label style="font-weight:800;">⚙️ Reward Settings</label>
+
+                <label>Program status:</label>
+                <select id="rfaEnabled">
+                    <option value="1">Enabled — rewards are paid</option>
+                    <option value="0">Paused — no new rewards</option>
+                </select>
+
+                <label>Reward per qualified referral (₹):</label>
+                <input id="rfaBonus" type="number" min="0" placeholder="e.g. 50">
+
+                <label>When is the reward paid?</label>
+                <select id="rfaMode" onchange="rfaToggleMode()">
+                    <option value="signup">Instantly when the friend signs up</option>
+                    <option value="first_deposit">When the friend's first deposit is approved</option>
+                    <option value="min_deposit">When a single approved deposit reaches a minimum</option>
+                </select>
+                <div id="rfaMinDepWrap" style="display:none;">
+                    <label>Minimum single deposit (₹):</label>
+                    <input id="rfaMinDeposit" type="number" min="0" placeholder="e.g. 200">
+                </div>
+
+                <label>Max rewarded referrals per user (0 = unlimited):</label>
+                <input id="rfaMax" type="number" min="0" placeholder="0">
+
+                <label>Milestone bonuses — one per line as <b>friends=reward</b>:</label>
+                <textarea id="rfaMilestones" rows="4" placeholder="5=100&#10;10=250&#10;25=700"></textarea>
+                <p class="hint-text">Example: <b>10=250</b> pays an extra ₹250 once a user has 10 qualified referrals. Each milestone is paid once.</p>
+
+                <label>App link for invite links (optional):</label>
+                <input id="rfaAppLink" type="text" placeholder="https://your-app-link (leave empty to use the current page)">
+                <p class="hint-text">Users get an invite link like <b>your-app-link?ref=USERCODE</b>. Opening it takes new users straight to Create Account with that code filled in.</p>
+
+                <label>Share message — use {code}, {link}, {amount}:</label>
+                <textarea id="rfaShareText" rows="3" placeholder="Join me on Game Verse! Sign up with my code {code} and start playing. {link}"></textarea>
+
+                <button onclick="saveReferralConfig()" class="btn-green">Save Refer &amp; Earn Settings</button>
             </div>
-            <label style="font-size:12px; color:var(--text-muted); margin: 10px 0 4px 2px; display:block;">Active &amp; Past Tournaments:</label>
-            <div id="tournamentsAdminContainer" style="max-height: 260px; overflow-y: auto; margin: 10px 0;">Loading tournaments...</div>
+
+            <div class="admin-section-card">
+                <label style="font-weight:800;">⏳ Pending referrals</label>
+                <p class="hint-text">Friends who signed up but have not qualified yet. You can qualify them manually or mark them not eligible.</p>
+                <div id="rfaPendingList" style="max-height:320px; overflow-y:auto; margin-top:8px;">Loading...</div>
+            </div>
+
+            <div class="admin-section-card">
+                <label style="font-weight:800;">🏅 Top referrers</label>
+                <div id="rfaTopList" style="margin-top:8px;">Loading...</div>
+            </div>
+
+            <div class="admin-section-card">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                    <label style="font-weight:800;">🧾 Recent referral payouts</label>
+                    <button type="button" class="btn-red" style="width:auto;margin:0;padding:8px 12px;min-height:34px;font-size:11px;" onclick="rfaDeleteRecentPayouts()">🗑️ Delete records</button>
+                </div>
+                <div id="rfaRecentList" style="max-height:300px; overflow-y:auto; margin-top:8px;">Loading...</div>
+            </div>
         </div>
 
         <!-- Predictions Management Section -->
@@ -2470,7 +2518,7 @@
                 <input id="eventImageUrl" type="text" placeholder="Banner Image URL (wide image recommended)">
                 <input id="eventTitle" type="text" placeholder="Event Title (e.g. Diwali Bonanza)">
                 <div class="two-cols">
-                    <input id="eventCategory" type="text" placeholder="Category (e.g. Tournament, Bonus, Announcement)">
+                    <input id="eventCategory" type="text" placeholder="Category (e.g. Bonus, Announcement)">
                     <input id="eventPriority" type="number" placeholder="Priority (higher = higher)" min="0" max="9999" value="0">
                 </div>
                 <input id="eventLink" type="text" placeholder="Reference / Event Link (Optional)">
@@ -3132,7 +3180,7 @@ function formatAdminMoney(value){
         // flow), we must hide every section before opening a new one — otherwise
         // jumping straight from one section to another via the sidebar would leave
         // both visible at once.
-        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','dashboard20Section','colourClashAdminSection','k3AdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','tournamentsAdminSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
+        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','referAdminSection','dashboard20Section','colourClashAdminSection','k3AdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
 
         function hideAllAdminSections() {
             ALL_ADMIN_SECTION_IDS.forEach(id => {
@@ -3463,7 +3511,6 @@ function formatAdminMoney(value){
                 if (visible('depositSection') && typeof loadDepositRequestsForAdmin === 'function') loadDepositRequestsForAdmin();
                 if (visible('withdrawSection') && typeof loadWithdrawRequestsForAdmin === 'function') loadWithdrawRequestsForAdmin();
                 if (visible('supportSection') && typeof loadSupportRequestsForAdmin === 'function') loadSupportRequestsForAdmin();
-                if (visible('tournamentsAdminSection') && typeof loadTournamentsAdminList === 'function') loadTournamentsAdminList();
                 if (visible('predictionsAdminSection') && typeof loadPredictionsAdminList === 'function') loadPredictionsAdminList();
                 if (visible('eventsAdminSection') && typeof loadEventsAdminList === 'function') loadEventsAdminList();
                 if (visible('dailyRewardsAdminSection') && typeof loadDailyRewardsAdminList === 'function') loadDailyRewardsAdminList();
@@ -4002,64 +4049,287 @@ function formatAdminMoney(value){
             db.ref('broadcasts/' + key).remove();
         }
 
-        function updateReferBonus() {
-            const bonusVal = Number(document.getElementById('referBonusInput').value);
-            if(isNaN(bonusVal) || bonusVal < 0) return alert('Please enter a valid referral reward amount.');
-
-            db.ref('control').update({ referBonus: bonusVal }).then(() => {
-                alert(`Referral reward updated to ₹${bonusVal} successfully!`);
-            });
+        /* ===== Refer & Earn (admin) ===== */
+        function rfaNormalizeConfig(raw, legacyBonus) {
+            raw = raw || {};
+            const mode = ['signup', 'first_deposit', 'min_deposit'].includes(raw.mode) ? raw.mode : 'signup';
+            const list = Array.isArray(raw.milestones) ? raw.milestones : Object.values(raw.milestones || {});
+            const ms = list.map(m => ({ count: Math.floor(Number(m && m.count) || 0), reward: Number(m && m.reward) || 0 }))
+                .filter(m => m.count > 0 && m.reward > 0).sort((a, b) => a.count - b.count);
+            return {
+                enabled: raw.enabled !== false,
+                bonus: raw.bonus !== undefined ? Math.max(0, Number(raw.bonus) || 0) : Math.max(0, Number(legacyBonus) || 0),
+                mode: mode,
+                minDeposit: Math.max(0, Number(raw.minDeposit) || 0),
+                maxReferrals: Math.max(0, Math.floor(Number(raw.maxReferrals) || 0)),
+                milestones: ms,
+                appLink: String(raw.appLink || '').trim(),
+                shareText: String(raw.shareText || '').trim()
+            };
         }
 
-        function updateReferDepositCommission() {
-            let pct = Number(document.getElementById('referDepositCommissionInput').value);
-            if(isNaN(pct) || pct < 0) pct = 0;
-            if(pct > 100) pct = 100;
-
-            db.ref('control').update({ referDepositCommissionPercent: pct }).then(() => {
-                alert(`Referral deposit commission updated to ${pct}% successfully!`);
-            });
+        async function rfaGetConfig() {
+            const r = await Promise.all([db.ref('control/referralConfig').once('value'), db.ref('control/referBonus').once('value')]);
+            return rfaNormalizeConfig(r[0].val(), r[1].val());
         }
 
-        function loadReferBonusSetting() {
-            db.ref('control/referBonus').once('value', snap => {
-                const val = snap.val();
-                if(val !== null) {
-                    document.getElementById('referBonusInput').value = val;
-                }
-            });
-            db.ref('control/referDepositCommissionPercent').once('value', snap => {
-                const val = snap.val();
-                document.getElementById('referDepositCommissionInput').value = val !== null ? val : 0;
-            });
+        function rfaEsc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
+        function rfaMoney(n) { n = Number(n) || 0; return '₹' + (Math.round(n * 100) / 100).toLocaleString('en-IN'); }
+        function rfaDate(ts) { return ts ? new Date(ts).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'; }
+
+        // Same bonus-credit record the user app writes, so referral rewards follow the turnover / expiry rules.
+        async function rfaRecordBonusCredit(uid, amount, extra) {
+            amount = Number(amount) || 0;
+            if (!uid || amount <= 0) return;
+            const cfg = (await db.ref('control/bonusRestrictions').once('value')).val() || {};
+            const m = Number(cfg.bonusTurnoverMultiplier) || 0, days = Number(cfg.bonusExpiryDays) || 0, t = Date.now();
+            return db.ref('bonus_credits/' + uid).push(Object.assign({
+                source: 'referral_bonus', amount: amount, currency: 'INR', timestamp: t, turnoverMultiplier: m,
+                requiredTurnover: Number((amount * m).toFixed(2)), expiresAt: days > 0 ? t + days * 86400000 : 0, status: 'active'
+            }, extra || {}));
         }
 
-        function createTournament() {
-            const title = document.getElementById('tourneyTitle').value.trim();
-            const prize = Number(document.getElementById('tourneyPrize').value);
-            const entryFee = Number(document.getElementById('tourneyFee').value);
-            const desc = document.getElementById('tourneyDesc').value.trim();
+        /* Pays the referral reward for one referred user (idempotent: a status transaction guarantees it runs once). */
+        async function gvQualifyReferral(childKey, cfg, opts) {
+            opts = opts || {};
+            const childRef = db.ref('users/' + childKey);
+            const child = (await childRef.once('value')).val() || {};
+            const refUid = String(child.referredBy || '').trim();
+            if (!refUid || refUid.toUpperCase() === 'ADMIN') return null;
+            if (child.status === 'deleted' || child.status === 'blocked') return null;
 
-            if(!title) return alert('Please enter tournament title.');
-            if(isNaN(prize) || prize <= 0) return alert('Please enter a valid prize pool.');
-            if(isNaN(entryFee) || entryFee < 0) return alert('Please enter a valid entry fee.');
+            // Claim the qualification exactly once.
+            const claim = await db.ref('users/' + childKey + '/referralStatus').transaction(cur =>
+                (cur === 'qualified' || cur === 'rejected' || cur === 'capped') ? undefined : 'qualified');
+            if (!claim.committed) return null;
 
-            const tRef = db.ref('tournaments').push();
-            tRef.set({
-                id: tRef.key,
-                title: title,
-                prize: prize,
-                entryFee: entryFee,
-                description: desc,
-                status: 'open',
-                timestamp: Date.now()
-            }).then(() => {
-                alert('Tournament published successfully!');
-                document.getElementById('tourneyTitle').value = '';
-                document.getElementById('tourneyPrize').value = '';
-                document.getElementById('tourneyFee').value = '';
-                document.getElementById('tourneyDesc').value = '';
+            const rs = await db.ref('users').orderByChild('customUid').equalTo(refUid).once('value');
+            let rKey = null;
+            rs.forEach(ch => { if (!rKey) rKey = ch.key; });
+            if (!rKey || rKey === childKey) { await childRef.update({ referralStatus: 'pending' }); return null; }
+
+            // Older accounts were already paid at signup under the previous rules: never pay them twice.
+            const prior = await db.ref('referral_earnings').orderByChild('referrerCustomUid').equalTo(refUid).once('value');
+            let already = false;
+            prior.forEach(ch => {
+                const v = ch.val() || {};
+                if (v.fromCustomUid === child.customUid && (v.type === 'signup' || v.type === 'qualified')) already = true;
             });
+            if (already) { await childRef.update({ referralQualifiedAt: Date.now(), referralBonus: 0 }); return { paid: 0, legacy: true }; }
+
+            let paid = 0, capped = false, milestoneList = [];
+            const tx = await db.ref('users/' + rKey).transaction(u => {
+                paid = 0; capped = false; milestoneList = [];
+                if (!u) return u;
+                const qc = Number(u.referralQualifiedCount) || 0;
+                if (cfg.maxReferrals > 0 && qc >= cfg.maxReferrals) { capped = true; return u; }
+                const next = Object.assign({}, u);
+                const newQc = qc + 1;
+                const mp = Object.assign({}, u.referralMilestonesPaid || {});
+                let add = Number(cfg.bonus) || 0;
+                (cfg.milestones || []).forEach(m => {
+                    if (newQc >= m.count && !mp['m' + m.count]) { mp['m' + m.count] = Date.now(); add += m.reward; milestoneList.push(m); }
+                });
+                next.referralQualifiedCount = newQc;
+                next.referralMilestonesPaid = mp;
+                next.balance = Number(((Number(u.balance) || 0) + add).toFixed(2));
+                paid = add;
+                return next;
+            });
+            if (!tx.committed) { await childRef.update({ referralStatus: 'pending' }); return null; }
+            if (capped) { await childRef.update({ referralStatus: 'capped' }); return { paid: 0, capped: true }; }
+
+            const now = Date.now();
+            await childRef.update({ referralQualifiedAt: now, referralBonus: Number(cfg.bonus) || 0 });
+            const base = { referrerUid: rKey, referrerCustomUid: refUid, fromCustomUid: child.customUid || '', timestamp: now };
+            const jobs = [];
+            if (cfg.bonus > 0) jobs.push(db.ref('referral_earnings').push(Object.assign({ type: 'qualified', amount: cfg.bonus, trigger: opts.trigger || cfg.mode }, base)));
+            milestoneList.forEach(m => jobs.push(db.ref('referral_earnings').push(Object.assign({ type: 'milestone', amount: m.reward, milestoneCount: m.count }, base))));
+            if (paid > 0) jobs.push(rfaRecordBonusCredit(rKey, paid, { fromCustomUid: child.customUid || '' }));
+            await Promise.all(jobs);
+            return { paid: paid, milestones: milestoneList, referrerKey: rKey };
+        }
+
+
+        // Called after a deposit is approved: pays the referrer when the program is set to deposit-based rewards.
+        async function rfaOnDepositApproved(childKey, amount, currency) {
+            try {
+                const cfg = await rfaGetConfig();
+                if (!cfg.enabled || cfg.mode === 'signup') return 0;
+                if (cfg.mode === 'min_deposit' && (String(currency).toUpperCase() !== 'INR' || Number(amount) < cfg.minDeposit)) return 0;
+                const r = await gvQualifyReferral(childKey, cfg, { trigger: 'deposit' });
+                return r && r.paid ? r.paid : 0;
+            } catch (e) {
+                console.warn('Referral qualification skipped:', e);
+                return 0;
+            }
+        }
+
+        function openReferAdminModal() {
+            document.getElementById('mainAdminMenu').classList.add('hidden');
+            document.getElementById('referAdminSection').classList.remove('hidden');
+            loadReferralConfigIntoForm();
+            loadReferralAdminReport();
+        }
+
+        function rfaToggleMode() {
+            const wrap = document.getElementById('rfaMinDepWrap'), mode = document.getElementById('rfaMode');
+            if (wrap && mode) wrap.style.display = mode.value === 'min_deposit' ? '' : 'none';
+        }
+
+        function loadReferralConfigIntoForm() {
+            if (!document.getElementById('rfaBonus')) return;
+            rfaGetConfig().then(cfg => {
+                document.getElementById('rfaEnabled').value = cfg.enabled ? '1' : '0';
+                document.getElementById('rfaBonus').value = cfg.bonus;
+                document.getElementById('rfaMode').value = cfg.mode;
+                document.getElementById('rfaMinDeposit').value = cfg.minDeposit || '';
+                document.getElementById('rfaMax').value = cfg.maxReferrals || 0;
+                document.getElementById('rfaMilestones').value = cfg.milestones.map(m => m.count + '=' + m.reward).join('\n');
+                document.getElementById('rfaAppLink').value = cfg.appLink;
+                document.getElementById('rfaShareText').value = cfg.shareText;
+                rfaToggleMode();
+            }).catch(e => console.warn('Could not load referral settings:', e));
+        }
+        // Kept so older calls elsewhere in the panel keep working.
+        function loadReferBonusSetting() { loadReferralConfigIntoForm(); }
+
+        function saveReferralConfig() {
+            const bonus = Number(document.getElementById('rfaBonus').value) || 0;
+            const mode = document.getElementById('rfaMode').value;
+            const minDeposit = Number(document.getElementById('rfaMinDeposit').value) || 0;
+            const maxReferrals = Math.floor(Number(document.getElementById('rfaMax').value) || 0);
+            if (bonus < 0) return alert('Reward amount cannot be negative.');
+            if (maxReferrals < 0) return alert('Max referrals cannot be negative.');
+            if (mode === 'min_deposit' && minDeposit <= 0) return alert('Enter the minimum deposit amount for this reward mode.');
+
+            const milestones = [], seen = {};
+            const lines = String(document.getElementById('rfaMilestones').value || '').split(/\r?\n/);
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                const m = line.match(/^(\d+)\s*[=:,\-]\s*(\d+(?:\.\d+)?)$/);
+                if (!m || Number(m[1]) <= 0 || Number(m[2]) <= 0) return alert('Milestone line ' + (i + 1) + ' is invalid. Use the format  friends=reward  e.g. 10=250');
+                if (seen[m[1]]) return alert('Milestone for ' + m[1] + ' friends is listed twice.');
+                seen[m[1]] = true;
+                milestones.push({ count: Number(m[1]), reward: Number(m[2]) });
+            }
+            milestones.sort((a, b) => a.count - b.count);
+
+            const cfg = {
+                enabled: document.getElementById('rfaEnabled').value === '1',
+                bonus: bonus, mode: mode, minDeposit: mode === 'min_deposit' ? minDeposit : 0,
+                maxReferrals: maxReferrals, milestones: milestones,
+                appLink: document.getElementById('rfaAppLink').value.trim(),
+                shareText: document.getElementById('rfaShareText').value.trim(),
+                updatedAt: Date.now()
+            };
+            // referBonus is kept in sync for compatibility with older screens.
+            db.ref('control').update({ referralConfig: cfg, referBonus: bonus }).then(() => {
+                alert('Refer & Earn settings saved.');
+            }).catch(e => alert('Could not save settings: ' + e.message));
+        }
+
+        async function rfaDeleteRecentPayouts() {
+            if (!confirm('Delete all records shown under Recent referral payouts? This removes the referral payout history records only; it does not change users’ wallet balances.')) return;
+            const btn = document.querySelector('#referAdminSection button[onclick="rfaDeleteRecentPayouts()"]');
+            if (btn) { btn.disabled = true; btn.textContent = 'Deleting...'; }
+            try {
+                await db.ref('referral_earnings').remove();
+                const list = document.getElementById('rfaRecentList');
+                if (list) list.innerHTML = '<p class="hint-text">No payout records yet.</p>';
+                await loadReferralAdminReport();
+                alert('Recent referral payout records deleted.');
+            } catch (e) {
+                alert('Could not delete payout records: ' + e.message);
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = '🗑️ Delete records'; }
+            }
+        }
+
+        function loadReferralAdminReport() {
+            const statsEl = document.getElementById('rfaStats');
+            if (!statsEl) return;
+            Promise.all([db.ref('users').once('value'), db.ref('referral_earnings').once('value')]).then(r => {
+                const users = [], earnings = [];
+                r[0].forEach(ch => { users.push(Object.assign({ __key: ch.key }, ch.val() || {})); });
+                r[1].forEach(ch => { earnings.push(ch.val() || {}); });
+
+                const paidFrom = {}, earnedBy = {}; let totalPaid = 0;
+                earnings.forEach(e => {
+                    const a = Number(e.amount) || 0; totalPaid += a;
+                    earnedBy[e.referrerCustomUid] = (earnedBy[e.referrerCustomUid] || 0) + a;
+                    if (e.type === 'signup' || e.type === 'qualified') paidFrom[e.fromCustomUid] = true;
+                });
+
+                const refs = {}, pending = []; let total = 0, q = 0, p = 0; const dayAgo = Date.now() - 86400000;
+                users.forEach(u => {
+                    const by = String(u.referredBy || '').trim();
+                    if (!by || by.toUpperCase() === 'ADMIN' || u.status === 'deleted') return;
+                    total++;
+                    let st = String(u.referralStatus || '');
+                    if (!st) st = paidFrom[u.customUid] ? 'qualified' : 'pending';
+                    if (st === 'qualified') q++;
+                    else if (st === 'pending') { p++; pending.push(u); }
+                    const rr = refs[by] || (refs[by] = { uid: by, total: 0, qualified: 0, recent: 0 });
+                    rr.total++; if (st === 'qualified') rr.qualified++; if ((Number(u.joinedAt) || 0) > dayAgo) rr.recent++;
+                });
+
+                const card = (label, val, color) => '<div style="background:rgba(10,10,10,.7);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;padding:12px;text-align:center;">' +
+                    '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700;">' + label + '</div>' +
+                    '<div style="font-size:20px;font-weight:800;margin-top:4px;color:' + (color || '#fff') + ';">' + val + '</div></div>';
+                statsEl.innerHTML = card('Total referred', total) + card('Qualified', q, '#34d399') + card('Pending', p, '#facc15') + card('Rewards paid', rfaMoney(totalPaid), '#34d399');
+
+                // Pending referrals
+                pending.sort((a, b) => (Number(b.joinedAt) || 0) - (Number(a.joinedAt) || 0));
+                const pendEl = document.getElementById('rfaPendingList');
+                pendEl.innerHTML = pending.length ? pending.slice(0, 40).map(u =>
+                    '<div class="deposit-admin-item" style="margin-bottom:8px;">' +
+                    '<b>Friend:</b> <span class="uid-badge">' + rfaEsc(u.customUid) + '</span> &nbsp; <b>Referred by:</b> <span class="uid-badge">' + rfaEsc(u.referredBy) + '</span><br>' +
+                    '<span style="font-size:12px;color:var(--text-muted);">' + rfaEsc(u.email || '') + ' · joined ' + rfaDate(u.joinedAt) + '</span><br>' +
+                    '<div style="display:flex;gap:8px;margin-top:6px;">' +
+                    '<button class="btn-green" style="margin:0;" onclick="rfaQualifyManual(\'' + u.__key + '\')">✅ Qualify &amp; Pay</button>' +
+                    '<button class="btn-red" style="margin:0;" onclick="rfaRejectReferral(\'' + u.__key + '\')">🚫 Not eligible</button></div></div>'
+                ).join('') + (pending.length > 40 ? '<p class="hint-text">+' + (pending.length - 40) + ' more pending</p>' : '')
+                    : '<p class="hint-text">No pending referrals.</p>';
+
+                // Top referrers
+                const top = Object.values(refs).sort((a, b) => b.qualified - a.qualified || b.total - a.total).slice(0, 10);
+                document.getElementById('rfaTopList').innerHTML = top.length ? top.map((t, i) =>
+                    '<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:13px;">' +
+                    '<span>#' + (i + 1) + ' <span class="uid-badge">' + rfaEsc(t.uid) + '</span>' + (t.recent >= 5 ? ' <span style="color:#facc15;" title="Many signups in the last 24 hours">⚠️ ' + t.recent + ' joins/24h</span>' : '') + '</span>' +
+                    '<span style="color:var(--text-muted);">' + t.total + ' referred · ' + t.qualified + ' qualified · <b style="color:#34d399;">' + rfaMoney(earnedBy[t.uid] || 0) + '</b></span></div>'
+                ).join('') : '<p class="hint-text">No referrals yet.</p>';
+
+                // Recent payouts
+                earnings.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+                document.getElementById('rfaRecentList').innerHTML = earnings.length ? earnings.slice(0, 15).map(e =>
+                    '<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;">' +
+                    '<span>' + rfaDate(e.timestamp) + ' · <span class="uid-badge">' + rfaEsc(e.referrerCustomUid) + '</span> ← <span class="uid-badge">' + rfaEsc(e.fromCustomUid) + '</span> · ' +
+                    rfaEsc(e.type === 'milestone' ? 'milestone ' + (e.milestoneCount || '') : (e.type || 'reward')) + '</span>' +
+                    '<b style="color:#34d399;">' + rfaMoney(e.amount) + '</b></div>'
+                ).join('') : '<p class="hint-text">No payouts yet.</p>';
+            }).catch(e => { statsEl.innerHTML = '<p class="hint-text">Could not load referral report: ' + rfaEsc(e.message) + '</p>'; });
+        }
+
+        async function rfaQualifyManual(childKey) {
+            if (!confirm('Qualify this referral and pay the reward to the referrer now?')) return;
+            try {
+                const cfg = await rfaGetConfig();
+                const r = await gvQualifyReferral(childKey, cfg, { trigger: 'admin' });
+                if (!r) alert('Nothing was paid (already processed, referrer not found, or the account is blocked).');
+                else if (r.capped) alert('The referrer reached the max rewarded referrals limit, so no reward was paid.');
+                else if (r.legacy) alert('Marked as qualified. The reward was already paid earlier, so nothing more was credited.');
+                else alert('Reward of ' + rfaMoney(r.paid) + ' credited to the referrer.');
+            } catch (e) { alert('Could not qualify referral: ' + e.message); }
+            loadReferralAdminReport();
+        }
+
+        function rfaRejectReferral(childKey) {
+            if (!confirm('Mark this referral as not eligible? No reward will be paid for it.')) return;
+            db.ref('users/' + childKey).update({ referralStatus: 'rejected' })
+                .then(() => loadReferralAdminReport())
+                .catch(e => alert('Could not update referral: ' + e.message));
         }
 
         function loadSelectedGameData() {
@@ -6240,86 +6510,6 @@ function formatAdminMoney(value){
             }).join('');
         }
 
-        // Referral deposit commission: credit a referrer once for each approved
-        // deposit. The marker and wallet update are done in one Firebase transaction,
-        // so repeated/concurrent approval calls cannot pay the same commission twice.
-        function creditReferralDepositCommissionOnce(reqKey, childUserId, depositAmount, currency) {
-            const amount = Number(depositAmount) || 0;
-            const c = String(currency || 'INR').toUpperCase() === 'USDT' ? 'USDT' : 'INR';
-            if (!reqKey || !childUserId || amount <= 0) return Promise.resolve(false);
-
-            return Promise.all([
-                db.ref('users/' + childUserId).once('value'),
-                db.ref('control/referDepositCommissionPercent').once('value')
-            ]).then(([childSnap, pctSnap]) => {
-                const child = childSnap.val() || {};
-                const referrerCustomUid = String(child.referredBy || '').trim();
-                const pct = Math.min(100, Math.max(0, Number(pctSnap.val()) || 0));
-
-                if (!referrerCustomUid || referrerCustomUid.toUpperCase() === 'ADMIN' || pct <= 0) {
-                    return false;
-                }
-
-                const commission = Number((amount * pct / 100).toFixed(c === 'USDT' ? 4 : 2));
-                if (commission <= 0) return false;
-
-                return db.ref('users').orderByChild('customUid').equalTo(referrerCustomUid).once('value')
-                    .then(refSnap => {
-                        if (!refSnap.exists()) return false;
-
-                        let referrerKey = null;
-                        refSnap.forEach(ch => { if (!referrerKey) referrerKey = ch.key; });
-                        if (!referrerKey) return false;
-
-                        const field = c === 'USDT' ? 'usdtBalance' : 'balance';
-                        const token = 'depcomm_' + reqKey + '_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-                        const referrerRef = db.ref('users/' + referrerKey);
-
-                        return referrerRef.transaction(user => {
-                            if (!user) return user;
-
-                            const ledger = (user.depositCommissionCredits && typeof user.depositCommissionCredits === 'object')
-                                ? user.depositCommissionCredits : {};
-
-                            if (ledger[reqKey]) return user;
-
-                            const next = Object.assign({}, user);
-                            next[field] = Number((Number(user[field]) || 0) + commission).toFixed(c === 'USDT' ? 4 : 2);
-                            next.depositCommissionCredits = Object.assign({}, ledger, {
-                                [reqKey]: {
-                                    amount: commission,
-                                    currency: c,
-                                    sourceDepositId: reqKey,
-                                    fromCustomUid: child.customUid || '',
-                                    token: token,
-                                    creditedAt: Date.now()
-                                }
-                            });
-                            return next;
-                        }).then(res => {
-                            const finalUser = res.snapshot && res.snapshot.val ? (res.snapshot.val() || {}) : {};
-                            const marker = finalUser.depositCommissionCredits && finalUser.depositCommissionCredits[reqKey];
-                            const creditedByThisCall = !!marker && marker.token === token;
-
-                            if (!creditedByThisCall) return false;
-
-                            return db.ref('referral_earnings').push({
-                                referrerUid: referrerKey,
-                                referrerCustomUid: referrerCustomUid,
-                                fromCustomUid: child.customUid || '',
-                                type: 'deposit_commission',
-                                depositId: reqKey,
-                                depositAmount: amount,
-                                commissionPercent: pct,
-                                amount: commission,
-                                currency: c,
-                                timestamp: Date.now()
-                            }).then(() => true);
-                        });
-                    });
-            });
-        }
-
         function approveDeposit(reqKey, userId, amount) {
             const note=(prompt('Optional admin note:','')||'').trim();
 
@@ -6385,23 +6575,14 @@ function formatAdminMoney(value){
                             bonusPercent:bonusType==='percent'?bonusPercent:0,
                             totalCredited:Number((depositAmount+bonusAmount).toFixed(currency==='USDT'?4:2))
                         });
-                    }).then(()=>{
-                        // Referral commission is calculated from the deposit amount,
-                        // not from the promotional bonus.
-                        return creditReferralDepositCommissionOnce(
-                            reqKey,
-                            userId,
-                            depositAmount,
-                            currency
-                        ).then(commissionPaid=>({
-                            currency,
-                            depositAmount,
-                            bonusAmount,
-                            bonusType,
-                            bonusPercent,
-                            commissionPaid
-                        }));
-                    });
+                    }).then(()=>rfaOnDepositApproved(userId, depositAmount, currency).then(referralPaid=>({
+                        currency,
+                        depositAmount,
+                        bonusAmount,
+                        bonusType,
+                        bonusPercent,
+                        referralPaid
+                    })));
                 });
             }).then(result=>{
                 if(!result) return;
@@ -6409,7 +6590,7 @@ function formatAdminMoney(value){
                     ? ` Bonus ${result.currency==='USDT'?'USDT '+result.bonusAmount.toFixed(4):'₹'+result.bonusAmount.toFixed(2)} added automatically.`
                     : ' No deposit bonus is currently enabled.';
                 const baseMsg = `Deposit approved: ${result.currency==='USDT'?'USDT '+result.depositAmount.toFixed(4):'₹'+result.depositAmount.toFixed(2)} credited.`;
-                alert(baseMsg + bonusText + (result.commissionPaid ? ' Referral deposit commission credited to the referrer.' : ''));
+                alert(baseMsg + bonusText + (result.referralPaid > 0 ? ' Referral reward of ₹' + result.referralPaid + ' credited to the referrer.' : ''));
             }).catch(e=>alert('Could not approve deposit: '+e.message));
         }
 
@@ -6759,155 +6940,6 @@ function formatAdminMoney(value){
         function deleteSupportRequest(reqKey) {
             if (!confirm('Delete this support ticket permanently?')) return;
             db.ref('support_requests/' + reqKey).remove().then(() => alert('Support request deleted!')).catch(err => alert('Could not delete support request: ' + err.message));
-        }
-
-        function openTournamentsAdminModal() {
-            document.getElementById('mainAdminMenu').classList.add('hidden');
-            document.getElementById('tournamentsAdminSection').classList.remove('hidden');
-            loadTournamentsAdminList();
-        }
-
-        function closeTournamentsAdminModal() {
-            document.getElementById('tournamentsAdminSection').classList.add('hidden');
-            document.getElementById('mainAdminMenu').classList.remove('hidden');
-        }
-
-        function loadTournamentsAdminList() {
-            const container = document.getElementById('tournamentsAdminContainer');
-            db.ref('tournaments').on('value', snap => {
-                container.innerHTML = '';
-                if(!snap.exists()) {
-                    container.innerHTML = '<p>No tournaments created yet.</p>';
-                    return;
-                }
-
-                snap.forEach(child => {
-                    const t = child.val();
-                    const tKey = child.key;
-
-                    db.ref('tournament_participants/' + tKey).once('value', partSnap => {
-                        let participantsHtml = '';
-                        let optionsHtml = '<option value="">-- Select Winner --</option>';
-                        if(partSnap.exists()) {
-                            partSnap.forEach(pChild => {
-                                const p = pChild.val();
-                                participantsHtml += `<span class="uid-badge">${p.uid}</span>`;
-                                optionsHtml += `<option value="${pChild.key}|${p.uid}">${p.uid}</option>`;
-                            });
-                        } else {
-                            participantsHtml = '<span style="color:var(--text-muted); font-style:italic;">No participants yet.</span>';
-                        }
-
-                        let card = document.getElementById('admin_tourney_' + tKey);
-                        if(!card) {
-                            card = document.createElement('div');
-                            card.id = 'admin_tourney_' + tKey;
-                            card.className = 'tournament-admin-item';
-                            container.appendChild(card);
-                        }
-
-                        const status = t.status || 'open';
-                        let statusBadge;
-                        if (status === 'open') {
-                            statusBadge = `<span style="color:#34d399; font-weight:bold;">🟢 OPEN</span>`;
-                        } else if (status === 'cancelled') {
-                            statusBadge = `<span style="color:#f87171; font-weight:bold;">🚫 CANCELLED — Entry Fees Refunded</span>`;
-                        } else {
-                            statusBadge = `<span style="color:var(--accent-gold); font-weight:bold;">🏁 CLOSED — Winner: ${t.winnerCustomUid || '—'} (₹${t.prizeAwarded || 0})</span>`;
-                        }
-
-                        const managementControlsHtml = status === 'open' ? `
-                            <div style="margin-top:8px; border-top: 1px solid rgba(82, 82, 91, 0.3); padding-top:8px;">
-                                <select id="tourney_winner_select_${tKey}" style="margin-bottom:6px;">${optionsHtml}</select>
-                                <input id="tourney_prize_award_${tKey}" type="number" placeholder="Prize Amount (₹)" value="${t.prize || 0}" style="margin-bottom:6px;">
-                                <div class="action-row">
-                                    <button onclick="declareTournamentWinner('${tKey}')" class="btn-green">🏆 Declare Winner & Pay Prize</button>
-                                    <button onclick="cancelTournament('${tKey}')" class="btn-red">🚫 Cancel & Refund</button>
-                                </div>
-                            </div>
-                        ` : '';
-
-                        card.innerHTML = `
-                            <b style="color:var(--accent-cyan); font-size:14px;">🏆 ${t.title}</b><br>
-                            <b>Prize Pool:</b> ₹${t.prize} | <b>Entry Fee:</b> ₹${t.entryFee || 0}<br>
-                            <b>Description:</b> ${t.description || 'N/A'}<br>
-                            <b>Status:</b> ${statusBadge}<br>
-                            <p style="margin:6px 0 4px 0; color:var(--text-muted);"><b>Registered Participants (${partSnap.numChildren() || 0}):</b></p>
-                            <div style="max-height:80px; overflow-y:auto; margin-bottom:8px;">${participantsHtml}</div>
-                            ${managementControlsHtml}
-                            <div class="action-row" style="margin-top:6px;">
-                                <button onclick="deleteTournament('${tKey}')" class="btn-red">🗑️ Delete Tournament</button>
-                            </div>
-                        `;
-                    });
-                });
-            });
-        }
-
-        function declareTournamentWinner(tKey) {
-            const select = document.getElementById('tourney_winner_select_' + tKey);
-            const prizeInput = document.getElementById('tourney_prize_award_' + tKey);
-            if (!select.value) return alert('Please select a winner from the participant list.');
-
-            const [winnerUid, winnerCustomUid] = select.value.split('|');
-            const prizeAmount = Number(prizeInput.value);
-            if (isNaN(prizeAmount) || prizeAmount <= 0) return alert('Please enter a valid prize amount.');
-
-            if (!confirm(`Declare "${winnerCustomUid}" as the winner and pay out ₹${prizeAmount}? This closes the tournament.`)) return;
-
-            db.ref('users/' + winnerUid + '/balance').once('value').then(snap => {
-                const currentBal = Number(snap.val()) || 0;
-                const newBal = currentBal + prizeAmount;
-
-                db.ref('users/' + winnerUid).update({ balance: newBal }).then(() => {
-                    db.ref('tournaments/' + tKey).update({
-                        status: 'closed',
-                        winnerUid: winnerUid,
-                        winnerCustomUid: winnerCustomUid,
-                        prizeAwarded: prizeAmount,
-                        declaredAt: Date.now()
-                    }).then(() => {
-                        alert(`Winner declared! ₹${prizeAmount} credited to ${winnerCustomUid}.`);
-                    });
-                });
-            });
-        }
-
-        function cancelTournament(tKey) {
-            if (!confirm('Cancel this tournament and refund entry fees to all participants? This cannot be undone.')) return;
-
-            db.ref('tournaments/' + tKey).once('value').then(tSnap => {
-                const t = tSnap.val() || {};
-                const entryFee = Number(t.entryFee) || 0;
-
-                db.ref('tournament_participants/' + tKey).once('value').then(partSnap => {
-                    const refundPromises = [];
-
-                    if (entryFee > 0 && partSnap.exists()) {
-                        partSnap.forEach(pChild => {
-                            const participantUid = pChild.key;
-                            const refundPromise = db.ref('users/' + participantUid + '/balance').once('value').then(balSnap => {
-                                const currentBal = Number(balSnap.val()) || 0;
-                                return db.ref('users/' + participantUid).update({ balance: currentBal + entryFee });
-                            });
-                            refundPromises.push(refundPromise);
-                        });
-                    }
-
-                    Promise.all(refundPromises).then(() => {
-                        db.ref('tournaments/' + tKey).update({ status: 'cancelled' }).then(() => {
-                            alert(entryFee > 0 ? 'Tournament cancelled and entry fees refunded to all participants.' : 'Tournament cancelled.');
-                        });
-                    });
-                });
-            });
-        }
-
-        function deleteTournament(tKey) {
-            if(confirm('Are you sure you want to delete this tournament and its participant data?')) {
-                db.ref('tournaments/' + tKey).remove();
-                db.ref('tournament_participants/' + tKey).remove().then(() => alert('Tournament deleted successfully!'));
-            }
         }
 
         function openPredictionsAdminModal() {
