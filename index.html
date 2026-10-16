@@ -825,7 +825,23 @@
 <style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style>
 <script>
 </script>
-<style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style></head>
+<style id="adminThemeGlowOverride">button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 11px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) 19%, transparent)); }</style>
+<style id="gameverse-royal-fixed-theme">
+:root{--bg-darkblue:#020817;--panel-blue:#071426;--border-blue:#b87912;--glow-blue:rgba(245,189,69,.35);--accent-cyan:#f5bd45;--accent-gold:#fbbf24;--text-muted:#9aacc7;--accent-rgb:245,189,69;--text-main:#f8fafc}
+html,body{background:#020817!important;color:#f8fafc!important}
+body{background:radial-gradient(ellipse at 50% -10%,#102b56 0%,#020817 58%,#01040b 100%)!important}
+.container,.panel,.glass-card,.card,.stat-card,.dash2-hero,.dash2-stat,.dash2-control,.dash2-mini,.dash2-health-card,.staff-card,.restriction-admin-card{background:linear-gradient(145deg,rgba(7,20,38,.98),rgba(2,8,23,.97))!important;border-color:rgba(245,189,69,.24)!important;box-shadow:0 10px 28px #0005,inset 0 1px #ffffff08!important}
+h2,h3,h4,.dash2-title{color:#fbbf24!important;text-shadow:0 0 12px #fbbf241c!important}
+input,select,textarea{background:#061226!important;border-color:#25436b!important;color:#f8fafc!important}
+input:focus,select:focus,textarea:focus{border-color:#fbbf24!important;box-shadow:0 0 0 2px #fbbf2426!important}
+button{background:linear-gradient(135deg,#f9d879,#d99a20 55%,#9b620b)!important;border:1px solid #ffe5a0!important;color:#101827!important;box-shadow:0 5px 16px #0006,inset 0 1px #fff8!important;text-shadow:none!important}
+button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!important;box-shadow:0 7px 22px #fbbf2424!important}
+.btn-green,.btn-yellow{background:linear-gradient(135deg,#f9d879,#d99a20 55%,#9b620b)!important;color:#101827!important}
+.btn-gray{background:linear-gradient(135deg,#10294b,#071426)!important;color:#dbeafe!important;border-color:#28466c!important}
+.overview-detail-table th,.dash2-table th,.staff-table th{color:#fbbf24!important;background:#fbbf240d!important}
+</style>
+
+</head>
 <body class="admin-shell-active">
 
     <!-- Auth Screen -->
@@ -1139,52 +1155,7 @@
                             <label class="dash2-switch"><input type="checkbox" id="d20RegistrationEnabled" onchange="saveDashboard20Control('registrationEnabled',this.checked)"> Enabled</label>
                         </div>
                     </div>
-                    <div class="dash2-control">
-                        <div class="dash2-control-head">
-                            <div><div class="dash2-control-title">📢 User Service Banner</div><div class="dash2-control-desc">Show an operational notice at the top of the User App.</div></div>
-                            <label class="dash2-switch"><input type="checkbox" id="d20BannerEnabled" onchange="saveDashboard20Control('bannerEnabled',this.checked)"> Enabled</label>
-                        </div>
-                        <input id="d20BannerMessage" type="text" placeholder="Example: Scheduled maintenance tonight at 12:00 AM" style="margin-top:8px;">
-                        <button class="btn-gray" onclick="saveDashboard20Banner()" style="margin-top:4px;">💾 Save Banner Message</button>
                     </div>
-                </div>
-            </div>
-
-            <div class="dash-panel">
-                <div class="dash-panel-head"><h4>🎮 Game Availability Matrix</h4><span class="view-all-link" onclick="navTo('Games Management', openGamesManagementAdminModal, null)">Open Controls →</span></div>
-                <div class="dash2-table-wrap">
-                    <table class="dash2-table">
-                        <thead><tr><th>Game</th><th>Individual Status</th><th>Global Switch</th><th>Effective Status</th></tr></thead>
-                        <tbody id="d20GameMatrixBody"><tr><td colspan="4">Loading…</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="dash-panel">
-                <div class="dash-panel-head"><h4>🧭 Admin Quick Operations</h4></div>
-                <div class="dash2-action-row">
-                    <button class="btn-gray" onclick="navTo('Deposits', openDepositRequestsModal, null)">💳 Review Deposits</button>
-                    <button class="btn-gray" onclick="navTo('Withdrawals', openWithdrawRequestsModal, null)">💸 Review Withdrawals</button>
-                    <button class="btn-gray" onclick="navTo('Users', openUserListModal, null)">👥 Inspect Users</button>
-                    <button class="btn-gray" onclick="navTo('Notifications', openNotificationsAdminModal, null)">🔔 Send Notice</button>
-                </div>
-            </div>
-
-            <div class="dash-panel">
-                <div class="dash2-toolbar d20-pulse-head">
-                <div><h4 style="margin:0;">⚡ Operations Pulse</h4><div style="font-size:9px;color:var(--text-muted);margin-top:3px;">Live operational signals that are not part of the normal revenue dashboard.</div></div>
-                <div class="d20-pulse-actions">
-                    <span id="d20LastRefresh">Not refreshed yet</span>
-                    <button class="btn-gray" onclick="loadDashboard20()">↻ Refresh</button>
-                    <button class="btn-gray" id="d20AutoRefreshBtn" onclick="toggleDashboard20AutoRefresh()">⏱ Auto Refresh: OFF</button>
-                </div>
-            </div>
-            <div class="dash2-ops-grid">
-                    <div class="dash2-mini"><div class="m-label">Games Available</div><div class="m-value" id="d20GamesAvailable">0 / 0</div><div class="m-help">Effective status after global switch</div></div>
-                    <div class="dash2-mini"><div class="m-label">Open Queues</div><div class="m-value" id="d20OpenQueues">0</div><div class="m-help">Pending deposits + withdrawals</div></div>
-                    <div class="dash2-mini"><div class="m-label">New Users Today</div><div class="m-value" id="d20NewUsersToday">0</div><div class="m-help">Registration activity since midnight</div></div>
-                    <div class="dash2-mini"><div class="m-label">Active Last Hour</div><div class="m-value" id="d20ActiveHour">1</div><div class="m-help">Users with recent activity</div></div>
-                </div>
             </div>
 
             <div class="dash-panel">
@@ -1212,18 +1183,9 @@
             <div class="dash-panel">
                 <div class="dash-panel-head"><h4>✨ User App Experience Controls</h4><span style="font-size:9px;color:var(--text-muted);">Controls visual/communication features only — game outcomes and odds are unchanged</span></div>
                 <div class="d20-experience-grid">
-                    <div class="d20-feature-card">                         <div class="d20-fhead"><div class="d20-ftitle">📣 Home Announcement</div><label class="dash2-switch"><input type="checkbox" id="d20HomeAnnouncementEnabled" onchange="saveExperienceControl('homeAnnouncementEnabled',this.checked)"> Enabled</label></div>
-                        <div class="d20-fdesc">Show a compact announcement card on the User App home screen.</div>
-                        <input id="d20HomeAnnouncement" type="text" placeholder="Example: New event is live today">
-                        <select id="d20HomeAnnouncementStyle"><option value="info">ℹ️ Info</option><option value="success">✅ Success</option><option value="warning">⚠️ Notice</option></select>
-                    </div>
                     <div class="d20-feature-card">
                         <div class="d20-fhead"><div class="d20-ftitle">🏆 Achievement Showcase</div><label class="dash2-switch"><input type="checkbox" id="d20AchievementsEnabled" onchange="saveExperienceControl('achievementsEnabled',this.checked)"> Enabled</label></div>
                         <div class="d20-fdesc">Show a non-monetary achievement panel based on existing account activity.</div>
-                    </div>
-                    <div class="d20-feature-card">
-                        <div class="d20-fhead"><div class="d20-ftitle">📰 What's New Feed</div><label class="dash2-switch"><input type="checkbox" id="d20WhatsNewEnabled" onchange="saveExperienceControl('whatsNewEnabled',this.checked)"> Enabled</label></div>
-                        <div class="d20-fdesc">Show the latest admin announcement as a small home feed item.</div>
                     </div>
                     <div class="d20-feature-card d20-feature-wide">
                         <div class="d20-fhead"><div class="d20-ftitle">👋 Welcome Message</div><label class="dash2-switch"><input type="checkbox" id="d20WelcomeEnabled" onchange="saveExperienceControl('welcomeEnabled',this.checked)"> Enabled</label></div>
@@ -1645,6 +1607,23 @@
                     <button onclick="clearPlayHistoryDigest()" class="btn-red">🗑️ Clear Profit &amp; Rounds Played Records</button>
                 </div>
                 <p class="hint-text" id="lastClearedGameRounds">Last cleared: 3/9/2026, 1:59:41 pm (also resets the Overview chart &amp; Total Profit)</p>
+            </div>
+
+            <div class="control-group" id="gvUserExperienceSettings" style="border:1px solid rgba(56,189,248,.25);border-radius:12px;padding:14px;margin-top:14px;background:rgba(14,165,233,.04);">
+              <label style="font-weight:900;color:#7dd3fc;">User App Experience Controls</label>
+              <p class="hint-text">These communication and accessibility settings sync to the user app through Firebase. The app theme is fixed and is not controlled here.</p>
+              <label class="restriction-toggle"><input id="gvUasSupportEnabled" type="checkbox" checked> Show floating support button</label>
+              <label for="gvUasSupportLabel">Support button label</label>
+              <input id="gvUasSupportLabel" maxlength="32" value="Contact Support" placeholder="Contact Support">
+              <label for="gvUasSupportUrl">Support link (optional)</label>
+              <input id="gvUasSupportUrl" type="url" placeholder="https://t.me/your_support">
+              <label class="restriction-toggle"><input id="gvUasCompact" type="checkbox"> Compact cards for smaller screens</label>
+              <label class="restriction-toggle"><input id="gvUasReduceMotion" type="checkbox"> Reduce animations for accessibility</label>
+              <div class="action-row">
+                <button class="btn-green" onclick="gvSaveUserAppSettings()">Save User App Settings</button>
+                <button class="btn-gray" onclick="gvLoadUserAppSettings()">Reload Saved Settings</button>
+              </div>
+              <p class="hint-text" id="gvUasStatus" aria-live="polite">Settings not loaded yet.</p>
             </div>
         </div>
 
@@ -2800,41 +2779,10 @@ function formatAdminMoney(value){
             const blur=Math.round(4+safe*14), alpha=Math.min(0.38,safe*0.38);
             adminGlowOverrideStyle.textContent=safe<=0?'':`button, .btn, .neon-btn, .card, .glass-card, .panel, .game-card, .mission-card, input, select, textarea, .modal, .modal-content, .stat-card, .action-card { filter: drop-shadow(0 0 ${blur}px color-mix(in srgb, rgb(var(--accent-rgb, 56, 189, 248)) ${Math.round(alpha*100)}%, transparent)); }`;
         }
-        let adminThemeGlowScale = 100;
-        db.ref('control/appTheme').on('value', snap => {
-            const t=snap.val()||'black'; applyTheme(t); updateThemeButtons(t);
-            setTimeout(()=>applyAdminThemeGlow(50),0);
-        });
-        db.ref('control/themeGlowScale').on('value', snap => {
-            // Theme Glow Strength control removed — all themes always use full glow.
-            applyAdminThemeGlow(50);
-        });
-        function updateThemeButtons(themeName) {
-            const ids = ['themeBlackBtn','themeDarkBlueBtn','themeGoldenBtn','themeNeonBtn','themeRedBtn','themeColorfulBtn','themeSkyBlueBtn','themeBloodMoonBtn','themeEmeraldBtn','themeAuroraBtn'];
-            const map = { black:'themeBlackBtn', darkblue:'themeDarkBlueBtn', blue:'themeDarkBlueBtn', golden:'themeGoldenBtn', neon:'themeNeonBtn', red:'themeRedBtn', orange:'themeRedBtn', colorful:'themeColorfulBtn', skyblue:'themeSkyBlueBtn', bloodmoon:'themeBloodMoonBtn', emerald:'themeEmeraldBtn', aurora:'themeAuroraBtn' };
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                const isActive = map[themeName] === id;
-                el.classList.toggle('btn-green', isActive);
-                el.classList.toggle('btn-gray', !isActive);
-            });
-        }
-        function setAppTheme(themeName) {
-            db.ref('control').update({ appTheme: themeName }).then(() => {
-                applyTheme(themeName);
-                updateThemeButtons(themeName);
-                const labels = { black:'Black (Silver)', darkblue:'Dark Blue', blue:'Dark Blue', golden:'Golden', neon:'Neon', red:'Orange', orange:'Orange', colorful:'Colorful', skyblue:'Sky Blue', bloodmoon:'Blood Moon', emerald:'Emerald', aurora:'Aurora' };
-                alert('App theme switched to ' + (labels[themeName] || themeName) + ' for the Admin Panel and User App.');
-            });
-        }
-        function loadAppThemeSetting() {
-            db.ref('control/appTheme').once('value', snap => {
-                const themeName = snap.val() || 'black';
-                applyTheme(themeName);
-                updateThemeButtons(themeName);
-            });
-        }
+        // Fixed GameVerse Royal Navy & Gold theme. Theme switching has been removed.
+        function updateThemeButtons() {}
+        function setAppTheme() { alert('GameVerse Royal Navy & Gold theme is fixed.'); }
+        function loadAppThemeSetting() { applyTheme('darkblue'); }
 
         function applyAdminThemeGlow(value) {
             const pct=Math.max(0,Math.min(100,Number(value)||0));
@@ -3008,13 +2956,14 @@ function formatAdminMoney(value){
         }
         function saveExperienceControl(key,value){
             const patch={}; patch[key]=value; patch.updatedAt=Date.now();
-            db.ref('control/dashboard20').update(patch).catch(err=>alert('Could not save experience setting: '+err.message));
+            const writes=[db.ref('control/dashboard20').update(patch)];
+            Promise.all(writes).catch(err=>alert('Could not save experience setting: '+err.message));
         }
         function saveExperienceBundle(){
-            const patch={homeAnnouncementEnabled:!!document.getElementById('d20HomeAnnouncementEnabled')?.checked,homeAnnouncement:document.getElementById('d20HomeAnnouncement')?.value.trim()||'',homeAnnouncementStyle:document.getElementById('d20HomeAnnouncementStyle')?.value||'info',achievementsEnabled:!!document.getElementById('d20AchievementsEnabled')?.checked,whatsNewEnabled:!!document.getElementById('d20WhatsNewEnabled')?.checked,welcomeEnabled:!!document.getElementById('d20WelcomeEnabled')?.checked,welcomeMessage:document.getElementById('d20WelcomeMessage')?.value.trim()||'',updatedAt:Date.now()};
+            const patch={achievementsEnabled:!!document.getElementById('d20AchievementsEnabled')?.checked,welcomeEnabled:!!document.getElementById('d20WelcomeEnabled')?.checked,welcomeMessage:document.getElementById('d20WelcomeMessage')?.value.trim()||'',updatedAt:Date.now()};
             db.ref('control/dashboard20').update(patch).then(()=>alert('User App experience settings saved.')).catch(err=>alert('Could not save experience settings: '+err.message));
         }
-        function previewUserExperience(){const msg=document.getElementById('d20HomeAnnouncement')?.value.trim()||'No announcement set';alert('Preview\n\n📣 '+msg);}
+        function previewUserExperience(){const msg=document.getElementById('d20WelcomeMessage')?.value.trim()||'Welcome to Game Verse';alert('Preview\n\n'+msg);}
         function loadDashboard20(){
             const read = path => db.ref(path).once('value').catch(()=>null);
             Promise.all([
@@ -3027,7 +2976,7 @@ function formatAdminMoney(value){
                 const now=Date.now(); const todayStart=new Date(); todayStart.setHours(0,0,0,0); const todayMs=todayStart.getTime();
                 const cfg=(cfgSnap&&cfgSnap.val())||{}; window.__dashboard20Config=cfg;
                 const setExp=(id,val,check)=>{const el=document.getElementById(id);if(!el)return;if(check)el.checked=!!val;else el.value=val==null?'':String(val);};
-                setExp('d20HomeAnnouncementEnabled',cfg.homeAnnouncementEnabled===true,true);setExp('d20HomeAnnouncement',cfg.homeAnnouncement||'');setExp('d20HomeAnnouncementStyle',cfg.homeAnnouncementStyle||'info');setExp('d20AchievementsEnabled',cfg.achievementsEnabled!==false,true);setExp('d20WhatsNewEnabled',cfg.whatsNewEnabled===true,true);setExp('d20WelcomeEnabled',cfg.welcomeEnabled===true,true);setExp('d20WelcomeMessage',cfg.welcomeMessage||'');
+                setExp('d20AchievementsEnabled',cfg.achievementsEnabled!==false,true);setExp('d20WelcomeEnabled',cfg.welcomeEnabled===true,true);setExp('d20WelcomeMessage',cfg.welcomeMessage||'');
                 __sessionControls.strictPresence=cfg.strictPresence===true;
                 __sessionControls.presenceTimeoutMinutes=Math.max(1,Number(cfg.presenceTimeoutMinutes)||5);
                 __sessionControls.presenceRefreshMs=Math.max(5000,Number(cfg.presenceRefreshMs)||10000);
@@ -3068,8 +3017,7 @@ function formatAdminMoney(value){
                 set('d20ActiveUsers',activeUsers);set('d20Active5m',active5);set('d20BlockedUsers',blockedUsers);set('d20PendingDeposits',pendingDep);set('d20PendingWithdrawals',pendingWd);set('d20GBadgeUsers',gBadgeUsers);set('d20ReferralUsers',referralUsers);set('d20OpenQueues',pendingDep+pendingWd);set('d20ActiveHour',activeHour);set('d20NewUsersToday',newUsersToday);
                 const ageText=t=>{if(!t)return 'No pending';const m=Math.max(0,Math.floor((Date.now()-t)/60000));return m<60?m+' min':Math.floor(m/60)+'h '+(m%60)+'m';};set('d20DepositQueueAge',ageText(oldestDep));set('d20WithdrawalQueueAge',ageText(oldestWd));
                 const setCheck=(id,val)=>{const el=document.getElementById(id);if(el)el.checked=val!==false;};
-                setCheck('d20DepositsEnabled',cfg.depositsEnabled);setCheck('d20WithdrawalsEnabled',cfg.withdrawalsEnabled);setCheck('d20RegistrationEnabled',cfg.registrationEnabled);setCheck('d20BannerEnabled',cfg.bannerEnabled);
-                const bm=document.getElementById('d20BannerMessage');if(bm)bm.value=cfg.bannerMessage||'';
+                setCheck('d20DepositsEnabled',cfg.depositsEnabled);setCheck('d20WithdrawalsEnabled',cfg.withdrawalsEnabled);setCheck('d20RegistrationEnabled',cfg.registrationEnabled);
                 const sel=(id,val,def)=>{const el=document.getElementById(id);if(el)el.value=(val===undefined||val===null)?def:String(val);};
                 setCheck('d20StrictPresence',__sessionControls.strictPresence);sel('d20PresenceTimeout',__sessionControls.presenceTimeoutMinutes,5);sel('d20PresenceRefresh',__sessionControls.presenceRefreshMs,10000);setCheck('d20PresenceMonitor',__sessionControls.presenceMonitor);renderSessionFlags();
                 const globalActive=window.__globalGamesState!=='paused'; const body=document.getElementById('d20GameMatrixBody'); let effectiveActiveCount=0;
@@ -3087,11 +3035,11 @@ function formatAdminMoney(value){
         function saveDashboard20Select(key,id){const el=document.getElementById(id);const value=String(el&&el.value||'standard');db.ref('control/dashboard20').update({[key]:value,updatedAt:Date.now()}).then(()=>{loadDashboard20();alert('Dashboard 2.0 display mode saved.');}).catch(err=>alert('Could not save display mode: '+err.message));}
 
         function saveDashboard20Control(key,value){
-            const allowed=['depositsEnabled','withdrawalsEnabled','registrationEnabled','bannerEnabled'];
+            const allowed=['depositsEnabled','withdrawalsEnabled','registrationEnabled'];
             if(!allowed.includes(String(key))) return;
             const normalized=!!value;
             const payload={}; payload[key]=normalized; payload.updatedAt=Date.now();
-            const checkboxMap={depositsEnabled:'d20DepositsEnabled',withdrawalsEnabled:'d20WithdrawalsEnabled',registrationEnabled:'d20RegistrationEnabled',bannerEnabled:'d20BannerEnabled'};
+            const checkboxMap={depositsEnabled:'d20DepositsEnabled',withdrawalsEnabled:'d20WithdrawalsEnabled',registrationEnabled:'d20RegistrationEnabled'};
             const el=document.getElementById(checkboxMap[key]);
             if(el) el.checked=normalized;
             db.ref('control/dashboard20').update(payload).then(()=>{
@@ -3099,22 +3047,13 @@ function formatAdminMoney(value){
                 const serviceMap={depositsEnabled:'d20DepositService',withdrawalsEnabled:'d20WithdrawalService',registrationEnabled:'d20RegistrationService'};
                 const serviceEl=document.getElementById(serviceMap[key]);
                 if(serviceEl) serviceEl.textContent=normalized?'ON':'OFF';
-                if(key==='bannerEnabled') showDashboard20BannerPreviewState?.();
-                const label=key==='depositsEnabled'?'Deposits':key==='withdrawalsEnabled'?'Withdrawals':key==='registrationEnabled'?'New registrations':'User service banner';
+                                const label=key==='depositsEnabled'?'Deposits':key==='withdrawalsEnabled'?'Withdrawals':'New registrations';
                 alert(label+' '+(normalized?'enabled':'disabled')+'.');
             }).catch(err=>{
                 if(el) el.checked=!normalized;
                 alert('Could not save '+key+': '+(err&&err.message?err.message:'Unknown error'));
                 loadDashboard20();
             });
-        }
-
-        function saveDashboard20Banner(){
-            const enabled=!!document.getElementById('d20BannerEnabled')?.checked;
-            const message=(document.getElementById('d20BannerMessage')?.value||'').trim();
-            db.ref('control/dashboard20').update({bannerEnabled:enabled,bannerMessage:message,updatedAt:Date.now()})
-                .then(()=>{ window.__dashboard20Config=Object.assign({},window.__dashboard20Config||{},{bannerEnabled:enabled,bannerMessage:message,updatedAt:Date.now()}); alert('User service banner saved.'); })
-                .catch(err=>alert('Could not save banner: '+(err&&err.message?err.message:'Unknown error')));
         }
 
         function updateGlobalGamesButton(active){
@@ -9489,4 +9428,66 @@ function clearK3EntriesHistory() {
 
 
 </script>
+
+<script>
+(function(){
+  function removeThemeControls(){
+    ['themeBlackBtn','themeDarkBlueBtn','themeGoldenBtn','themeNeonBtn','themeRedBtn','themeColorfulBtn','themeSkyBlueBtn','themeBloodMoonBtn','themeEmeraldBtn','themeAuroraBtn'].forEach(function(id){
+      var el=document.getElementById(id); if(!el)return;
+      var group=el.closest('.control-group')||el.parentElement;
+      if(group) group.remove(); else el.remove();
+    });
+    document.querySelectorAll('label').forEach(function(label){
+      if(/app theme|theme glow|theme strength/i.test(label.textContent||'')){
+        var group=label.closest('.control-group'); if(group)group.remove();
+      }
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeThemeControls);else removeThemeControls();
+})();
+</script>
+
+
+<script id="gv-user-app-settings-admin">
+(function(){
+  const $=id=>document.getElementById(id);
+  const keys=['gvUasSupportEnabled','gvUasSupportLabel','gvUasSupportUrl','gvUasCompact','gvUasReduceMotion'];
+  function status(msg,error){const el=$('gvUasStatus');if(el){el.textContent=msg;el.style.color=error?'#fca5a5':'#86efac';}}
+  window.gvLoadUserAppSettings=function(){
+    if(typeof db==='undefined'||!db||!db.ref){status('Firebase database is not ready yet.',true);return;}
+    db.ref('control/userAppSettings').once('value').then(snap=>{
+      const s=snap.val()||{};
+      $('gvUasSupportEnabled').checked=s.supportButtonEnabled!==false;
+      $('gvUasSupportLabel').value=s.supportButtonLabel||'Contact Support';
+      $('gvUasSupportUrl').value=s.supportUrl||'';
+      $('gvUasCompact').checked=s.compactMode===true;
+      $('gvUasReduceMotion').checked=s.reduceMotion===true;
+      status('Loaded saved user app settings.');
+    }).catch(e=>status('Could not load settings: '+(e.message||e),true));
+  };
+  window.gvSaveUserAppSettings=function(){
+    if(typeof db==='undefined'||!db||!db.ref){status('Firebase database is not ready yet.',true);return;}
+    const supportUrl=$('gvUasSupportUrl').value.trim();
+    if(supportUrl && !/^https:\/\/(t\.me|telegram\.me|wa\.me|www\.whatsapp\.com|discord\.gg|discord\.com|[\w.-]+\.[a-z]{2,})(\/|$)/i.test(supportUrl)){
+      status('Enter a valid HTTPS support URL.',true);return;
+    }
+    const s={
+      supportButtonEnabled:$('gvUasSupportEnabled').checked,
+      supportButtonLabel:$('gvUasSupportLabel').value.trim().slice(0,32)||'Contact Support',
+      supportUrl,
+      compactMode:$('gvUasCompact').checked,
+      reduceMotion:$('gvUasReduceMotion').checked,
+      updatedAt:Date.now()
+    };
+    db.ref('control/userAppSettings').update(s).then(()=>status('Saved. User app settings are now syncing.')).catch(e=>status('Save failed: '+(e.message||e),true));
+  };
+  function bind(){if($('gvUserExperienceSettings'))window.gvLoadUserAppSettings();}
+  const original=window.openSettingsAdminModal;
+  if(typeof original==='function'){
+    window.openSettingsAdminModal=function(){original.apply(this,arguments);setTimeout(bind,100);};
+  } else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(bind,300));
+  else setTimeout(bind,300);
+})();
+</script>
+
 </body></html>
