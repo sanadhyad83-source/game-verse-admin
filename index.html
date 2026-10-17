@@ -7234,6 +7234,16 @@ function formatAdminMoney(value){
         // or the admin panel's round number & countdown will drift out of sync with what users see.
         let ccAdminConfig = { enabled:true, entrySeconds:30, cooldownSeconds:5, minBet:10, maxBet:5000, minBetUsdt:0.1, maxBetUsdt:5000, multiplier:2, violetMultiplier:3, numberMultiplier:9, sizeMultiplier:2, autoResult:true, randomizedResult:true, noConsecutiveRepeat:true };
         let ccAdminConfigReady = false;
+        // ===== Unique per-game period labels (same format as the user app) =====
+        function gvPeriodLabel(prefix, roundId, cycleMs){
+            const id=Math.max(1,Number(roundId)||1), cyc=Math.max(1000,Number(cycleMs)||35000);
+            const IST=19800000, DAY=86400000;
+            const t=(id-1)*cyc+IST, day=Math.floor(t/DAY), d=new Date(day*DAY);
+            const seq=Math.floor((t-day*DAY)/cyc)+1;
+            return prefix+d.getUTCFullYear()+String(d.getUTCMonth()+1).padStart(2,'0')+String(d.getUTCDate()).padStart(2,'0')+String(seq).padStart(4,'0');
+        }
+        function wingoPeriodLabel(roundId){ return gvPeriodLabel('WG',roundId,ccAdminCycleMs()); }
+        function k3PeriodLabel(roundId){ return gvPeriodLabel('K3',roundId,k3AdminCycleMs()); }
         function ccAdminCycleMs(){
             const entry=Math.max(5,Number(ccAdminConfig.entrySeconds)||30);
             const cooldown=Math.max(2,Number(ccAdminConfig.cooldownSeconds)||5);
@@ -7508,7 +7518,7 @@ function formatAdminMoney(value){
             const tick=()=>{
                 try{
                     const entry=Math.max(5,Number(ccAdminConfig.entrySeconds)||30),cycle=ccAdminCycleMs(),idx=Math.floor(Date.now()/cycle),roundId=String(idx+1),start=idx*cycle,elapsed=Date.now()-start,phase=elapsed<entry*1000?'open':'cooldown',end=phase==='open'?start+entry*1000:start+cycle;
-                    const roundEl=document.getElementById('ccAdminRound'); if(roundEl) roundEl.innerText=roundId;
+                    const roundEl=document.getElementById('ccAdminRound'); if(roundEl) roundEl.innerText=wingoPeriodLabel(roundId);
                     const phaseEl=document.getElementById('ccAdminPhase'); if(phaseEl) phaseEl.innerText=phase.toUpperCase()+' • '+Math.max(0,Math.ceil((end-Date.now())/1000))+'s';
                     if(typeof loadColourClashAdminEntries==='function') loadColourClashAdminEntries(roundId);
                     if(typeof loadColourClashAdminResult==='function') loadColourClashAdminResult(roundId);
@@ -7750,7 +7760,7 @@ function formatAdminMoney(value){
         }
         function loadColourClashAdminHistory(){const ref=db.ref('colour_clash/rounds').limitToLast(50);if(ccAdminHistoryListener)ref.off('value',ccAdminHistoryListener);ccAdminHistoryListener=snap=>{const rows=[];snap.forEach(ch=>{const d=ch.val();if(d&&(d.result||d.resultNumber!==undefined))rows.push({id:ch.key,...d});});rows.reverse();const historyEl=document.getElementById('ccAdminHistoryContainer');if(!historyEl)return;historyEl.innerHTML=rows.length?rows.map(d=>{const historyColours=d.resultNumber!==undefined&&d.resultNumber!==null?ccNumberColours(d.resultNumber):[d.result];const historyColour=historyColours.filter(Boolean).map(ccColourDot).join(' ');const numberPart=(d.resultNumber!==undefined&&d.resultNumber!==null)
 ?`<span style="display:inline-flex;align-items:center;gap:7px;font-weight:900;"><strong>${d.resultNumber}</strong><span style="color:var(--text-muted);">${ccNumberSize(d.resultNumber)}</span><span class="cc-result-dots">${ccColourDots(ccNumberColours(d.resultNumber))}</span></span>`
-:'<span style="color:var(--text-muted);">—</span>';return `<div class="user-item"><b>Round #${d.roundId||d.id}</b><br>Result: ${numberPart}</div>`;}).join(''):'No completed rounds yet.';};ref.on('value',ccAdminHistoryListener);}
+:'<span style="color:var(--text-muted);">—</span>';return `<div class="user-item"><b>Round #${wingoPeriodLabel(d.roundId||d.id)}</b><br>Result: ${numberPart}</div>`;}).join(''):'No completed rounds yet.';};ref.on('value',ccAdminHistoryListener);}
         function clearColourClashRoundHistory(){
             if(!confirm('Delete ALL WINGO round result history? This does not delete users\' entries — use "Delete All Entries" for that.'))return;
             db.ref('colour_clash/rounds').remove()
@@ -7809,7 +7819,7 @@ function formatAdminMoney(value){
                 const statusColor = e.status==='win'?'#34d399':e.status==='loss'?'#f87171':'var(--accent-gold)';
                 const statusLabel = e.status==='win'?`🏆 WON ${ccAdminMoney(e.winAmount||0,e.currency||ccAdminCurrency)}`:e.status==='loss'?'❌ LOST':'⏳ PENDING';
                 return `<div class="user-item" style="border-left:3px solid ${statusColor};">
-                    <b>Round #${e.roundId}</b> • <span class="uid-badge">${escapeHtml(e.customUid||e.userId||'—')}</span><br>
+                    <b>Round #${wingoPeriodLabel(e.roundId)}</b> • <span class="uid-badge">${escapeHtml(e.customUid||e.userId||'—')}</span><br>
                     <b>Amount:</b> ${ccAdminMoney(e.amount,e.currency||ccAdminCurrency)} &nbsp; ${betLabel}<br>
                     <b>Status:</b> <span style="color:${statusColor};font-weight:800;">${statusLabel}</span><br>
                     <button onclick="deleteColourClashEntry('${e.key}')" class="btn-red" style="margin-top:8px;padding:8px;font-size:11px;">🗑️ Delete Entry</button>
@@ -8841,7 +8851,7 @@ function refreshK3AdminLive() {
     k3AdminCfg.fairRandomOnly = d.fairRandomOnly === true;
     const r = k3AdminRoundState();
     const left = Math.max(0, Math.ceil((r.phaseEnd - k3AdminNow()) / 1000));
-    const pEl = document.getElementById('k3AdminRound'); if (pEl) pEl.innerText = '#' + r.roundId;
+    const pEl = document.getElementById('k3AdminRound'); if (pEl) pEl.innerText = k3PeriodLabel(r.roundId);
     const phEl = document.getElementById('k3AdminPhase'); if (phEl) phEl.innerText = (r.phase === 'open' ? 'OPEN ' : 'COOL ') + left + 's';
     const rid = String(r.roundId);
 
@@ -9124,7 +9134,7 @@ async function resolveK3AdminNow() {
     const round = res.snapshot.val();
     if (!round || round.resultSum == null) { alert('Could not lock round.'); return; }
     const secs = Math.max(0, Math.ceil((k3AdminRoundEndMs(rid) - k3AdminNow()) / 1000));
-    alert((res.committed ? 'Round #' + rid + ' locked: ' : 'Round #' + rid + ' was already locked: ') +
+    alert((res.committed ? 'Round #' + k3PeriodLabel(rid) + ' locked: ' : 'Round #' + k3PeriodLabel(rid) + ' was already locked: ') +
       'sum ' + round.resultSum + ' (' + (round.dice || []).join(',') + ').\nIt will be shown to players and settled in ~' + secs + 's.');
     loadK3AdminHistory();
     refreshK3AdminLive();
@@ -9277,7 +9287,7 @@ function renderK3AdminHistoryRows(snap) {
       const dice = Array.isArray(r.dice) ? r.dice.join(',') : '';
       const pendingForce = (r.resultSum == null && Array.isArray(r.forcedDice)) ? (' · <span style="color:#fbbf24;">forced ' + r.forcedDice.join(',') + ' (waiting to be drawn)</span>') : '';
       const src = r.source ? (' · <span style="color:var(--text-muted);">' + r.source + '</span>') : '';
-      return '<div class="user-item" style="font-size:11px;"><b>#' + (r.roundId != null ? r.roundId : r.key) + '</b> · ' +
+      return '<div class="user-item" style="font-size:11px;"><b>' + k3PeriodLabel(r.roundId != null ? r.roundId : r.key) + '</b> · ' +
         (r.status || '—') + ' · sum <b>' + (r.resultSum != null ? r.resultSum : '—') + '</b> · ' +
         dice + ' · ' + (r.size || '') + ' ' + (r.parity || '') + src + pendingForce + '</div>';
     }).join('');
@@ -9363,7 +9373,7 @@ function renderK3EntriesHistory() {
       const res = e.resultSum != null ? (' · result sum ' + e.resultSum) : '';
       const idHint = e.key ? (' <span style="color:var(--text-muted);font-size:10px;">#' + String(e.key).slice(-8) + '</span>') : '';
       return '<div class="user-item" style="font-size:11px;"><b>' + (e.customUid || e.userId || '—') + '</b>' + idHint +
-        ' · #' + (e.roundId != null ? e.roundId : '—') + res +
+        ' · ' + (e.roundId != null ? k3PeriodLabel(e.roundId) : '—') + res +
         '<br>' + (e.betType || '') + ' <b>' + (e.target != null ? e.target : '') + '</b> · ' +
         (e.currency || 'INR') + ' ' + (e.amount != null ? e.amount : '') +
         ' · <span style="color:' + col + ';font-weight:900;">' + label + '</span></div>';
