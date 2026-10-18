@@ -1575,6 +1575,17 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             </div>
 
             <div class="control-group">
+                <label>🛠️ Maintenance Access List (allowed Gmails):</label>
+                <p class="hint-text">Users whose Gmail is on this list can still log in and use the User App while it is set to <b>Disable App (Maintenance)</b>. Remove a Gmail and that user is signed out and blocked during maintenance.</p>
+                <div class="two-cols" style="grid-template-columns:1fr auto;gap:8px;">
+                    <input id="maintAllowEmail" type="email" placeholder="user@gmail.com" autocomplete="off">
+                    <button onclick="addMaintenanceAllowedEmail()" class="btn-green" style="width:auto;padding:0 16px;">➕ Add</button>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:var(--text-muted);"><span>Allowed users</span><b id="maintAllowCount">0</b></div>
+                <div id="maintAllowList" style="margin-top:6px;max-height:260px;overflow:auto;"></div>
+            </div>
+
+            <div class="control-group">
                 <label>🎨 App Theme — switches the color theme for both the Admin Panel and the User App:</label>
                 <div class="action-row" style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                     <button id="themeBlackBtn" onclick="setAppTheme('black')" class="btn-gray">⚫ Black (Silver)</button>
@@ -3020,7 +3031,16 @@ function formatAdminMoney(value){
                 const sel=(id,val,def)=>{const el=document.getElementById(id);if(el)el.value=(val===undefined||val===null)?def:String(val);};
                 setCheck('d20StrictPresence',__sessionControls.strictPresence);sel('d20PresenceTimeout',__sessionControls.presenceTimeoutMinutes,5);sel('d20PresenceRefresh',__sessionControls.presenceRefreshMs,10000);setCheck('d20PresenceMonitor',__sessionControls.presenceMonitor);renderSessionFlags();
                 const globalActive=window.__globalGamesState!=='paused'; const body=document.getElementById('d20GameMatrixBody'); let effectiveActiveCount=0;
-                if(body){const games=(gamesSnap&&gamesSnap.val())||{};body.innerHTML=DASH20_GAME_LIST.map(g=>{let individual='active';if(g.id==='mines')individual=((minesSnap&&minesSnap.val()||{}).enabled!==false)?'active':'paused';else if(g.id==='colour_clash')individual=((ccSnap&&ccSnap.val()||{}).enabled!==false)?'active':'paused';else if(g.id==='k3')individual=((k3Snap&&k3Snap.val()||{}).enabled!==false)?'active':'paused';else individual=((games[g.id]||{}).status==='active')?'active':'paused';const effective=globalActive&&individual==='active'?'active':'paused';if(effective==='active')effectiveActiveCount++;return `<tr><td>${g.name}</td><td><span class="dash2-pill ${individual==='active'?'on':'off'}">${individual.toUpperCase()}</span></td><td><span class="dash2-pill ${globalActive?'on':'off'}">${globalActive?'ACTIVE':'PAUSED'}</span></td><td><span class="dash2-pill ${effective==='active'?'on':'off'}">${effective.toUpperCase()}</span></td></tr>`;}).join('');}
+                const games=(gamesSnap&&gamesSnap.val())||{};
+                // Count availability independently of the (optional) game table so the health card never shows 0 when the table isn't on the page.
+                const dgIndividual=gid=>{
+                    if(gid==='mines')return (minesSnap&&minesSnap.val()||{}).enabled!==false;
+                    if(gid==='colour_clash')return (ccSnap&&ccSnap.val()||{}).enabled!==false;
+                    if(gid==='k3')return (k3Snap&&k3Snap.val()||{}).enabled!==false;
+                    const st=(games[gid]||{}).status; return st===undefined||st===null||st==='active';
+                };
+                DASH20_GAME_LIST.forEach(g=>{ if(globalActive&&dgIndividual(g.id))effectiveActiveCount++; });
+                if(body){body.innerHTML=DASH20_GAME_LIST.map(g=>{let individual='active';if(g.id==='mines')individual=((minesSnap&&minesSnap.val()||{}).enabled!==false)?'active':'paused';else if(g.id==='colour_clash')individual=((ccSnap&&ccSnap.val()||{}).enabled!==false)?'active':'paused';else if(g.id==='k3')individual=((k3Snap&&k3Snap.val()||{}).enabled!==false)?'active':'paused';else individual=dgIndividual(g.id)?'active':'paused';const effective=globalActive&&individual==='active'?'active':'paused';return `<tr><td>${g.name}</td><td><span class="dash2-pill ${individual==='active'?'on':'off'}">${individual.toUpperCase()}</span></td><td><span class="dash2-pill ${globalActive?'on':'off'}">${globalActive?'ACTIVE':'PAUSED'}</span></td><td><span class="dash2-pill ${effective==='active'?'on':'off'}">${effective.toUpperCase()}</span></td></tr>`;}).join('');}
                 set('d20GamesAvailable',effectiveActiveCount+' / '+DASH20_GAME_LIST.length);
                 const svc=(id,on)=>{const el=document.getElementById(id);if(el)el.textContent=on?'ON':'OFF';};svc('d20DepositService',cfg.depositsEnabled!==false);svc('d20WithdrawalService',cfg.withdrawalsEnabled!==false);svc('d20RegistrationService',cfg.registrationEnabled!==false);
                 const ql=document.getElementById('d20QueueHealthLabel');if(ql)ql.textContent=(pendingDep+pendingWd)>0?'Queue has '+(pendingDep+pendingWd)+' pending item(s)':'Queues clear';
@@ -4769,11 +4789,50 @@ function formatAdminMoney(value){
             });
         }
 
+
+        /* --- MAINTENANCE ACCESS LIST (Gmails allowed to use the User App during maintenance) --- */
+        function gvMaintNorm(email){
+            const lower=String(email||'').trim().toLowerCase(); const at=lower.lastIndexOf('@'); if(at===-1) return lower;
+            let local=lower.slice(0,at), domain=lower.slice(at+1);
+            const plus=local.indexOf('+'); if(plus!==-1) local=local.slice(0,plus);
+            if(domain==='gmail.com'||domain==='googlemail.com'){ local=local.replace(/\./g,''); domain='gmail.com'; }
+            return local+'@'+domain;
+        }
+        function gvMaintKey(email){
+            return btoa(unescape(encodeURIComponent(gvMaintNorm(email)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+        }
+
+        let maintAllowListener = null;
+        function renderMaintenanceAllowList(data){
+            const box=document.getElementById('maintAllowList'), cnt=document.getElementById('maintAllowCount');
+            const rows=Object.keys(data||{}).map(k=>Object.assign({key:k},data[k]||{})).sort((a,b)=>(Number(b.addedAt)||0)-(Number(a.addedAt)||0));
+            if(cnt) cnt.textContent=rows.length;
+            if(!box) return;
+            box.innerHTML=rows.length?rows.map(r=>`<div class="user-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><span style="word-break:break-all;">📧 ${escapeHtml(r.email||'(unknown)')}<br><small style="color:var(--text-muted);">Added ${r.addedAt?new Date(Number(r.addedAt)).toLocaleString():''}</small></span><button class="btn-red" style="width:auto;padding:6px 12px;flex:0 0 auto;" data-key="${escapeHtml(r.key)}" data-email="${escapeHtml(r.email||'')}" onclick="removeMaintenanceAllowedEmail(this.dataset.key,this.dataset.email)">Remove</button></div>`).join(''):'<div class="hint-text">No Gmails on the list. During maintenance nobody can use the User App.</div>';
+        }
+        function loadMaintenanceAllowList(){
+            if(!db||maintAllowListener) return;
+            maintAllowListener=db.ref('control/maintenanceAllowList');
+            maintAllowListener.on('value',snap=>renderMaintenanceAllowList(snap.val()||{}),err=>{const box=document.getElementById('maintAllowList');if(box)box.innerHTML='<span style="color:#fca5a5">Could not load the list: '+escapeHtml(err.message)+'</span>';});
+        }
+        function addMaintenanceAllowedEmail(){
+            const inp=document.getElementById('maintAllowEmail'); const email=String(inp&&inp.value||'').trim().toLowerCase();
+            if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('Please enter a valid Gmail address.');
+            const key=gvMaintKey(email);
+            db.ref('control/maintenanceAllowList/'+key).set({email:email,addedAt:Date.now()}).then(()=>{ if(inp) inp.value=''; }).catch(e=>alert('Could not add: '+e.message));
+        }
+        function removeMaintenanceAllowedEmail(key,email){
+            if(!key) return;
+            if(!confirm('Remove '+(email||'this user')+' from the maintenance access list?\nThey will not be able to use the User App during maintenance.')) return;
+            db.ref('control/maintenanceAllowList/'+key).remove().catch(e=>alert('Could not remove: '+e.message));
+        }
+
         function loadAppStatusSetting() {
             db.ref('control/appStatus').once('value', snap => {
                 const val = snap.val();
                 if(val) document.getElementById('appStatusSelect').value = val;
             });
+            if (typeof loadMaintenanceAllowList === 'function') loadMaintenanceAllowList();
         }
 
         /* --- INVESTMENT MANAGEMENT FUNCTIONS --- */
