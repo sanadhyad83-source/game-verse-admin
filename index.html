@@ -1663,15 +1663,14 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     </div>
                     <select id="ccAdminAuto"><option value="true">Automatic Result: ON</option><option value="false">Automatic Result: OFF</option></select>
                     <select id="ccAdminRandomized"><option value="true">🔐 Cryptographic Random Results: ON</option></select>
+                    <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-top:8px;">Result Pattern Style:</label>
+                    <select id="ccAdminPatternMode"><option value="pro">📈 Professional Pattern (balanced colours / sizes, no long streaks)</option><option value="random">🎲 Pure Random</option></select>
+                    <div class="two-cols">
+                        <input id="ccAdminPatternStrength" type="number" min="0" max="100" step="1" placeholder="Pattern Strength 0-100 (default 30)">
+                        <input id="ccAdminChaosChance" type="number" min="0" max="100" step="1" placeholder="Chaos Rounds % (default 35)">
+                    </div>
+                    <div class="hint-text" style="margin-top:4px;">🛡️ <b>Hard-to-predict system:</b> <b>Pattern Strength</b> sets how chart-like results look (0 = pure random). <b>Chaos Rounds %</b> = share of rounds drawn with no pattern at all. Strength is also randomly varied every round and streaks are only discouraged, never blocked — so players can't learn a rule to bet against, but any result stays possible.</div>
                     <select id="ccAdminFairness"><option value="false">🔓 Fairness Lock: OFF</option><option value="true">🔒 Fairness Lock: ON</option></select>
-                    <div class="two-cols">
-                        <input id="ccAdminMaxEntriesPerUser" type="number" min="1" placeholder="Max Entries / User / Round">
-                        <input id="ccAdminMaxRoundEntries" type="number" min="1" placeholder="Max Total Entries / Round">
-                    </div>
-                    <div class="two-cols">
-                        <input id="ccAdminMaxRoundLiability" type="number" min="0" placeholder="Max INR Round Wager">
-                        <input id="ccAdminMaxRoundLiabilityUsdt" type="number" min="0" step="0.0001" placeholder="Max USDT Round Wager">
-                    </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
                       <div class="stat-card"><span>Fairness Lock</span><b id="ccAdminFairnessStatus" style="color:#34d399">ON</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Controls whether manual result selection is locked.</small></div>
                       <div class="stat-card"><span>RNG Source</span><b>Web Crypto</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Unpredictable per round.</small></div>
@@ -7276,6 +7275,9 @@ function formatAdminMoney(value){
                 autoResult: d.autoResult !== false,
                 randomizedResult: true,
                 noConsecutiveRepeat: false,
+                patternMode: d.patternMode==='random' ? 'random' : 'pro',
+                patternStrength: d.patternStrength!==undefined&&d.patternStrength!==null&&d.patternStrength!=='' ? Math.min(100,Math.max(0,Number(d.patternStrength)||0)) : 30,
+                chaosChance: d.chaosChance!==undefined&&d.chaosChance!==null&&d.chaosChance!=='' ? Math.min(100,Math.max(0,Number(d.chaosChance)||0)) : 35,
                 fairRandomOnly: d.fairRandomOnly === true,
                 auditRounds: d.auditRounds !== false
             };
@@ -7285,7 +7287,7 @@ function formatAdminMoney(value){
             const enabledEl=document.getElementById('ccAdminEnabled'); if(enabledEl) enabledEl.value=d.enabled===false?'false':'true';
             const esEl=document.getElementById('ccAdminEntrySeconds'); if(esEl) esEl.value=Number(d.entrySeconds)||30;
             const csEl=document.getElementById('ccAdminCooldownSeconds'); if(csEl) csEl.value=Number(d.cooldownSeconds)||5;
-            const fairnessEl=document.getElementById('ccAdminFairness'); if(fairnessEl) fairnessEl.value=d.fairRandomOnly===true?'true':'false'; const fairnessStatus=document.getElementById('ccAdminFairnessStatus'); if(fairnessStatus){ fairnessStatus.textContent=d.fairRandomOnly===true?'ON':'OFF'; fairnessStatus.style.color=d.fairRandomOnly===true?'#34d399':'#fbbf24'; }
+            const psEl=document.getElementById('ccAdminPatternStrength'); if(psEl) psEl.value=(d.patternStrength!==undefined&&d.patternStrength!==null)?Number(d.patternStrength):30; const chEl=document.getElementById('ccAdminChaosChance'); if(chEl) chEl.value=(d.chaosChance!==undefined&&d.chaosChance!==null)?Number(d.chaosChance):35; const patternEl=document.getElementById('ccAdminPatternMode'); if(patternEl) patternEl.value=d.patternMode==='random'?'random':'pro'; const fairnessEl=document.getElementById('ccAdminFairness'); if(fairnessEl) fairnessEl.value=d.fairRandomOnly===true?'true':'false'; const fairnessStatus=document.getElementById('ccAdminFairnessStatus'); if(fairnessStatus){ fairnessStatus.textContent=d.fairRandomOnly===true?'ON':'OFF'; fairnessStatus.style.color=d.fairRandomOnly===true?'#34d399':'#fbbf24'; }
             const minEl=document.getElementById('ccAdminMinBet'); if(minEl) minEl.value=Number(d.minBet)||10;
             const maxEl=document.getElementById('ccAdminMaxBet'); if(maxEl) maxEl.value=Number(d.maxBet)||5000;
             const minUsdtEl=document.getElementById('ccAdminMinBetUsdt'); if(minUsdtEl) minUsdtEl.value=Number(d.minBetUsdt)||0.1;
@@ -7296,10 +7298,6 @@ function formatAdminMoney(value){
             const sizeMulEl=document.getElementById('ccAdminSizeMultiplier'); if(sizeMulEl) sizeMulEl.value=Number(d.sizeMultiplier)||2;
             const autoEl=document.getElementById('ccAdminAuto'); if(autoEl) autoEl.value=d.autoResult===false?'false':'true';
             const randomEl=document.getElementById('ccAdminRandomized'); if(randomEl) randomEl.value='true';
-            const me=document.getElementById('ccAdminMaxEntriesPerUser'); if(me) me.value=Number(d.maxEntriesPerUserPerRound)||5;
-            const mre=document.getElementById('ccAdminMaxRoundEntries'); if(mre) mre.value=Number(d.maxRoundEntries)||500;
-            const ml=document.getElementById('ccAdminMaxRoundLiability'); if(ml) ml.value=Number(d.maxRoundLiability)||0;
-            const mlu=document.getElementById('ccAdminMaxRoundLiabilityUsdt'); if(mlu) mlu.value=Number(d.maxRoundLiabilityUsdt)||0;
             ccAdminConfigReady = true;
             updateManualResultControlUi();
         }
@@ -7350,19 +7348,56 @@ function formatAdminMoney(value){
             do{window.crypto.getRandomValues(buf);}while(buf[0]>=limit);
             return buf[0]%max;
         }
-        async function ccGetAutomaticNumber(roundId){
-            let previous=null;
-            try{
-                const p=await db.ref('colour_clash/rounds/'+String(Math.max(1,Number(roundId)||1)-1)).once('value');
-                const pv=p.val()||{};
-                if(pv.resultNumber!==undefined&&pv.resultNumber!==null) previous=Number(pv.resultNumber);
-            }catch(e){}
-            let n=ccSecureRandomInt(10);
-            if(ccAdminConfig.noConsecutiveRepeat!==false&&previous!==null){
-                let tries=0;
-                while(n===previous&&tries++<32)n=ccSecureRandomInt(10);
+
+        // ===== Professional WINGO pattern engine (shared logic: User + Admin) =====
+        // Draws a cryptographically-random digit, but weights it against the recent history so the
+        // board looks like a real Wingo chart: no long single-colour/size streaks, few back-to-back
+        // repeats, numbers and violet (0/5) show up regularly, big/small and red/green stay mixed.
+        function ccPickPatternNumber(history, secureInt, opts){
+            opts=opts||{};
+            const strength=Math.min(100,Math.max(0,Number(opts.strength)));   // 0 = pure random, 100 = strongest "chart-like" pattern
+            const chaos=Math.min(100,Math.max(0,Number(opts.chaos)));         // % of rounds drawn completely at random
+            const S=isNaN(strength)?30:strength, C=isNaN(chaos)?35:chaos;
+            const u=()=>secureInt(1000000)/1000000;
+            // 1) "Chaos" rounds: ignore history entirely, so ANY digit / streak / repeat can happen at any time.
+            if(u()*100<C||S<=0)return secureInt(10);
+            // 2) Strength is jittered every round (60%-140%), so the effective rules are never the same twice
+            //    and cannot be reverse-engineered from the chart.
+            const s=(S/100)*(0.6+0.8*u());
+            const hist=(history||[]).filter(v=>v!==null&&v!==undefined&&!isNaN(v)).map(Number).slice(0,10); // newest first
+            const size=n=>n<=4?'S':'B';
+            const col=n=>[1,3,7,9].includes(n)?'G':'R';
+            const streak=fn=>{let k=0;for(let i=0;i<hist.length;i++){if(i===0||fn(hist[i])===fn(hist[0]))k++;else break;}return k;};
+            const sizeRun=hist.length?streak(size):0, colRun=hist.length?streak(col):0;
+            const w=[];
+            for(let n=0;n<10;n++){
+                let x=1;
+                const seen=hist.reduce((c,h,i)=>c+(h===n?(i<3?1.4:1):0),0);
+                x*=Math.pow(0.62,seen*s);                                             // recently seen digits slightly less likely
+                if(hist.length&&hist[0]===n)x*=Math.pow(0.5,s);                       // fewer immediate repeats
+                if(!hist.includes(n))x*=Math.pow(1.4,s);                              // missing digits drift back
+                if((n===0||n===5)&&!hist.slice(0,6).includes(0)&&!hist.slice(0,6).includes(5))x*=Math.pow(1.6,s);
+                // Streaks are discouraged but NEVER forbidden: the penalty has a floor, so even a 7-8 long run stays possible.
+                if(sizeRun>=3&&size(n)===size(hist[0]))x*=Math.pow(Math.max(0.2,Math.pow(0.5,sizeRun-2)),s);
+                if(colRun>=3&&col(n)===col(hist[0]))x*=Math.pow(Math.max(0.2,Math.pow(0.55,colRun-2)),s);
+                w.push(x);
             }
-            return n;
+            const total=w.reduce((a,b)=>a+b,0);
+            let r=u()*total;
+            for(let n=0;n<10;n++){r-=w[n];if(r<0)return n;}
+            return 9;
+        }
+        async function ccLoadRecentResults(roundId,count){
+            const base=Math.max(1,Number(roundId)||1), reads=[];
+            for(let i=1;i<=count&&base-i>=1;i++)reads.push(db.ref('colour_clash/rounds/'+(base-i)).once('value').then(s=>{const v=s.val()||{};return v.resultNumber!==undefined&&v.resultNumber!==null?Number(v.resultNumber):null;}).catch(()=>null));
+            const out=await Promise.all(reads);
+            const arr=[];for(const v of out){if(v===null)break;arr.push(v);} // stop at first gap so the streak logic stays contiguous
+            return arr;
+        }
+        async function ccGetAutomaticNumber(roundId){
+            if(ccAdminConfig.patternMode==='random') return ccSecureRandomInt(10);
+            const recent=await ccLoadRecentResults(roundId,10);
+            return ccPickPatternNumber(recent,ccSecureRandomInt,{strength:ccAdminConfig.patternStrength,chaos:ccAdminConfig.chaosChance});
         }
         function ccDeterministicColour(roundId){ return ccNumberColour(ccDeterministicNumber(roundId)); }
         function ccDeterministicNumber(roundId){const nRound=Math.max(1,Number(roundId)||1),block=Math.floor((nRound-1)/10),pos=(nRound-1)%10;let x=ccHash('cc-block-'+block)||1,arr=[0,1,2,3,4,5,6,7,8,9];const rnd=()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296;};for(let i=9;i>0;i--){const j=Math.floor(rnd()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr[pos];}
@@ -7531,12 +7566,12 @@ function formatAdminMoney(value){
         }
         function saveColourClashConfig(){
             try{
-                const ids=['ccAdminEnabled','ccAdminEntrySeconds','ccAdminCooldownSeconds','ccAdminMinBet','ccAdminMaxBet','ccAdminMinBetUsdt','ccAdminMaxBetUsdt','ccAdminMultiplier','ccAdminVioletMultiplier','ccAdminNumberMultiplier','ccAdminSizeMultiplier','ccAdminAuto','ccAdminRandomized','ccAdminFairness','ccAdminMaxEntriesPerUser','ccAdminMaxRoundEntries','ccAdminMaxRoundLiability','ccAdminMaxRoundLiabilityUsdt'];
+                const ids=['ccAdminEnabled','ccAdminEntrySeconds','ccAdminCooldownSeconds','ccAdminMinBet','ccAdminMaxBet','ccAdminMinBetUsdt','ccAdminMaxBetUsdt','ccAdminMultiplier','ccAdminVioletMultiplier','ccAdminNumberMultiplier','ccAdminSizeMultiplier','ccAdminAuto','ccAdminRandomized','ccAdminFairness'];
                 const els=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
                 if(Object.values(els).some(x=>!x)) return alert('WINGO settings UI is incomplete. Please reload the Admin App.');
                 const database=ensureGameVerseAdminDb();
                 if(!database) return alert('Firebase is unavailable. Please reload the Admin App and try again.');
-                const data={fairRandomOnly:els.ccAdminFairness.value==='true',enabled:els.ccAdminEnabled.value==='true',entrySeconds:Math.max(5,Number(els.ccAdminEntrySeconds.value)||30),cooldownSeconds:Math.max(2,Number(els.ccAdminCooldownSeconds.value)||5),minBet:Math.max(1,Number(els.ccAdminMinBet.value)||10),maxBet:Math.max(1,Number(els.ccAdminMaxBet.value)||5000),minBetUsdt:Math.max(0.0001,Number(els.ccAdminMinBetUsdt.value)||0.1),maxBetUsdt:Math.max(0.0001,Number(els.ccAdminMaxBetUsdt.value)||5000),multiplier:Math.max(1,Number(els.ccAdminMultiplier.value)||2),violetMultiplier:Math.max(1,Number(els.ccAdminVioletMultiplier.value)||3),numberMultiplier:Math.max(1,Number(els.ccAdminNumberMultiplier.value)||9),sizeMultiplier:Math.max(1,Number(els.ccAdminSizeMultiplier.value)||2),autoResult:els.ccAdminAuto.value==='true',randomizedResult:true,noConsecutiveRepeat:false,auditRounds:true,maxEntriesPerUserPerRound:Math.max(1,Number(els.ccAdminMaxEntriesPerUser.value)||5),maxRoundEntries:Math.max(1,Number(els.ccAdminMaxRoundEntries.value)||500),maxRoundLiability:Math.max(0,Number(els.ccAdminMaxRoundLiability.value)||0),maxRoundLiabilityUsdt:Math.max(0,Number(els.ccAdminMaxRoundLiabilityUsdt.value)||0)};
+                const data={fairRandomOnly:els.ccAdminFairness.value==='true',enabled:els.ccAdminEnabled.value==='true',entrySeconds:Math.max(5,Number(els.ccAdminEntrySeconds.value)||30),cooldownSeconds:Math.max(2,Number(els.ccAdminCooldownSeconds.value)||5),minBet:Math.max(1,Number(els.ccAdminMinBet.value)||10),maxBet:Math.max(1,Number(els.ccAdminMaxBet.value)||5000),minBetUsdt:Math.max(0.0001,Number(els.ccAdminMinBetUsdt.value)||0.1),maxBetUsdt:Math.max(0.0001,Number(els.ccAdminMaxBetUsdt.value)||5000),multiplier:Math.max(1,Number(els.ccAdminMultiplier.value)||2),violetMultiplier:Math.max(1,Number(els.ccAdminVioletMultiplier.value)||3),numberMultiplier:Math.max(1,Number(els.ccAdminNumberMultiplier.value)||9),sizeMultiplier:Math.max(1,Number(els.ccAdminSizeMultiplier.value)||2),autoResult:els.ccAdminAuto.value==='true',randomizedResult:true,noConsecutiveRepeat:false,patternMode:(document.getElementById('ccAdminPatternMode')||{}).value==='random'?'random':'pro',patternStrength:Math.min(100,Math.max(0,Number((document.getElementById('ccAdminPatternStrength')||{}).value===''?30:(document.getElementById('ccAdminPatternStrength')||{}).value)||0)),chaosChance:Math.min(100,Math.max(0,Number((document.getElementById('ccAdminChaosChance')||{}).value===''?35:(document.getElementById('ccAdminChaosChance')||{}).value)||0)),auditRounds:true,maxEntriesPerUserPerRound:null,maxRoundEntries:null,maxRoundLiability:null,maxRoundLiabilityUsdt:null,};
                 if(data.maxBet<data.minBet)return alert('Maximum INR bet must be greater than or equal to minimum INR bet.');
                 if(data.maxBetUsdt<data.minBetUsdt)return alert('Maximum USDT bet must be greater than or equal to minimum USDT bet.');
                 database.ref('control/colourClashConfig').update(data).then(()=>{ ccApplyAdminConfig(data); updateManualResultControlUi(); alert('WINGO settings saved.'); }).catch(e=>alert('Could not save settings: '+e.message));
