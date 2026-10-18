@@ -1673,7 +1673,8 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                         <input id="ccAdminSizeMultiplier" type="number" min="1" step="0.01" placeholder="BIG/SMALL Win Multiplier">
                     </div>
                     <select id="ccAdminAuto"><option value="true">Automatic Result: ON</option><option value="false">Automatic Result: OFF</option></select>
-                    <select id="ccAdminRandomized"><option value="true">🔐 Cryptographic Random Results: ON</option></select>
+                    <select id="ccAdminRandomized" onchange="try{ccRngUiRefresh(true)}catch(e){console.error(e)}"><option value="true">🔐 Cryptographic Random Results: ON</option><option value="false">🎛 Cryptographic Random Results: OFF (run Result Pattern)</option></select>
+                    <div id="ccAdminRngHint" class="hint-text" style="margin-top:4px;"></div>
                     <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-top:8px;">Result Pattern Style:</label>
                     <select id="ccAdminPatternMode"><option value="pro">📈 Professional Pattern (balanced colours / sizes, no long streaks)</option><option value="random">🎲 Pure Random</option></select>
                     <div class="two-cols">
@@ -1684,11 +1685,81 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     <select id="ccAdminFairness"><option value="false">🔓 Fairness Lock: OFF</option><option value="true">🔒 Fairness Lock: ON</option></select>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
                       <div class="stat-card"><span>Fairness Lock</span><b id="ccAdminFairnessStatus" style="color:#34d399">ON</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Controls whether manual result selection is locked.</small></div>
-                      <div class="stat-card"><span>RNG Source</span><b>Web Crypto</b><small style="display:block;color:var(--text-muted);margin-top:3px;">Unpredictable per round.</small></div>
+                      <div class="stat-card"><span>RNG Source</span><b id="ccAdminRngSource">Web Crypto</b><small id="ccAdminRngSourceNote" style="display:block;color:var(--text-muted);margin-top:3px;">Unpredictable per round.</small></div>
                     </div>
-                    <p class="hint-text">For a fair game, result generation uses cryptographic randomness and is not based on round numbers, player bets, or visible history. Liability controls only manage exposure; they do not alter the result.</p>
+                    <p id="ccAdminRngPara" class="hint-text">For a fair game, result generation uses cryptographic randomness and is not based on round numbers, player bets, or visible history. Liability controls only manage exposure; they do not alter the result.</p>
                     <button onclick="saveColourClashConfig()" class="btn-green">💾 Save Advanced WINGO Settings</button>
                 </div>
+            </div>
+
+            <div class="dash-panel" id="ccPatMgmtPanel">
+                <style>
+                    #ccPatMgmtPanel .cp-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+                    #ccPatMgmtPanel .cc-pat-ball{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;font-size:14px;font-weight:900;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.12)}
+                    #ccPatMgmtPanel .cp-chip{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+                    #ccPatMgmtPanel .cp-chip div{display:flex;gap:2px}
+                    #ccPatMgmtPanel .cp-chip button{width:24px;height:22px;min-height:0;padding:0;font-size:11px;font-weight:900;line-height:1;border-radius:6px;background:#334155!important;border:1px solid #94a3b8!important;color:#fff!important;-webkit-text-fill-color:#fff!important;box-shadow:none!important;opacity:1!important}
+                    #ccPatMgmtPanel .cp-digits button{width:34px;height:34px;padding:0;font-weight:900;border-radius:9px}
+                    #ccPatMgmtPanel .cp-badge{font-size:10px;font-weight:900;padding:4px 9px;border-radius:999px;letter-spacing:.4px}
+                    #ccPatMgmtPanel .cp-sim{background:rgba(250,204,21,.14);color:#facc15;border:1px solid rgba(250,204,21,.45)}
+                    #ccPatMgmtPanel .cp-prod{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.4)}
+                    #ccPatMgmtPanel .cp-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;margin-top:10px}
+                    #ccPatMgmtPanel .cp-msg{font-size:12px;margin-top:8px;font-weight:700}
+                </style>
+                <div class="dash-panel-head"><h4>🧩 Result Pattern Management</h4><span id="ccPatModeBadge" class="cp-badge cp-sim">🧪 SIMULATION MODE</span></div>
+                <div class="cp-card" style="margin-top:0;">
+                    <div class="cp-row"><span class="cp-badge cp-sim">🧪 SIMULATION</span><span style="font-size:11.5px;color:var(--text-muted);">The Simulate button only previews — it never writes to rounds, bets or wallets. A saved pattern drives LIVE results only while Cryptographic Random Results is OFF in the WINGO settings above.</span></div>
+                    <div class="cp-row"><span class="cp-badge cp-prod">🔒 PRODUCTION</span><span id="ccPatProdText" style="font-size:11.5px;color:var(--text-muted);">Live WINGO results are produced by the game's approved cryptographic generator and are not changed by these pattern settings.</span></div>
+                </div>
+                <label class="restriction-toggle" style="margin-top:12px;"><input id="ccPatEnabled" type="checkbox"> Enable Result Pattern (runs live when Cryptographic Random Results is OFF)</label>
+
+                <label style="font-size:11.5px;color:var(--text-muted);margin-top:10px;display:block;">🔎 Search / select pattern (25 built-in + your custom patterns):</label>
+                <input id="ccPatSearch" type="text" placeholder="Type a name or numbers, e.g. “streak” or “2,5”" oninput="ccPatRenderSelect()" autocomplete="off">
+                <select id="ccPatSelect" onchange="ccPatSelectChanged()" style="margin-top:6px;"></select>
+                <div class="cp-card"><div style="font-size:11px;color:var(--text-muted);">Example sequence</div><div id="ccPatExample" class="cp-row"></div></div>
+
+                <div class="cp-card">
+                    <div style="font-size:12px;font-weight:800;margin-bottom:4px;">✏️ Sequence editor (numbers 0–9)</div>
+                    <div id="ccPatChips" class="cp-row"></div>
+                    <div class="cp-row cp-digits" id="ccPatDigits"></div>
+                    <input id="ccPatSeqText" type="text" placeholder="Or type numbers: 2, 1, 4, 3" onchange="ccPatTextChanged()" autocomplete="off">
+                    <div class="two-cols" style="margin-top:8px;">
+                        <div><label style="font-size:11px;color:var(--text-muted);">Sequence length (1–50)</label><input id="ccPatLength" type="number" min="1" max="50" step="1" oninput="ccPatRenderPreview()"></div>
+                        <div><label style="font-size:11px;color:var(--text-muted);">At the end of the sequence</label><select id="ccPatRepeat" onchange="ccPatRenderPreview()"><option value="repeat">🔁 Repeat from the start</option><option value="stop">⏹ Stop at the end</option></select></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">Preview</div>
+                    <div id="ccPatPreview" class="cp-row"></div>
+                </div>
+
+                <div class="two-cols" style="margin-top:10px;">
+                    <button onclick="ccPatSave()" class="btn-green">💾 Save Changes</button>
+                    <button onclick="ccPatReset()" class="btn-gray">↩ Reset to Default</button>
+                </div>
+
+                <div class="cp-card">
+                    <div style="font-size:12px;font-weight:800;margin-bottom:6px;">⭐ Custom patterns</div>
+                    <div class="two-cols" style="grid-template-columns:1fr auto;gap:8px;">
+                        <input id="ccPatCustomName" type="text" maxlength="30" placeholder="Custom pattern name" autocomplete="off">
+                        <button onclick="ccPatSaveCustom()" class="btn-green" style="width:auto;padding:0 14px;">Save custom</button>
+                    </div>
+                    <div id="ccPatCustomList" style="margin-top:8px;"></div>
+                </div>
+
+                <div class="cp-card">
+                    <div style="font-size:12px;font-weight:800;margin-bottom:6px;">📌 Currently active configuration</div>
+                    <div id="ccPatActive" class="hint-text">Loading…</div>
+                </div>
+
+                <div class="cp-card">
+                    <div style="font-size:12px;font-weight:800;margin-bottom:6px;">🧪 Run a simulation <span style="font-weight:400;color:var(--text-muted);">(in-memory only)</span></div>
+                    <div class="two-cols" style="grid-template-columns:1fr auto;gap:8px;">
+                        <input id="ccPatSimCount" type="number" min="5" max="100" value="20" placeholder="Rounds to simulate (5–100)">
+                        <button onclick="ccPatSimulate()" class="btn-green" style="width:auto;padding:0 14px;">▶ Simulate</button>
+                    </div>
+                    <div id="ccPatSimOut" class="cp-row"></div>
+                    <div id="ccPatSimInfo" class="hint-text"></div>
+                </div>
+                <div id="ccPatStatus" class="cp-msg"></div>
             </div>
 
             <div class="dash-panel">
@@ -7290,17 +7361,20 @@ function formatAdminMoney(value){
         // Single source of truth for round/timer math — synced from the DB, same as the user app's colourClashConfig.
         // Round timing must NEVER be derived from the live (possibly unsaved/mid-edit) input fields below,
         // or the admin panel's round number & countdown will drift out of sync with what users see.
-        let ccAdminConfig = { enabled:true, entrySeconds:30, cooldownSeconds:5, minBet:10, maxBet:5000, minBetUsdt:0.1, maxBetUsdt:5000, multiplier:2, violetMultiplier:3, numberMultiplier:9, sizeMultiplier:2, autoResult:true, randomizedResult:true, noConsecutiveRepeat:true };
+        let ccAdminConfig = { enabled:true, entrySeconds:30, cooldownSeconds:5, minBet:10, maxBet:5000, minBetUsdt:0.1, maxBetUsdt:5000, multiplier:2, violetMultiplier:3, numberMultiplier:9, sizeMultiplier:2, autoResult:true, randomizedResult:true, cryptoRandom:true, noConsecutiveRepeat:true };
         let ccAdminConfigReady = false;
         // ===== Unique per-game period labels (same format as the user app) =====
-        function gvPeriodLabel(prefix, roundId, cycleMs){
+        function gvPeriodLabel(prefix, roundId, cycleMs, shiftFrac){
             const id=Math.max(1,Number(roundId)||1), cyc=Math.max(1000,Number(cycleMs)||35000);
             const IST=19800000, DAY=86400000;
             const t=(id-1)*cyc+IST, day=Math.floor(t/DAY), d=new Date(day*DAY);
-            const seq=Math.floor((t-day*DAY)/cyc)+1;
+            let seq=Math.floor((t-day*DAY)/cyc)+1;
+            // Each game gets its own sequence offset, so two games using the same entry/cooldown seconds
+            // (e.g. WINGO and K3) never show the same period number at the same time.
+            if(shiftFrac){ const N=Math.ceil(DAY/cyc), sh=Math.max(1,Math.round(N*shiftFrac)); seq=((seq-1+sh)%N)+1; }
             return prefix+d.getUTCFullYear()+String(d.getUTCMonth()+1).padStart(2,'0')+String(d.getUTCDate()).padStart(2,'0')+String(seq).padStart(4,'0');
         }
-        function wingoPeriodLabel(roundId){ return gvPeriodLabel('WG',roundId,ccAdminCycleMs()); }
+        function wingoPeriodLabel(roundId){ return gvPeriodLabel('WG',roundId,ccAdminCycleMs(),0.37); }
         function k3PeriodLabel(roundId){ return gvPeriodLabel('K3',roundId,k3AdminCycleMs()); }
         function ccAdminCycleMs(){
             const entry=Math.max(5,Number(ccAdminConfig.entrySeconds)||30);
@@ -7333,6 +7407,8 @@ function formatAdminMoney(value){
                 sizeMultiplier: Math.max(1, Number(d.sizeMultiplier) || 2),
                 autoResult: d.autoResult !== false,
                 randomizedResult: true,
+                cryptoRandom: d.cryptoRandom !== false,
+                livePattern: ccPatCfgNormalize(d.livePattern),
                 noConsecutiveRepeat: false,
                 patternMode: d.patternMode==='random' ? 'random' : 'pro',
                 patternStrength: d.patternStrength!==undefined&&d.patternStrength!==null&&d.patternStrength!=='' ? Math.min(100,Math.max(0,Number(d.patternStrength)||0)) : 30,
@@ -7356,7 +7432,8 @@ function formatAdminMoney(value){
             const numMulEl=document.getElementById('ccAdminNumberMultiplier'); if(numMulEl) numMulEl.value=Number(d.numberMultiplier)||9;
             const sizeMulEl=document.getElementById('ccAdminSizeMultiplier'); if(sizeMulEl) sizeMulEl.value=Number(d.sizeMultiplier)||2;
             const autoEl=document.getElementById('ccAdminAuto'); if(autoEl) autoEl.value=d.autoResult===false?'false':'true';
-            const randomEl=document.getElementById('ccAdminRandomized'); if(randomEl) randomEl.value='true';
+            const randomEl=document.getElementById('ccAdminRandomized'); if(randomEl) randomEl.value=(d.cryptoRandom===false)?'false':'true';
+            try{ ccRngUiRefresh(); }catch(e){}
             ccAdminConfigReady = true;
             updateManualResultControlUi();
         }
@@ -7446,6 +7523,90 @@ function formatAdminMoney(value){
             for(let n=0;n<10;n++){r-=w[n];if(r<0)return n;}
             return 9;
         }
+
+        // ===== WINGO admin-selectable result patterns (1-25) =====
+        // Stateless: the next number is derived only from the already-published history (newest first),
+        // so every client/admin produces a consistent result and future results are never stored anywhere.
+        function ccPatternNext(type, hist, ri){
+            const h=(hist||[]).map(Number).filter(v=>!isNaN(v)).slice(0,14);
+            const h0=h[0], h1=h[1], ALL=[0,1,2,3,4,5,6,7,8,9];
+            const chance=p=>ri(1000)<p*1000, pick=a=>a[ri(a.length)];
+            const notIn=(ex,pool)=>{const base=pool||ALL;const c=base.filter(n=>!ex.includes(n));return c.length?pick(c):pick(base);};
+            const isBig=n=>n>=5, isSmallFn=n=>n<=4, isOdd=n=>n%2===1, isEven=n=>n%2===0;
+            const run=fn=>{let k=0;while(k<h.length&&fn(h[k])===fn(h[0]))k++;return k;};
+            const SMALL=[0,1,2,3,4], BIG=[5,6,7,8,9];
+            // one streak of members of a set, then a single separator number, then a new streak
+            const streak=(inSet,pool,sepPool,startPool,asc)=>{
+                if(h0===undefined||!inSet(h0)) return pick(startPool||pool);
+                const k=run(inSet), p=k<4?1:k===4?.75:k===5?.5:k===6?.3:0;
+                if(chance(p)){
+                    if(asc&&asc(h0)&&chance(.55)) return h0+1;
+                    return notIn([h0],pool);
+                }
+                return pick(sepPool);
+            };
+            const cycle=(p,Lmax)=>{
+                const first=h.slice(0,p);
+                if(h.length>=p&&new Set(first).size===p){
+                    let k=0;while(k<h.length-p&&h[k]===h[k+p])k++;
+                    return (p+k<Lmax)?h[p-1]:notIn(first);
+                }
+                return notIn(h.slice(0,p-1));
+            };
+            const sr=()=>run(x=>x);
+            const sgn=(a,b)=>a>b?1:a<b?-1:0;
+            switch(Number(type)){
+                case 1: // hop up, step down:  2,1,4,3,8,7,2,9
+                    if(h0===undefined) return pick(ALL);
+                    if(h1!==undefined&&h0===h1-1) return notIn([h0]);
+                    return h0>0?h0-1:notIn([h0]);
+                case 2: {const s=sr(); if(h0===undefined) return pick(ALL); if(s<3||(s<5&&chance(.75))) return h0; return notIn([h0]);}
+                case 3: {if(h0===undefined) return pick(ALL); return sr()===1?h0:notIn([h0]);}
+                case 4: {if(h0===undefined) return pick(ALL); return sr()<3?h0:notIn([h0]);}
+                case 5: return streak(isBig,BIG,SMALL,[5,6,6,7],n=>n<9);
+                case 6: return streak(isSmallFn,SMALL,BIG,[0,0,1,2],n=>n<4);
+                case 7: {if(h0===undefined) return pick(ALL); return notIn([h1,h[3]],isBig(h0)?SMALL:BIG);}
+                case 8: {if(h0===undefined) return pick(ALL); const pool=isOdd(h0)?[0,2,4,6,8]:[1,3,5,7,9];
+                         if(chance(.4)){const c=h0<9?h0+1:h0-1; if(pool.includes(c)) return c;} return notIn([h1,h[3]],pool);}
+                case 9: {const r=streak(isEven,[2,4,6,8],[1,3,7,9],[2,4,6,8]); return (isEven(r)&&chance(.08))?0:r;}
+                case 10:{const r=streak(isOdd,[1,3,7,9],[2,4,6,8],[1,3,7,9]); return (isOdd(r)&&chance(.08))?5:r;}
+                case 11:{const g=chance(.5)?3:4, v=h[g-1];
+                         if(v!==undefined&&v!==h0&&!h.slice(0,g-1).includes(v)&&chance(.7)) return v; return notIn(h.slice(0,3));}
+                case 12:{if(h0===undefined) return pick([2,4,6]);
+                         if(isEven(h0)) return h0>0?h0-1:pick([1,3,5]);
+                         const c=[h0+1,h0+2,h0+3].filter(n=>n<=8&&isEven(n)); return c.length?pick(c):pick([2,4,6,8]);}
+                case 13: return cycle(2,8);
+                case 14: return cycle(3,9);
+                case 15:{
+                    if(h0===undefined) return pick([1,2,3]);
+                    if(h1===undefined||h0===h1) return h0+2<=9?h0+2:h0-2;
+                    const d0=sgn(h0,h1); let n0=0; while(h[n0+1]!==undefined&&sgn(h[n0],h[n0+1])===d0) n0++;
+                    let n1=0; while(h[n0+n1+1]!==undefined&&sgn(h[n0+n1],h[n0+n1+1])===-d0) n1++;
+                    const st=Math.abs(h0-h1), s=(st===1||st===2)?st:2;
+                    const up=()=>h0+s<=9?h0+s:h0-s, down=()=>h0-s>=0?h0-s:h0+s;
+                    if(d0>0) return (n0<2||(n0===2&&chance(.4)))?up():down();
+                    return (n0<n1&&h0-s>=0)?down():up();
+                }
+                case 16: return h0===undefined?pick([0,1,2]):(h0<9?h0+1:pick([0,1,2]));
+                case 17: return h0===undefined?pick([7,8,9]):(h0>0?h0-1:pick([7,8,9]));
+                case 18: {if(h0===undefined) return pick(ALL); return notIn([h1,h[3]],h0<=4?[6,7,8,9]:[0,1,2,3]);}
+                case 19: {
+                    if(!h.length) return pick(ALL);
+                    const cnt={}; h.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+                    let F=h[2]!==undefined?h[2]:h[0], best=0; h.forEach(v=>{if(cnt[v]>best&&cnt[v]>=2){best=cnt[v];F=v;}});
+                    const idx=h.indexOf(F);
+                    if(idx===2||idx===3||(idx>=4&&chance(.7))) return F;
+                    return notIn([F,h0]);
+                }
+                case 20:{const s=sr(); if(h0===undefined) return pick(ALL); if((s===1&&chance(.65))||(s===2&&chance(.45))) return h0; return notIn([h0]);}
+                case 21: return streak(isOdd,[1,3,5,7,9],[0,2,4,6,8],[1,3,5,7,9]);
+                case 22: return streak(isEven,[0,2,4,6,8],[1,3,5,7,9],[0,2,4,6,8]);
+                case 23: return cycle(2,6);
+                case 24: {if(h0===undefined) return pick(ALL); return sr()===1?h0:notIn([h0],isBig(h0)?SMALL:BIG);}
+                case 25: return notIn(h.slice(0,7));
+            }
+            return null;
+        }
         async function ccLoadRecentResults(roundId,count){
             const base=Math.max(1,Number(roundId)||1), reads=[];
             for(let i=1;i<=count&&base-i>=1;i++)reads.push(db.ref('colour_clash/rounds/'+(base-i)).once('value').then(s=>{const v=s.val()||{};return v.resultNumber!==undefined&&v.resultNumber!==null?Number(v.resultNumber):null;}).catch(()=>null));
@@ -7453,10 +7614,45 @@ function formatAdminMoney(value){
             const arr=[];for(const v of out){if(v===null)break;arr.push(v);} // stop at first gap so the streak logic stays contiguous
             return arr;
         }
+        // ===== LIVE RESULT PATTERN RUNTIME (shared logic: User + Admin) =====
+        // Used ONLY when Cryptographic Random Results is OFF (and Fairness Lock is OFF) and an admin
+        // pattern is enabled. The admin mirrors the saved pattern into control/colourClashConfig/livePattern,
+        // so players and the admin read the identical pattern through the config listener they already have.
+        function ccPatCfgNormalize(v){
+            if(!v||v.enabled!==true) return null;
+            const seq=Array.isArray(v.seq)?v.seq.map(Number):[];
+            if(!seq.length||seq.length>50||!seq.every(n=>Number.isInteger(n)&&n>=0&&n<=9)) return null;
+            const len=Math.min(50,Math.max(1,Math.trunc(Number(v.length))||seq.length));
+            return {enabled:true,patternId:String(v.patternId||''),seq:seq,length:len,repeat:v.repeat==='stop'?'stop':'repeat',useRules:v.useRules===true,libId:Number(v.libId)||0,anchorRoundId:Math.trunc(Number(v.anchorRoundId))||0};
+        }
+        function ccPatSeqAt(p,idx){
+            if(idx<0) return null;
+            if(p.repeat==='stop'){ const n=Math.min(p.length,p.seq.length); return idx<n?p.seq[idx]:null; }
+            return p.seq[(idx%Math.max(1,p.length))%p.seq.length];
+        }
+        function ccLivePatternActive(cfg){ return cfg&&cfg.cryptoRandom===false&&cfg.fairRandomOnly!==true&&!!cfg.livePattern; }
+        async function ccLivePatternNumber(cfg,roundId){
+            if(!ccLivePatternActive(cfg)) return null;
+            const p=cfg.livePattern; let n=null;
+            if(p.useRules&&p.libId){
+                const recent=await ccLoadRecentResults(roundId,14);
+                n=ccPatternNext(p.libId,recent,ccSecureRandomInt);
+            }else{
+                n=ccPatSeqAt(p,Number(roundId)-(p.anchorRoundId||Number(roundId)));
+            }
+            if(n===null||n===undefined) return null;
+            n=Number(n);
+            return (Number.isInteger(n)&&n>=0&&n<=9)?n:null;
+        }
         async function ccGetAutomaticNumber(roundId){
             if(ccAdminConfig.patternMode==='random') return ccSecureRandomInt(10);
             const recent=await ccLoadRecentResults(roundId,10);
             return ccPickPatternNumber(recent,ccSecureRandomInt,{strength:ccAdminConfig.patternStrength,chaos:ccAdminConfig.chaosChance});
+        }
+        // Single entry point for automatic results: admin pattern when Cryptographic Random is OFF, otherwise the crypto engine.
+        async function ccGetAutomaticResult(roundId){
+            try{ const pn=await ccLivePatternNumber(ccAdminConfig,roundId); if(pn!==null) return {n:pn,src:'pattern'}; }catch(e){ console.warn('[WINGO] pattern result failed, using secure random:',e); }
+            return {n:await ccGetAutomaticNumber(roundId),src:'crypto'};
         }
         function ccDeterministicColour(roundId){ return ccNumberColour(ccDeterministicNumber(roundId)); }
         function ccDeterministicNumber(roundId){const nRound=Math.max(1,Number(roundId)||1),block=Math.floor((nRound-1)/10),pos=(nRound-1)%10;let x=ccHash('cc-block-'+block)||1,arr=[0,1,2,3,4,5,6,7,8,9];const rnd=()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296;};for(let i=9;i>0;i--){const j=Math.floor(rnd()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr[pos];}
@@ -7487,7 +7683,8 @@ function formatAdminMoney(value){
                 }
                 const hasConfirmed=current.confirmedResultNumber!==undefined&&current.confirmedResultNumber!==null;
                 if(!hasConfirmed&&!ccAdminConfig.autoResult)return;
-                const fallbackNumber=(hasConfirmed && !ccAdminConfig.fairRandomOnly)?Number(current.confirmedResultNumber):await ccGetAutomaticNumber(roundId);
+                let ccAutoSrc={src:'crypto'}; let fallbackNumber;
+                if(hasConfirmed && !ccAdminConfig.fairRandomOnly){ fallbackNumber=Number(current.confirmedResultNumber); } else { ccAutoSrc=await ccGetAutomaticResult(roundId); fallbackNumber=ccAutoSrc.n; }
                 const res=await ref.transaction(cur=>{
                     cur=cur||{};
                     if(cur.status==='resolved'&&cur.resultNumber!==undefined&&cur.resultNumber!==null)return cur;
@@ -7495,7 +7692,7 @@ function formatAdminMoney(value){
                     if(!confirmed&&!ccAdminConfig.autoResult)return cur;
                     const resultNumber=(confirmed && !ccAdminConfig.fairRandomOnly)?Number(cur.confirmedResultNumber):fallbackNumber;
                     const manual=confirmed && !ccAdminConfig.fairRandomOnly;
-                    return Object.assign({},cur,{roundId,status:'resolved',resultNumber,result:ccNumberColour(resultNumber),resultColours:ccNumberColours(resultNumber),resultSize:ccNumberSize(resultNumber),resolvedNumberAt:Date.now(),resolvedAt:Date.now(),modeNumber:manual?'manual':'auto',mode:manual?'manual-number':'auto',randomSource:'crypto.getRandomValues',audit:{rng:'Web Crypto getRandomValues',fairRandomOnly:manual===false && ccAdminConfig.fairRandomOnly===true,generatedAfterEntry:true}});
+                    return Object.assign({},cur,{roundId,status:'resolved',resultNumber,result:ccNumberColour(resultNumber),resultColours:ccNumberColours(resultNumber),resultSize:ccNumberSize(resultNumber),resolvedNumberAt:Date.now(),resolvedAt:Date.now(),modeNumber:manual?'manual':'auto',mode:manual?'manual-number':(ccAutoSrc.src==='pattern'?'pattern':'auto'),randomSource:(!manual&&ccAutoSrc.src==='pattern')?'admin-pattern':'crypto.getRandomValues',audit:{rng:(!manual&&ccAutoSrc.src==='pattern')?'Admin result pattern':'Web Crypto getRandomValues',fairRandomOnly:manual===false && ccAdminConfig.fairRandomOnly===true,generatedAfterEntry:true}});
                 });
                 const v=res.snapshot.val(); if(!v||v.resultNumber===undefined||v.resultNumber===null)return;
                 settleColourClashAdminNumberRound(roundId,v.resultNumber);
@@ -7563,7 +7760,7 @@ function formatAdminMoney(value){
                 const main=document.getElementById('mainAdminMenu'); if(main) main.classList.add('hidden');
                 const section=document.getElementById('colourClashAdminSection'); if(section) section.classList.remove('hidden');
                 if(typeof ccAdminConfig !== 'object' || !ccAdminConfig) {
-                    ccAdminConfig = {enabled:true,entrySeconds:30,cooldownSeconds:5,minBet:10,maxBet:5000,minBetUsdt:0.1,maxBetUsdt:5000,multiplier:2,violetMultiplier:3,numberMultiplier:9,sizeMultiplier:2,autoResult:true,randomizedResult:true,noConsecutiveRepeat:false,fairRandomOnly:false,auditRounds:true};
+                    ccAdminConfig = {enabled:true,entrySeconds:30,cooldownSeconds:5,minBet:10,maxBet:5000,minBetUsdt:0.1,maxBetUsdt:5000,multiplier:2,violetMultiplier:3,numberMultiplier:9,sizeMultiplier:2,autoResult:true,randomizedResult:true,cryptoRandom:true,noConsecutiveRepeat:false,fairRandomOnly:false,auditRounds:true};
                 }
                 const database=ensureGameVerseAdminDb();
                 const btnBox=document.getElementById('ccAdminNumberButtons');
@@ -7622,6 +7819,252 @@ function formatAdminMoney(value){
             if(ccAdminTimer)clearInterval(ccAdminTimer);ccAdminTimer=setInterval(tick,500);tick();
             if(typeof loadColourClashAdminHistory==='function') loadColourClashAdminHistory();
             if(typeof loadColourClashAllEntriesHistory==='function') loadColourClashAllEntriesHistory();
+            try{ ccPatInit(); }catch(e){ console.warn('[WINGO] pattern tools init skipped:',e); }
+        }
+
+        /* ===== Result Pattern Management (SIMULATION TOOLS ONLY — never touches live rounds, results, bets, settlements or wallets) ===== */
+        const CC_PAT_LIB = [{"id":1,"name":"Alternating","seq":[2,1,4,3,8,7,2,9]},{"id":2,"name":"Same Number Repeated","seq":[3,3,3,3,3]},{"id":3,"name":"Double Pattern","seq":[2,2,7,7,4,4]},{"id":4,"name":"Triple Pattern","seq":[1,1,1,8,8,8]},{"id":5,"name":"Big Streak","seq":[6,7,8,9,5]},{"id":6,"name":"Small Streak","seq":[0,1,2,3,4]},{"id":7,"name":"Big-Small Alternating","seq":[7,2,8,1,6,3,9,4]},{"id":8,"name":"Odd-Even Alternating","seq":[1,2,3,4,7,8,9,0]},{"id":9,"name":"Same Colour Pattern (Red)","seq":[2,4,6,8,2,6]},{"id":10,"name":"Same Colour Pattern (Green)","seq":[1,3,5,7,9,3]},{"id":11,"name":"Number Returns After a Gap","seq":[3,8,2,5,3,1,7,3]},{"id":12,"name":"Zigzag Colour Pattern","seq":[2,1,4,3,6,5,8,7]},{"id":13,"name":"Repeating Cycle","seq":[2,5,2,5,2,5]},{"id":14,"name":"Three-Number Cycle","seq":[1,4,7,1,4,7]},{"id":15,"name":"Mirror Pattern","seq":[2,4,6,4,2]},{"id":16,"name":"Increasing Numbers","seq":[1,2,3,4,5,6,7,8,9]},{"id":17,"name":"Decreasing Numbers","seq":[9,8,7,6,5,4,3,2,1,0]},{"id":18,"name":"Low-High Alternating","seq":[1,8,2,9,3,7,0,6]},{"id":19,"name":"Same Number Returns","seq":[4,7,2,4,9,1,4]},{"id":20,"name":"Mixed Streak Pattern","seq":[2,2,2,7,7,1,1,1,8]},{"id":21,"name":"Odd Streak","seq":[1,3,5,7,9]},{"id":22,"name":"Even Streak","seq":[0,2,4,6,8]},{"id":23,"name":"Short Repeat Pattern","seq":[3,5,3,5,3,5]},{"id":24,"name":"Double Then Switch","seq":[2,2,7,7,4,4,9,9]},{"id":25,"name":"Random-Looking Mixed Pattern","seq":[2,9,1,6,3,8,0,5,7,4]}];
+        const CC_PAT_DEFAULT = ()=>({enabled:false,patternId:'1',seq:CC_PAT_LIB[0].seq.slice(),length:CC_PAT_LIB[0].seq.length,repeat:'repeat'});
+        let ccPatSaved = CC_PAT_DEFAULT();          // what is stored in Firebase
+        let ccPatEdit = CC_PAT_DEFAULT();           // what the editor currently shows
+        let ccPatCustom = {};                       // custom patterns {key:{name,seq,length,repeat}}
+        let ccPatEditingKey = null, ccPatInited = false;
+        function ccPatMsg(text, ok){ const el=document.getElementById('ccPatStatus'); if(!el) return; el.textContent=text||''; el.style.color=ok===false?'#fca5a5':'#34d399'; }
+        function ccPatBall(n){ return '<span class="cc-pat-ball '+ccNumberCssClass(n)+'">'+n+'</span>'; }
+        function ccPatSeqHtml(seq){ return (seq&&seq.length)?seq.map(ccPatBall).join(''):'<span class="hint-text">—</span>'; }
+        function ccPatParse(str){
+            const parts=String(str||'').split(/[\s,;]+/).filter(Boolean), out=[];
+            for(const p of parts){ if(!/^\d$/.test(p)) return null; out.push(Number(p)); }
+            return out;
+        }
+        function ccPatValidate(seq,length,repeat){
+            if(!Array.isArray(seq)||!seq.length) return 'Add at least one number to the sequence.';
+            if(seq.length>50) return 'A sequence can have at most 50 numbers.';
+            if(!seq.every(n=>Number.isInteger(n)&&n>=0&&n<=9)) return 'Every number must be a whole number from 0 to 9.';
+            if(!Number.isInteger(length)||length<1||length>50) return 'Sequence length must be a whole number from 1 to 50.';
+            if(repeat!=='repeat'&&repeat!=='stop') return 'Choose whether the sequence repeats or stops at the end.';
+            return '';
+        }
+        function ccPatExpand(seq,length,repeat){
+            const out=[]; if(!seq.length) return out;
+            const n=repeat==='stop'?Math.min(length,seq.length):length;
+            for(let i=0;i<n;i++) out.push(seq[i%seq.length]);
+            return out;
+        }
+        function ccPatNameOf(id){
+            if(String(id).indexOf('custom:')===0){ const c=ccPatCustom[String(id).slice(7)]; return c?('⭐ '+c.name):'(deleted custom pattern)'; }
+            const l=CC_PAT_LIB.find(x=>String(x.id)===String(id)); return l?(l.id+'. '+l.name):'—';
+        }
+        function ccPatLookup(id){
+            if(String(id).indexOf('custom:')===0){ const c=ccPatCustom[String(id).slice(7)]; return c?{name:c.name,seq:c.seq,length:c.length,repeat:c.repeat,custom:true}:null; }
+            const l=CC_PAT_LIB.find(x=>String(x.id)===String(id)); return l?{name:l.name,seq:l.seq,length:l.seq.length,repeat:'repeat',custom:false}:null;
+        }
+        function ccPatRenderSelect(){
+            const sel=document.getElementById('ccPatSelect'); if(!sel) return;
+            const q=String((document.getElementById('ccPatSearch')||{}).value||'').trim().toLowerCase();
+            const match=(name,seq)=>!q||name.toLowerCase().indexOf(q)>=0||seq.join(',').indexOf(q.replace(/\s+/g,''))>=0||seq.join(' ').indexOf(q)>=0;
+            let html='<optgroup label="Built-in patterns">';
+            CC_PAT_LIB.forEach(l=>{ if(match(l.name,l.seq)) html+='<option value="'+l.id+'">'+l.id+'. '+escapeHtml(l.name)+' — '+l.seq.join(', ')+'</option>'; });
+            html+='</optgroup>';
+            const keys=Object.keys(ccPatCustom).filter(k=>match(ccPatCustom[k].name,ccPatCustom[k].seq));
+            if(keys.length){ html+='<optgroup label="Custom patterns">'+keys.map(k=>'<option value="custom:'+escapeHtml(k)+'">⭐ '+escapeHtml(ccPatCustom[k].name)+' — '+ccPatCustom[k].seq.join(', ')+'</option>').join('')+'</optgroup>'; }
+            sel.innerHTML=html;
+            if([...sel.options].some(o=>o.value===String(ccPatEdit.patternId))) sel.value=String(ccPatEdit.patternId);
+        }
+        function ccPatRenderEditor(){
+            const chips=document.getElementById('ccPatChips'); if(!chips) return;
+            chips.innerHTML=ccPatEdit.seq.length?ccPatEdit.seq.map((n,i)=>'<span class="cp-chip">'+ccPatBall(n)+'<div><button type="button" onclick="ccPatMove('+i+',-1)" title="Move left">◀</button><button type="button" onclick="ccPatMove('+i+',1)" title="Move right">▶</button><button type="button" onclick="ccPatRemove('+i+')" title="Remove">✕</button></div></span>').join(''):'<span class="hint-text">Sequence is empty — tap a number below.</span>';
+            const t=document.getElementById('ccPatSeqText'); if(t&&document.activeElement!==t) t.value=ccPatEdit.seq.join(', ');
+            const ex=document.getElementById('ccPatExample'); const lk=ccPatLookup(ccPatEdit.patternId); if(ex) ex.innerHTML=lk?ccPatSeqHtml(lk.seq):'<span class="hint-text">—</span>';
+            ccPatRenderPreview();
+        }
+        function ccPatRenderPreview(){
+            const L=document.getElementById('ccPatLength'), R=document.getElementById('ccPatRepeat'), pv=document.getElementById('ccPatPreview');
+            if(L&&L.value!=='') ccPatEdit.length=Math.trunc(Number(L.value)); if(R) ccPatEdit.repeat=R.value;
+            if(!pv) return;
+            const err=ccPatValidate(ccPatEdit.seq,ccPatEdit.length,ccPatEdit.repeat);
+            if(err){ pv.innerHTML='<span class="hint-text" style="color:#fca5a5">'+escapeHtml(err)+'</span>'; return; }
+            pv.innerHTML=ccPatSeqHtml(ccPatExpand(ccPatEdit.seq,ccPatEdit.length,ccPatEdit.repeat));
+        }
+        function ccPatAdd(d){ if(ccPatEdit.seq.length>=50) return ccPatMsg('A sequence can have at most 50 numbers.',false); ccPatEdit.seq.push(d); ccPatEdit.length=Math.min(50,Math.max(ccPatEdit.length,ccPatEdit.seq.length)); ccPatSyncInputs(); ccPatRenderEditor(); }
+        function ccPatRemove(i){ ccPatEdit.seq.splice(i,1); ccPatSyncInputs(); ccPatRenderEditor(); }
+        function ccPatMove(i,dir){ const j=i+dir; if(j<0||j>=ccPatEdit.seq.length) return; const t=ccPatEdit.seq[i]; ccPatEdit.seq[i]=ccPatEdit.seq[j]; ccPatEdit.seq[j]=t; ccPatRenderEditor(); }
+        function ccPatTextChanged(){
+            const arr=ccPatParse(document.getElementById('ccPatSeqText').value);
+            if(arr===null){ ccPatMsg('Only the numbers 0–9 are allowed (separate them with commas or spaces).',false); return; }
+            if(arr.length>50){ ccPatMsg('A sequence can have at most 50 numbers.',false); return; }
+            ccPatEdit.seq=arr; ccPatMsg(''); ccPatRenderEditor();
+        }
+        function ccPatSyncInputs(){
+            const L=document.getElementById('ccPatLength'), R=document.getElementById('ccPatRepeat'), E=document.getElementById('ccPatEnabled');
+            if(L) L.value=ccPatEdit.length; if(R) R.value=ccPatEdit.repeat; if(E) E.checked=!!ccPatEdit.enabled;
+        }
+        function ccPatSelectChanged(){
+            const sel=document.getElementById('ccPatSelect'); const lk=ccPatLookup(sel.value); if(!lk) return;
+            ccPatEdit.patternId=sel.value; ccPatEdit.seq=lk.seq.slice(); ccPatEdit.length=lk.length; ccPatEdit.repeat=lk.repeat;
+            ccPatEditingKey=lk.custom?String(sel.value).slice(7):null;
+            const nm=document.getElementById('ccPatCustomName'); if(nm) nm.value=lk.custom?lk.name:'';
+            ccPatSyncInputs(); ccPatRenderEditor(); ccPatMsg('');
+        }
+        function ccPatRenderActive(){
+            const el=document.getElementById('ccPatActive'); if(!el) return;
+            const c=ccPatSaved, exp=ccPatExpand(c.seq,c.length,c.repeat);
+            el.innerHTML='<div class="cp-row"><b>'+escapeHtml(ccPatNameOf(c.patternId))+'</b><span class="cp-badge '+ccPatBadgeInfo(c).cls+'">'+ccPatBadgeInfo(c).long+'</span></div>'
+                +'<div class="cp-row">'+ccPatSeqHtml(exp)+'</div>'
+                +'<div style="font-size:11px;color:var(--text-muted);">Length '+c.length+' · '+(c.repeat==='stop'?'stops at the end':'repeats from the start')+(c.updatedAt?' · saved '+new Date(Number(c.updatedAt)).toLocaleString():'')+'</div>';
+            const badge=document.getElementById('ccPatModeBadge'); if(badge){ badge.className='cp-badge '+ccPatBadgeInfo(c).cls; badge.textContent=ccPatBadgeInfo(c).short; }
+        }
+        function ccPatRenderCustomList(){
+            const box=document.getElementById('ccPatCustomList'); if(!box) return;
+            const keys=Object.keys(ccPatCustom).sort((a,b)=>String(ccPatCustom[a].name).localeCompare(String(ccPatCustom[b].name)));
+            box.innerHTML=keys.length?keys.map(k=>{const c=ccPatCustom[k];return '<div class="user-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;"><span><b>'+escapeHtml(c.name)+'</b><br><span class="cp-row">'+ccPatSeqHtml(ccPatExpand(c.seq,c.length,c.repeat))+'</span></span><span style="display:flex;gap:6px;"><button class="btn-gray" style="width:auto;padding:6px 10px;" data-k="'+escapeHtml(k)+'" onclick="ccPatLoadCustom(this.dataset.k)">Edit</button><button class="btn-red" style="width:auto;padding:6px 10px;" data-k="'+escapeHtml(k)+'" onclick="ccPatDeleteCustom(this.dataset.k)">Delete</button></span></div>';}).join(''):'<div class="hint-text">No custom patterns yet.</div>';
+        }
+        function ccPatLoadCustom(k){ if(!ccPatCustom[k]) return; ccPatEdit.patternId='custom:'+k; ccPatRenderSelect(); const sel=document.getElementById('ccPatSelect'); if(sel) sel.value='custom:'+k; ccPatSelectChanged(); }
+        function ccPatSavedFromDb(v){
+            const d=CC_PAT_DEFAULT(); v=v||{};
+            const seq=Array.isArray(v.seq)?v.seq.map(Number):d.seq;
+            const len=Number.isInteger(Number(v.length))?Number(v.length):d.length;
+            const rep=v.repeat==='stop'?'stop':'repeat';
+            const ok=!ccPatValidate(seq,len,rep);
+            return {enabled:v.enabled===true,patternId:String(v.patternId||d.patternId),seq:ok?seq:d.seq,length:ok?len:d.length,repeat:ok?rep:d.repeat,updatedAt:v.updatedAt||0};
+        }
+        function ccPatInit(){
+            const dg=document.getElementById('ccPatDigits');
+            if(dg&&!dg.firstChild) dg.innerHTML=[0,1,2,3,4,5,6,7,8,9].map(d=>'<button type="button" class="btn-gray" onclick="ccPatAdd('+d+')">'+d+'</button>').join('');
+            if(ccPatInited){ ccPatRenderSelect(); ccPatRenderEditor(); ccPatRenderActive(); ccPatRenderCustomList(); return; }
+            const database=ensureGameVerseAdminDb(); if(!database){ ccPatMsg('Firebase is unavailable. Reload the Admin App.',false); return; }
+            ccPatInited=true;
+            database.ref('control/colourClashCustomPatterns').on('value',snap=>{
+                const raw=snap.val()||{}; ccPatCustom={};
+                Object.keys(raw).forEach(k=>{const c=raw[k]||{}; const seq=Array.isArray(c.seq)?c.seq.map(Number):[]; const len=Number(c.length)||seq.length; const rep=c.repeat==='stop'?'stop':'repeat'; if(!ccPatValidate(seq,len,rep)&&c.name) ccPatCustom[k]={name:String(c.name).slice(0,30),seq:seq,length:len,repeat:rep};});
+                ccPatRenderSelect(); ccPatRenderCustomList(); ccPatRenderActive();
+            },err=>ccPatMsg('Could not load custom patterns: '+err.message,false));
+            database.ref('control/colourClashPatternConfig').on('value',snap=>{
+                try{
+                ccPatSaved=ccPatSavedFromDb(snap.val());
+                ccPatEdit=Object.assign({},ccPatSaved,{seq:ccPatSaved.seq.slice()});
+                ccPatEditingKey=String(ccPatEdit.patternId).indexOf('custom:')===0?String(ccPatEdit.patternId).slice(7):null;
+                ccPatRenderSelect(); ccPatSyncInputs(); ccPatRenderEditor(); ccPatRenderActive();
+                }catch(e){ console.error('[WINGO] Pattern config render error:',e); ccPatMsg('❌ Display error: '+(e&&e.message?e.message:e),false); }
+            },err=>ccPatMsg('Could not load pattern settings: '+err.message,false));
+        }
+        function ccPatSave(){
+            try{
+                ccPatEdit.enabled=!!(document.getElementById('ccPatEnabled')||{}).checked;
+                ccPatEdit.length=Math.trunc(Number((document.getElementById('ccPatLength')||{}).value));
+                ccPatEdit.repeat=(document.getElementById('ccPatRepeat')||{}).value||'repeat';
+                const err=ccPatValidate(ccPatEdit.seq,ccPatEdit.length,ccPatEdit.repeat);
+                if(err) return ccPatMsg('❌ '+err,false);
+                const database=ensureGameVerseAdminDb(); if(!database) return ccPatMsg('❌ Firebase is unavailable.',false);
+                const ccLib=CC_PAT_LIB.find(x=>String(x.id)===String(ccPatEdit.patternId));
+                const ccUnedited=!!(ccLib&&ccLib.seq.length===ccPatEdit.seq.length&&ccLib.seq.every((v,i)=>v===ccPatEdit.seq[i]));
+                const ccLiveNow=ccAdminConfig.cryptoRandom===false&&ccAdminConfig.fairRandomOnly!==true;
+                let cyc=0; try{ cyc=Number(ccAdminCycleMs()); }catch(e){}
+                if(!(cyc>0)) cyc=35000;
+                const now=Date.now();
+                const payload=JSON.parse(JSON.stringify({enabled:ccPatEdit.enabled,patternId:String(ccPatEdit.patternId),seq:ccPatEdit.seq.slice(),length:ccPatEdit.length,repeat:ccPatEdit.repeat,useRules:ccUnedited,libId:ccUnedited?Number(ccLib.id):0,anchorRoundId:Math.floor(now/cyc)+1,mode:ccLiveNow?'live':'standby',updatedAt:now}));
+                const ccLiveCopy=JSON.parse(JSON.stringify({enabled:payload.enabled,patternId:payload.patternId,seq:payload.seq,length:payload.length,repeat:payload.repeat,useRules:payload.useRules,libId:payload.libId,anchorRoundId:payload.anchorRoundId,updatedAt:payload.updatedAt}));
+                // 1) save the pattern settings (same as before)
+                database.ref('control/colourClashPatternConfig').set(payload).then(()=>{
+                    // 2) publish it to the live-result config so the round engine / players can use it
+                    return database.ref('control/colourClashConfig/livePattern').set(ccLiveCopy).catch(e=>{ throw new Error('Pattern saved, but could not publish it for live results ('+(e&&e.message?e.message:e)+'). Check Firebase rules for control/colourClashConfig.'); });
+                }).then(()=>{
+                    if(!payload.enabled) ccPatMsg('✅ Pattern saved, but "Enable Result Pattern" is unchecked, so it is not used.');
+                    else if(ccAdminConfig.cryptoRandom!==false) ccPatMsg('✅ Pattern saved. Cryptographic Random Results is ON, so live results are NOT using it yet — set it to OFF in the WINGO settings above and press Save.');
+                    else if(ccAdminConfig.fairRandomOnly===true) ccPatMsg('✅ Pattern saved. Fairness Lock is ON, so results stay random — turn Fairness Lock OFF to run the pattern.');
+                    else ccPatMsg('✅ Pattern saved and LIVE — it starts with the current round.');
+                    try{ ccRngUiRefresh(); }catch(e){}
+                }).catch(e=>ccPatMsg('❌ Could not save: '+(e&&e.message?e.message:e),false));
+            }catch(e){
+                console.error('[WINGO] Pattern save error:',e);
+                ccPatMsg('❌ Save failed: '+(e&&e.message?e.message:e),false);
+            }
+        }
+        function ccPatReset(){
+            if(!confirm('Reset Result Pattern Management to the default settings?')) return;
+            const database=ensureGameVerseAdminDb(); if(!database) return ccPatMsg('❌ Firebase is unavailable.',false);
+            const d=CC_PAT_DEFAULT(); d.mode='simulation'; d.updatedAt=Date.now();
+            Promise.all([database.ref('control/colourClashPatternConfig').set(d),database.ref('control/colourClashConfig/livePattern').set(null)]).then(()=>ccPatMsg('✅ Settings reset to default.')).catch(e=>ccPatMsg('❌ Could not reset: '+e.message,false));
+        }
+        function ccPatSaveCustom(){
+            const name=String((document.getElementById('ccPatCustomName')||{}).value||'').trim();
+            ccPatEdit.length=Math.trunc(Number((document.getElementById('ccPatLength')||{}).value));
+            ccPatEdit.repeat=(document.getElementById('ccPatRepeat')||{}).value||'repeat';
+            if(!name) return ccPatMsg('❌ Enter a name for the custom pattern.',false);
+            if(name.length>30) return ccPatMsg('❌ The name can have at most 30 characters.',false);
+            const err=ccPatValidate(ccPatEdit.seq,ccPatEdit.length,ccPatEdit.repeat); if(err) return ccPatMsg('❌ '+err,false);
+            const dup=Object.keys(ccPatCustom).find(k=>ccPatCustom[k].name.toLowerCase()===name.toLowerCase()&&k!==ccPatEditingKey);
+            if(dup) return ccPatMsg('❌ A custom pattern with this name already exists.',false);
+            const database=ensureGameVerseAdminDb(); if(!database) return ccPatMsg('❌ Firebase is unavailable.',false);
+            const ref=ccPatEditingKey?database.ref('control/colourClashCustomPatterns/'+ccPatEditingKey):database.ref('control/colourClashCustomPatterns').push();
+            const key=ref.key, data={name:name,seq:ccPatEdit.seq.slice(),length:ccPatEdit.length,repeat:ccPatEdit.repeat,updatedAt:Date.now()};
+            ref.set(data).then(()=>{ ccPatEditingKey=key; ccPatEdit.patternId='custom:'+key; ccPatCustom[key]={name:name,seq:data.seq,length:data.length,repeat:data.repeat}; ccPatRenderSelect(); ccPatRenderCustomList(); ccPatMsg('✅ Custom pattern “'+name+'” saved.'); }).catch(e=>ccPatMsg('❌ Could not save: '+e.message,false));
+        }
+        function ccPatDeleteCustom(k){
+            const c=ccPatCustom[k]; if(!c) return;
+            if(!confirm('Delete the custom pattern “'+c.name+'”?')) return;
+            const database=ensureGameVerseAdminDb(); if(!database) return ccPatMsg('❌ Firebase is unavailable.',false);
+            const wasActive=ccPatSaved.patternId==='custom:'+k;
+            database.ref('control/colourClashCustomPatterns/'+k).remove().then(()=>{
+                if(ccPatEditingKey===k){ ccPatEditingKey=null; }
+                if(wasActive) return Promise.all([database.ref('control/colourClashPatternConfig').set(Object.assign(CC_PAT_DEFAULT(),{mode:'standby',updatedAt:Date.now()})),database.ref('control/colourClashConfig/livePattern').set(null)]);
+            }).then(()=>ccPatMsg('✅ Custom pattern deleted.')).catch(e=>ccPatMsg('❌ Could not delete: '+e.message,false));
+        }
+        function ccPatSimulate(){
+            const n=Math.trunc(Number((document.getElementById('ccPatSimCount')||{}).value));
+            if(!Number.isInteger(n)||n<5||n>100) return ccPatMsg('❌ Simulate between 5 and 100 rounds.',false);
+            ccPatEdit.length=Math.trunc(Number((document.getElementById('ccPatLength')||{}).value)||ccPatEdit.length);
+            ccPatEdit.repeat=(document.getElementById('ccPatRepeat')||{}).value||ccPatEdit.repeat;
+            const err=ccPatValidate(ccPatEdit.seq,ccPatEdit.length,ccPatEdit.repeat); if(err) return ccPatMsg('❌ '+err,false);
+            const lib=CC_PAT_LIB.find(x=>String(x.id)===String(ccPatEdit.patternId));
+            const unedited=lib&&lib.seq.length===ccPatEdit.seq.length&&lib.seq.every((v,i)=>v===ccPatEdit.seq[i]);
+            let out=[],src;
+            if(unedited){ const h=[]; for(let i=0;i<n;i++){ const v=ccPatternNext(lib.id,h,ccSecureRandomInt); out.push(v); h.unshift(v); if(h.length>14) h.pop(); } src='rule engine for “'+lib.name+'” (fresh random numbers each run)'; }
+            else { out=ccPatExpand(ccPatEdit.seq,n,ccPatEdit.repeat); src='your configured sequence ('+(ccPatEdit.repeat==='stop'?'stops at the end':'repeating')+')'; }
+            if(!out.every(v=>Number.isInteger(v)&&v>=0&&v<=9)) return ccPatMsg('❌ Simulation produced an invalid number — nothing shown.',false);
+            document.getElementById('ccPatSimOut').innerHTML=ccPatSeqHtml(out);
+            const big=out.filter(v=>v>=5).length, red=out.filter(v=>v%2===0).length, vio=out.filter(v=>v===0||v===5).length;
+            document.getElementById('ccPatSimInfo').innerHTML='SIMULATION ONLY — nothing was written to the game, wallets or history. Source: '+escapeHtml(src)+'.<br>'+out.length+' rounds · Big '+big+' / Small '+(out.length-big)+' · Red '+red+' / Green '+(out.length-red)+' · Violet '+vio;
+            ccPatMsg('');
+        }
+
+        // ===== Cryptographic Random ON/OFF — UI state =====
+        function ccPatBadgeInfo(c){
+            const cryptoOn=ccAdminConfig.cryptoRandom!==false, fair=ccAdminConfig.fairRandomOnly===true;
+            if(!c||!c.enabled) return {cls:'cp-prod',short:'🔒 PATTERN OFF',long:'PATTERN DISABLED'};
+            if(cryptoOn) return {cls:'cp-sim',short:'⏸ STANDBY — Crypto Random ON',long:'ENABLED · STANDBY (Cryptographic Random is ON)'};
+            if(fair) return {cls:'cp-sim',short:'⏸ STANDBY — Fairness Lock ON',long:'ENABLED · STANDBY (Fairness Lock is ON)'};
+            return {cls:'cp-prod',short:'🟢 LIVE — pattern running',long:'LIVE · DRIVING RESULTS'};
+        }
+        function ccPatReanchor(database){
+            // When Cryptographic Random is switched OFF, restart the saved sequence from the current round.
+            const anchor=Math.floor(Date.now()/ccAdminCycleMs())+1;
+            database.ref('control/colourClashPatternConfig').once('value').then(s=>{ if(s.exists()) return database.ref('control/colourClashPatternConfig/anchorRoundId').set(anchor); }).catch(()=>{});
+            if(ccAdminConfig.livePattern) database.ref('control/colourClashConfig/livePattern/anchorRoundId').set(anchor).catch(()=>{});
+        }
+        function ccRngUiRefresh(){
+            const sel=document.getElementById('ccAdminRandomized');
+            const cryptoOn=sel?sel.value!=='false':(ccAdminConfig.cryptoRandom!==false);
+            const fair=ccAdminConfig.fairRandomOnly===true;
+            const patOn=!!ccAdminConfig.livePattern;
+            const set=(id,html)=>{const el=document.getElementById(id); if(el) el.innerHTML=html;};
+            if(cryptoOn){
+                set('ccAdminRngSource','Web Crypto'); set('ccAdminRngSourceNote','Unpredictable per round.');
+                set('ccAdminRngHint','Cryptographic Random is <b>ON</b>: Result Patterns are ignored for live rounds. Switch to OFF and press Save to run a pattern.');
+                set('ccAdminRngPara','For a fair game, result generation uses cryptographic randomness and is not based on round numbers, player bets, or visible history. Liability controls only manage exposure; they do not alter the result.');
+                set('ccPatProdText','Cryptographic Random Results is ON, so live WINGO results ignore these patterns. Set it to OFF in the WINGO settings to run a saved pattern.');
+            }else if(fair){
+                set('ccAdminRngSource','Web Crypto'); set('ccAdminRngSourceNote','Fairness Lock is ON — pattern is blocked.');
+                set('ccAdminRngHint','Cryptographic Random is <b>OFF</b>, but <b>Fairness Lock is ON</b>, so results are still random. Turn Fairness Lock OFF to run a pattern.');
+                set('ccAdminRngPara','Fairness Lock is ON, so results stay random and patterns are not applied.');
+                set('ccPatProdText','Fairness Lock is ON, so live results stay random. Turn Fairness Lock OFF to run a saved pattern.');
+            }else{
+                set('ccAdminRngSource',patOn?'Admin Pattern':'Pro / Random'); set('ccAdminRngSourceNote',patOn?'Saved Result Pattern drives each round.':'No pattern enabled — using Result Pattern Style.');
+                set('ccAdminRngHint',patOn?'Cryptographic Random is <b>OFF</b>: the saved Result Pattern below is running on live rounds.':'Cryptographic Random is <b>OFF</b>, but no Result Pattern is enabled below, so results use the Result Pattern Style above. Enable and save a pattern to run it.');
+                set('ccAdminRngPara','Cryptographic Random is OFF: live results follow the Result Pattern you saved in Result Pattern Management.');
+                set('ccPatProdText','Cryptographic Random Results is OFF: the saved pattern below drives live WINGO results.');
+            }
+            try{ if(typeof ccPatInited!=='undefined'&&ccPatInited) ccPatRenderActive(); }catch(e){}
         }
         function saveColourClashConfig(){
             try{
@@ -7630,13 +8073,14 @@ function formatAdminMoney(value){
                 if(Object.values(els).some(x=>!x)) return alert('WINGO settings UI is incomplete. Please reload the Admin App.');
                 const database=ensureGameVerseAdminDb();
                 if(!database) return alert('Firebase is unavailable. Please reload the Admin App and try again.');
-                const data={fairRandomOnly:els.ccAdminFairness.value==='true',enabled:els.ccAdminEnabled.value==='true',entrySeconds:Math.max(5,Number(els.ccAdminEntrySeconds.value)||30),cooldownSeconds:Math.max(2,Number(els.ccAdminCooldownSeconds.value)||5),minBet:Math.max(1,Number(els.ccAdminMinBet.value)||10),maxBet:Math.max(1,Number(els.ccAdminMaxBet.value)||5000),minBetUsdt:Math.max(0.0001,Number(els.ccAdminMinBetUsdt.value)||0.1),maxBetUsdt:Math.max(0.0001,Number(els.ccAdminMaxBetUsdt.value)||5000),multiplier:Math.max(1,Number(els.ccAdminMultiplier.value)||2),violetMultiplier:Math.max(1,Number(els.ccAdminVioletMultiplier.value)||3),numberMultiplier:Math.max(1,Number(els.ccAdminNumberMultiplier.value)||9),sizeMultiplier:Math.max(1,Number(els.ccAdminSizeMultiplier.value)||2),autoResult:els.ccAdminAuto.value==='true',randomizedResult:true,noConsecutiveRepeat:false,patternMode:(document.getElementById('ccAdminPatternMode')||{}).value==='random'?'random':'pro',patternStrength:Math.min(100,Math.max(0,Number((document.getElementById('ccAdminPatternStrength')||{}).value===''?30:(document.getElementById('ccAdminPatternStrength')||{}).value)||0)),chaosChance:Math.min(100,Math.max(0,Number((document.getElementById('ccAdminChaosChance')||{}).value===''?35:(document.getElementById('ccAdminChaosChance')||{}).value)||0)),auditRounds:true,maxEntriesPerUserPerRound:null,maxRoundEntries:null,maxRoundLiability:null,maxRoundLiabilityUsdt:null,};
+                const data={fairRandomOnly:els.ccAdminFairness.value==='true',enabled:els.ccAdminEnabled.value==='true',entrySeconds:Math.max(5,Number(els.ccAdminEntrySeconds.value)||30),cooldownSeconds:Math.max(2,Number(els.ccAdminCooldownSeconds.value)||5),minBet:Math.max(1,Number(els.ccAdminMinBet.value)||10),maxBet:Math.max(1,Number(els.ccAdminMaxBet.value)||5000),minBetUsdt:Math.max(0.0001,Number(els.ccAdminMinBetUsdt.value)||0.1),maxBetUsdt:Math.max(0.0001,Number(els.ccAdminMaxBetUsdt.value)||5000),multiplier:Math.max(1,Number(els.ccAdminMultiplier.value)||2),violetMultiplier:Math.max(1,Number(els.ccAdminVioletMultiplier.value)||3),numberMultiplier:Math.max(1,Number(els.ccAdminNumberMultiplier.value)||9),sizeMultiplier:Math.max(1,Number(els.ccAdminSizeMultiplier.value)||2),autoResult:els.ccAdminAuto.value==='true',randomizedResult:true,cryptoRandom:els.ccAdminRandomized.value!=='false',noConsecutiveRepeat:false,patternMode:(document.getElementById('ccAdminPatternMode')||{}).value==='random'?'random':'pro',patternStrength:Math.min(100,Math.max(0,Number((document.getElementById('ccAdminPatternStrength')||{}).value===''?30:(document.getElementById('ccAdminPatternStrength')||{}).value)||0)),chaosChance:Math.min(100,Math.max(0,Number((document.getElementById('ccAdminChaosChance')||{}).value===''?35:(document.getElementById('ccAdminChaosChance')||{}).value)||0)),auditRounds:true,maxEntriesPerUserPerRound:null,maxRoundEntries:null,maxRoundLiability:null,maxRoundLiabilityUsdt:null,};
                 if(data.maxBet<data.minBet)return alert('Maximum INR bet must be greater than or equal to minimum INR bet.');
                 if(data.maxBetUsdt<data.minBetUsdt)return alert('Maximum USDT bet must be greater than or equal to minimum USDT bet.');
-                database.ref('control/colourClashConfig').update(data).then(()=>{ ccApplyAdminConfig(data); updateManualResultControlUi(); alert('WINGO settings saved.'); }).catch(e=>alert('Could not save settings: '+e.message));
+                const ccWasCrypto=ccAdminConfig.cryptoRandom!==false;
+                database.ref('control/colourClashConfig').update(data).then(()=>{ try{ if(ccWasCrypto&&data.cryptoRandom===false){ ccPatReanchor(database); } data.livePattern=ccAdminConfig.livePattern?Object.assign({},ccAdminConfig.livePattern):null; ccApplyAdminConfig(data); updateManualResultControlUi(); ccRngUiRefresh(); }catch(uiErr){ console.error('[WINGO] post-save UI refresh error:',uiErr); } alert(data.cryptoRandom===false?(data.fairRandomOnly===true?'WINGO settings saved. Cryptographic Random is OFF, but Fairness Lock is ON, so results stay random. Turn Fairness Lock OFF to run the pattern.':'WINGO settings saved. Cryptographic Random is OFF — the saved Result Pattern now drives live results.'):'WINGO settings saved.'); }).catch(e=>alert('Could not save settings: '+e.message));
             }catch(e){
                 console.error('[WINGO] Save error:',e);
-                alert('Could not save WINGO settings. Please reload the Admin App.');
+                alert('Could not save WINGO settings: '+(e&&e.message?e.message:e));
             }
         }
         function updateManualResultControlUi(){
