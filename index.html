@@ -7374,7 +7374,7 @@ function formatAdminMoney(value){
             if(shiftFrac){ const N=Math.ceil(DAY/cyc), sh=Math.max(1,Math.round(N*shiftFrac)); seq=((seq-1+sh)%N)+1; }
             return prefix+d.getUTCFullYear()+String(d.getUTCMonth()+1).padStart(2,'0')+String(d.getUTCDate()).padStart(2,'0')+String(seq).padStart(4,'0');
         }
-        function wingoPeriodLabel(roundId){ return gvPeriodLabel('WG',roundId,ccAdminCycleMs(),0.37); }
+        function wingoPeriodLabel(roundId){ return gvPeriodLabel('',roundId,ccAdminCycleMs(),0.37); }
         function k3PeriodLabel(roundId){ return gvPeriodLabel('K3',roundId,k3AdminCycleMs()); }
         function ccAdminCycleMs(){
             const entry=Math.max(5,Number(ccAdminConfig.entrySeconds)||30);
