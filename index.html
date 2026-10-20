@@ -888,6 +888,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             <div class="sidebar-nav-item" onclick="navTo('Missions', openMissionsAdminModal, this)"><span class="icon">🎯</span> Missions</div>
             <div class="sidebar-nav-item" onclick="navTo('Refer &amp; Earn', openReferAdminModal, this)"><span class="icon">🤝</span> Refer &amp; Earn</div>
             <div class="sidebar-nav-item" onclick="navTo('Events &amp; Activity', openEventsAdminModal, this)"><span class="icon">🎉</span> Events &amp; Activity</div>
+            <div class="sidebar-nav-item" onclick="navTo('Home Settings', openHomeSettingsAdminModal, this)"><span class="icon">🏠</span> Home Settings</div>
             <div class="sidebar-nav-item" onclick="navTo('Support Tickets', openSupportRequestsModal, this)"><span class="icon">📞</span> Support Tickets</div>
 
             <div class="sidebar-group-label">ANALYTICS &amp; REPORTS</div>
@@ -2608,14 +2609,162 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             <div id="eventsAdminContainer" style="max-height:360px;overflow-y:auto;margin:10px 0;">Loading events...</div>
         </div>
 
+        <!-- Home Settings Section (controls the User App home page) — data: control/homeSettings -->
+        <div id="homeSettingsAdminSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size:16px;">🏠 Home Page Settings</h3>
+            <p class="hint-text" style="margin-bottom:12px;">Controls the royal-themed Home page players see in the User App: greeting, notice bar, wallet card, menu tiles, featured games and promo cards. Changes go live instantly after you press Save.</p>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🎨 Royal Style</h4></div>
+                <label for="hsAccent">Accent palette</label>
+                <select id="hsAccent">
+                    <option value="gold">👑 Royal Gold (default)</option>
+                    <option value="amethyst">🔮 Amethyst Purple</option>
+                    <option value="emerald">💎 Emerald</option>
+                    <option value="crimson">🏺 Crimson</option>
+                </select>
+                <label class="restriction-toggle" style="margin-top:8px;"><input id="hsShimmer" type="checkbox"> Animated gold shimmer on cards &amp; crown</label>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>👑 Greeting Bar</h4></div>
+                <label class="restriction-toggle"><input id="hsGreetOn" type="checkbox"> Show greeting bar</label>
+                <label for="hsGreetText" style="margin-top:8px;">Greeting text</label>
+                <input id="hsGreetText" type="text" maxlength="40" placeholder="Welcome back">
+                <label class="restriction-toggle"><input id="hsGreetUid" type="checkbox"> Show player UID chip (tap to copy)</label>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>📢 Notice Bar</h4></div>
+                <label class="restriction-toggle"><input id="hsNoticeOn" type="checkbox"> Show scrolling notice bar</label>
+                <label for="hsNoticeText" style="margin-top:8px;">Scrolling text</label>
+                <input id="hsNoticeText" type="text" maxlength="200" placeholder="Short line that scrolls across the bar">
+                <label for="hsNoticeBtn">Button label</label>
+                <input id="hsNoticeBtn" type="text" maxlength="14" placeholder="Detail">
+                <label for="hsNoticeTitle">Detail popup title (leave empty to hide the button)</label>
+                <input id="hsNoticeTitle" type="text" maxlength="60" placeholder="e.g. Important Notice">
+                <label for="hsNoticeBody">Detail popup message</label>
+                <textarea id="hsNoticeBody" maxlength="1200" rows="4" placeholder="Full announcement shown when the player taps the button"></textarea>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>💳 Wallet Card</h4></div>
+                <label for="hsWalletTagline">Tagline under the balance</label>
+                <input id="hsWalletTagline" type="text" maxlength="60" placeholder="Your Winning Journey Begins!">
+                <label class="restriction-toggle"><input id="hsWalletHide" type="checkbox"> Let players hide / show their balance (eye button)</label>
+                <label class="restriction-toggle"><input id="hsWalletActions" type="checkbox"> Show Deposit / Withdraw / History buttons</label>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🧭 Royal Menu Tiles</h4></div>
+                <div class="two-cols">
+                    <div><label for="hsMenuTitle">Section title</label><input id="hsMenuTitle" type="text" maxlength="30" placeholder="Royal Menu"></div>
+                    <div><label for="hsMenuCols">Tiles per row</label><select id="hsMenuCols"><option value="3">3 per row</option><option value="4">4 per row</option></select></div>
+                </div>
+                <div id="hsTiles" style="margin-top:8px;"></div>
+                <p class="hint-text">Use ▲ ▼ to reorder. Untick a tile to hide it from the Home page. Badges show a small ribbon on the tile.</p>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🎮 Featured Games Strip</h4></div>
+                <label class="restriction-toggle"><input id="hsGamesOn" type="checkbox"> Show featured games strip</label>
+                <label for="hsGamesTitle" style="margin-top:8px;">Strip title</label>
+                <input id="hsGamesTitle" type="text" maxlength="30" placeholder="Featured Games">
+                <label class="restriction-toggle"><input id="hsGameWingo" type="checkbox"> WINGO card</label>
+                <label class="restriction-toggle"><input id="hsGameK3" type="checkbox"> K3 card</label>
+                <label class="restriction-toggle"><input id="hsGameMines" type="checkbox"> Mines card</label>
+                <label class="restriction-toggle"><input id="hsGameAll" type="checkbox"> "All Games" card</label>
+                <p class="hint-text">Cards show LIVE / LOCKED automatically from the game's own admin settings and the global games switch.</p>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🎁 Daily Reward Card</h4></div>
+                <label class="restriction-toggle"><input id="hsDailyOn" type="checkbox"> Show daily reward card (only appears while Daily Check-in or Lucky Spin is enabled in Rewards &amp; Bonuses)</label>
+                <label for="hsDailyTitle" style="margin-top:8px;">Title</label>
+                <input id="hsDailyTitle" type="text" maxlength="40" placeholder="Daily Royal Reward">
+                <label for="hsDailySub">Subtitle</label>
+                <input id="hsDailySub" type="text" maxlength="80" placeholder="Check in &amp; spin the wheel every day">
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🤝 Refer &amp; Earn Card</h4></div>
+                <label class="restriction-toggle"><input id="hsReferOn" type="checkbox"> Show Refer &amp; Earn promo card</label>
+                <label for="hsReferTitle" style="margin-top:8px;">Title</label>
+                <input id="hsReferTitle" type="text" maxlength="40" placeholder="Invite Friends, Earn Rewards">
+                <label for="hsReferSub">Subtitle</label>
+                <input id="hsReferSub" type="text" maxlength="80" placeholder="Share your link and get rewarded">
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🎧 Footer Strip</h4></div>
+                <label class="restriction-toggle"><input id="hsFooterOn" type="checkbox"> Show footer strip with Support shortcut</label>
+                <label for="hsFooterText" style="margin-top:8px;">Footer text</label>
+                <input id="hsFooterText" type="text" maxlength="80" placeholder="Need help? Our royal support team is here for you.">
+            </div>
+
+            <div class="btn-group" style="margin-bottom:6px;">
+                <button type="button" class="btn-green" onclick="hsSave()">💾 Save Home Settings</button>
+                <button type="button" class="btn-gray" onclick="hsResetDefaults()">↩️ Reset to Defaults</button>
+            </div>
+            <div class="live-status" id="hsStatus" style="margin-top:8px;"></div>
+        </div>
+
+
         <!-- Daily Rewards Management Section -->
         <div id="dailyRewardsAdminSection" class="hidden">
-            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🎁 Manage Daily Rewards</h3>
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">👑 Reward Page Settings</h3>
+            <p class="hint-text" style="margin-bottom:12px;">Controls what players see on the Rewards page: daily check-in streak, Lucky Spin wheel and the announcement banner. Payout features are OFF until you enable them and save.</p>
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-bottom:12px;">
+                <div class="kpi-card kpi-green"><div class="kpi-label">📅 CHECK-INS TODAY</div><div class="kpi-value" id="rsKpiCheckins" style="font-size:18px;">0</div></div>
+                <div class="kpi-card kpi-purple"><div class="kpi-label">🎡 SPINS TODAY</div><div class="kpi-value" id="rsKpiSpins" style="font-size:18px;">0</div></div>
+                <div class="kpi-card kpi-yellow"><div class="kpi-label">💸 PAID TODAY</div><div class="kpi-value" id="rsKpiPaidToday" style="font-size:18px;">₹0</div></div>
+                <div class="kpi-card kpi-blue"><div class="kpi-label">🏆 PAID ALL-TIME</div><div class="kpi-value" id="rsKpiPaidAll" style="font-size:18px;">₹0</div><div class="kpi-sub" id="rsKpiPaidSplit"></div></div>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>📢 Announcement Banner</h4></div>
+                <input id="rsAnnounce" type="text" maxlength="300" placeholder="Shown at the top of the Rewards page (leave empty to hide)">
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>📅 Daily Check-in (7-day streak)</h4></div>
+                <label class="restriction-toggle"><input id="rsCheckinOn" type="checkbox"> Enable daily check-in</label>
+                <label class="restriction-toggle"><input id="rsResetOnMiss" type="checkbox"> Reset streak to Day 1 when a day is missed</label>
+                <div id="rsDaysGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-top:8px;"></div>
+                <p class="hint-text">Reward (₹) for each day of the cycle. Day 7 is shown as the jackpot. After Day 7 the cycle starts again. Days reset at midnight IST.</p>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🎡 Lucky Spin</h4></div>
+                <label class="restriction-toggle"><input id="rsSpinOn" type="checkbox"> Enable Lucky Spin</label>
+                <label for="rsSpinPerDay" style="margin-top:8px;">Free spins per player per day</label>
+                <input id="rsSpinPerDay" type="number" min="1" step="1" value="1" oninput="rsRenderPrizePreview()">
+                <div id="rsPrizeRows" style="margin-top:10px;"></div>
+                <div class="btn-group" style="margin-top:8px;">
+                    <button type="button" class="btn-gray" onclick="rsAddPrizeRow()">➕ Add Prize</button>
+                </div>
+                <div class="live-status" id="rsPrizePreview" style="margin-top:10px;"></div>
+                <p class="hint-text">Weight = relative chance (higher is more likely, 0 removes the prize from the wheel). Use amount 0 for a "Try Again" slice. 2–12 prizes. Prizes are credited to the player's INR wallet.</p>
+            </div>
+
+            <div class="btn-group" style="margin-bottom:6px;">
+                <button type="button" class="btn-green" onclick="saveRewardSettings()">💾 Save Reward Page Settings</button>
+            </div>
+
+            <div class="dash-panel" style="margin-top:14px;">
+                <div class="dash-panel-head" style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><h4>🧾 Recent Reward Activity</h4><button type="button" class="btn-red" id="rsClearAllBtn" style="width:auto;margin:0;padding:6px 10px;font-size:11px;" onclick="rsClearAllActivity()">🗑️ Clear All</button></div>
+                <div id="rsActivity" style="max-height:260px;overflow-y:auto;">Loading…</div>
+            </div>
+
+            <h3 style="color:var(--accent-cyan); margin-top:22px; font-size: 16px; border-top: 1px solid rgba(var(--accent-rgb),0.25); padding-top:16px;">🎁 Manage Daily Rewards</h3>
             <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
                 <input type="hidden" id="editRewardKey" value="">
+                <input id="rewardTitleInput" type="text" maxlength="40" placeholder="Reward Title (e.g. Diwali Bonus)">
                 <input id="rewardAmountInput" type="number" placeholder="Reward Amount (₹)">
                 <input id="rewardMaxClaimsInput" type="number" placeholder="Max Claim Limit (e.g. 100, 0 for Unlimited)">
                 <input id="rewardDescInput" type="text" placeholder="Description / Rules for Reward">
+                <label for="rewardExpiryInput" style="margin-top:6px;">Expires at (optional)</label>
+                <input id="rewardExpiryInput" type="datetime-local">
                 <div class="btn-group">
                     <button id="saveRewardBtn" onclick="saveDailyReward()" class="btn-green">Save Daily Reward</button>
                     <button id="cancelRewardEditBtn" onclick="resetRewardForm()" class="btn-gray hidden">Cancel Edit</button>
@@ -3209,7 +3358,7 @@ function formatAdminMoney(value){
         // flow), we must hide every section before opening a new one — otherwise
         // jumping straight from one section to another via the sidebar would leave
         // both visible at once.
-        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','referAdminSection','dashboard20Section','colourClashAdminSection','k3AdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
+        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','referAdminSection','dashboard20Section','colourClashAdminSection','k3AdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','homeSettingsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
 
         function hideAllAdminSections() {
             ALL_ADMIN_SECTION_IDS.forEach(id => {
@@ -7375,7 +7524,7 @@ function formatAdminMoney(value){
             return prefix+d.getUTCFullYear()+String(d.getUTCMonth()+1).padStart(2,'0')+String(d.getUTCDate()).padStart(2,'0')+String(seq).padStart(4,'0');
         }
         function wingoPeriodLabel(roundId){ return gvPeriodLabel('',roundId,ccAdminCycleMs(),0.37); }
-        function k3PeriodLabel(roundId){ return gvPeriodLabel('K3',roundId,k3AdminCycleMs()); }
+        function k3PeriodLabel(roundId){ return gvPeriodLabel('',roundId,k3AdminCycleMs()); }
         function ccAdminCycleMs(){
             const entry=Math.max(5,Number(ccAdminConfig.entrySeconds)||30);
             const cooldown=Math.max(2,Number(ccAdminConfig.cooldownSeconds)||5);
@@ -8377,9 +8526,128 @@ function formatAdminMoney(value){
               .catch(e=>alert('Could not delete entries: '+e.message));
         }
 
+        /* ================= REWARD PAGE SETTINGS (admin) ================= */
+        const RS_DEFAULT_DAYS = [5, 10, 15, 20, 25, 30, 50];
+        const RS_DEFAULT_PRIZES = [
+            { label: 'Try Again', amount: 0, weight: 30 }, { label: '₹5', amount: 5, weight: 30 },
+            { label: '₹10', amount: 10, weight: 20 }, { label: '₹20', amount: 20, weight: 10 },
+            { label: '₹50', amount: 50, weight: 6 }, { label: '₹100', amount: 100, weight: 3 },
+            { label: '₹200', amount: 200, weight: 1 }, { label: '₹500', amount: 500, weight: 0 }
+        ];
+        let rsListeners = [];
+        function rsArr(v) { return Array.isArray(v) ? v : (v && typeof v === 'object' ? Object.keys(v).sort((a, b) => a - b).map(k => v[k]) : []); }
+        function rsIstDay(ts) { return new Date(ts + 19800000).toISOString().slice(0, 10); }
+        function rsMoney(n) { n = Number(n) || 0; return '₹' + (Math.abs(n - Math.round(n)) < 0.005 ? Math.round(n) : n.toFixed(2)); }
+        function rsRenderDays(days) {
+            const g = document.getElementById('rsDaysGrid'); if (!g) return;
+            g.innerHTML = days.map((v, i) => '<div><label>Day ' + (i + 1) + (i === 6 ? ' 👑' : '') + '</label><input id="rsDay' + i + '" type="number" min="0" step="any" value="' + (Number(v) || 0) + '"></div>').join('');
+        }
+        function rsPrizeRowHtml(p) {
+            return '<div class="rs-prize" style="display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center;">' +
+                '<input class="rs-p-label" type="text" maxlength="14" placeholder="Label" value="' + escapeHtml(p.label || '') + '" oninput="rsRenderPrizePreview()">' +
+                '<input class="rs-p-amt" type="number" min="0" step="any" placeholder="₹ Amount" value="' + (Number(p.amount) || 0) + '" oninput="rsRenderPrizePreview()">' +
+                '<input class="rs-p-w" type="number" min="0" step="any" placeholder="Weight" value="' + (Number(p.weight) || 0) + '" oninput="rsRenderPrizePreview()">' +
+                '<button type="button" class="btn-red" style="padding:6px 10px;width:auto;" onclick="this.closest(\'.rs-prize\').remove();rsRenderPrizePreview();">✕</button></div>';
+        }
+        function rsRenderPrizes(prizes) {
+            const c = document.getElementById('rsPrizeRows'); if (!c) return;
+            c.innerHTML = '<div style="display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:6px;font-size:10.5px;color:var(--text-muted);margin-bottom:4px;"><span>Label</span><span>Amount (₹)</span><span>Weight</span><span style="width:36px"></span></div>' + prizes.map(rsPrizeRowHtml).join('');
+            rsRenderPrizePreview();
+        }
+        function rsAddPrizeRow() {
+            const c = document.getElementById('rsPrizeRows'); if (!c) return;
+            if (c.querySelectorAll('.rs-prize').length >= 12) return alert('Maximum 12 prizes on the wheel.');
+            c.insertAdjacentHTML('beforeend', rsPrizeRowHtml({ label: '', amount: 0, weight: 1 }));
+            rsRenderPrizePreview();
+        }
+        function rsReadPrizes() {
+            return Array.from(document.querySelectorAll('#rsPrizeRows .rs-prize')).map(r => ({
+                label: r.querySelector('.rs-p-label').value.trim().slice(0, 14),
+                amount: Math.max(0, Number(r.querySelector('.rs-p-amt').value) || 0),
+                weight: Math.max(0, Number(r.querySelector('.rs-p-w').value) || 0)
+            }));
+        }
+        function rsRenderPrizePreview() {
+            const box = document.getElementById('rsPrizePreview'); if (!box) return;
+            const prizes = rsReadPrizes(), active = prizes.filter(p => p.weight > 0), total = active.reduce((s, p) => s + p.weight, 0);
+            const perDay = Math.max(1, Math.floor(Number(document.getElementById('rsSpinPerDay').value) || 1));
+            if (active.length < 2 || total <= 0) { box.innerHTML = '⚠️ Add at least 2 prizes with weight above 0.'; return; }
+            const ev = active.reduce((s, p) => s + p.amount * p.weight, 0) / total, maxA = Math.max.apply(null, active.map(p => p.amount));
+            box.innerHTML = '<b>Expected cost per spin:</b> ' + rsMoney(ev) + ' · <b>per player/day:</b> ' + rsMoney(ev * perDay) + ' · <b>Best case/day:</b> ' + rsMoney(maxA * perDay) +
+                '<br>' + active.map(p => escapeHtml(p.label || rsMoney(p.amount)) + ' <b>' + (p.weight / total * 100).toFixed(1) + '%</b>').join(' · ');
+        }
+        function loadRewardSettingsAdmin() {
+            rsListeners.forEach(r => { try { r.off(); } catch (e) {} }); rsListeners = [];
+            const watch = (ref, fn) => { ref.on('value', fn); rsListeners.push(ref); };
+            db.ref('reward_settings').once('value').then(s => {
+                const v = s.val() || {}, c = v.checkin || {}, sp = v.spin || {};
+                const set = (id, val) => { const e = document.getElementById(id); if (e) e.value = val; };
+                const chk = (id, val) => { const e = document.getElementById(id); if (e) e.checked = !!val; };
+                set('rsAnnounce', v.announcement || '');
+                chk('rsCheckinOn', c.enabled === true); chk('rsResetOnMiss', c.resetOnMiss !== false);
+                let days = rsArr(c.days).map(x => Number(x) || 0).slice(0, 7); while (days.length < 7) days.push(RS_DEFAULT_DAYS[days.length]);
+                rsRenderDays(days);
+                chk('rsSpinOn', sp.enabled === true); set('rsSpinPerDay', Math.max(1, Math.floor(Number(sp.perDay) || 1)));
+                const pr = rsArr(sp.prizes); rsRenderPrizes(pr.length >= 2 ? pr : RS_DEFAULT_PRIZES);
+            });
+            watch(db.ref('reward_stats'), s => {
+                const v = s.val() || {}, paid = k => Number((v[k] || {}).paid) || 0;
+                const t = paid('checkin_reward') + paid('spin_reward') + paid('daily_reward');
+                const e = document.getElementById('rsKpiPaidAll'); if (e) e.innerText = rsMoney(t);
+                const sp = document.getElementById('rsKpiPaidSplit'); if (sp) sp.innerText = 'Check-in ' + rsMoney(paid('checkin_reward')) + ' · Spin ' + rsMoney(paid('spin_reward')) + ' · Vault ' + rsMoney(paid('daily_reward'));
+            });
+            watch(db.ref('reward_stats_daily/' + rsIstDay(Date.now())), s => {
+                const v = s.val() || {}, cnt = k => Number((v[k] || {}).count) || 0, paid = k => Number((v[k] || {}).paid) || 0;
+                const set = (id, val) => { const e = document.getElementById(id); if (e) e.innerText = val; };
+                set('rsKpiCheckins', cnt('checkin_reward')); set('rsKpiSpins', cnt('spin_reward'));
+                set('rsKpiPaidToday', rsMoney(paid('checkin_reward') + paid('spin_reward') + paid('daily_reward')));
+            });
+            watch(db.ref('reward_activity').limitToLast(25), s => {
+                const box = document.getElementById('rsActivity'); if (!box) return;
+                const a = []; s.forEach(c => { const v = c.val() || {}; v.__key = c.key; a.push(v); }); a.reverse();
+                const clr = document.getElementById('rsClearAllBtn'); if (clr) clr.style.display = a.length ? '' : 'none';
+                if (!a.length) { box.innerHTML = '<p class="hint-text">No reward activity yet.</p>'; return; }
+                const ico = { checkin_reward: '📅', spin_reward: '🎡', daily_reward: '🎁' };
+                box.innerHTML = a.map(e => '<div class="user-item" style="padding:8px 10px;margin-bottom:6px;">' + (ico[e.type] || '🏆') + ' <b>' + escapeHtml(e.customUid || e.uid || '—') + '</b> · ' + escapeHtml(e.label || e.type || '') +
+                    ' <span style="float:right;color:#34d399;font-weight:700;">' + (Number(e.amount) > 0 ? '+' + rsMoney(e.amount) : '—') + '</span><br><span class="hint-text">' + (e.timestamp ? new Date(e.timestamp).toLocaleString() : '') + '</span>' +
+                    (e.__key ? '<button type="button" class="btn-red" title="Delete this record" style="float:right;width:auto;margin:2px 0 0;padding:3px 9px;font-size:11px;" onclick="rsDeleteActivity(\'' + String(e.__key).replace(/[^A-Za-z0-9_\-]/g, '') + '\')">🗑️ Delete</button>' : '') + '</div>').join('');
+            });
+        }
+        // Delete one record from "Recent Reward Activity" (log only — reward_stats totals and player wallets are untouched).
+        function rsDeleteActivity(key) {
+            if (!key) return;
+            if (!confirm('Delete this reward activity record?\n\nThis only removes the log entry. Player balances and the PAID totals above are not changed.')) return;
+            db.ref('reward_activity/' + key).remove().catch(e => alert('Could not delete: ' + (e && e.message ? e.message : e)));
+        }
+        function rsClearAllActivity() {
+            if (!confirm('Delete ALL reward activity records?\n\nThis only clears the log. Player balances and the PAID totals above are not changed. This cannot be undone.')) return;
+            db.ref('reward_activity').remove().catch(e => alert('Could not clear: ' + (e && e.message ? e.message : e)));
+        }
+        function saveRewardSettings() {
+            const days = []; for (let i = 0; i < 7; i++) { const e = document.getElementById('rsDay' + i); days.push(Math.max(0, Number(e && e.value) || 0)); }
+            const prizes = rsReadPrizes();
+            const active = prizes.filter(p => p.weight > 0);
+            const spinOn = document.getElementById('rsSpinOn').checked;
+            if (prizes.length < 2 || prizes.length > 12) return alert('Lucky Spin needs between 2 and 12 prizes.');
+            if (spinOn && active.length < 2) return alert('Enable Lucky Spin only after at least 2 prizes have a weight above 0.');
+            const data = {
+                announcement: document.getElementById('rsAnnounce').value.trim().slice(0, 300),
+                checkin: { enabled: document.getElementById('rsCheckinOn').checked, resetOnMiss: document.getElementById('rsResetOnMiss').checked, days },
+                spin: { enabled: spinOn, perDay: Math.max(1, Math.floor(Number(document.getElementById('rsSpinPerDay').value) || 1)), prizes },
+                updatedAt: Date.now()
+            };
+            db.ref('reward_settings').set(data).then(() => alert('Reward page settings saved. Players see the changes instantly.')).catch(e => alert('Could not save: ' + e.message));
+        }
+        function rsToLocalInput(ms) {
+            if (!ms) return ''; const d = new Date(Number(ms)), p = n => String(n).padStart(2, '0');
+            return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+        }
+        let adminRewardCache = {};
+
         function openDailyRewardsAdminModal() {
             document.getElementById('mainAdminMenu').classList.add('hidden');
             document.getElementById('dailyRewardsAdminSection').classList.remove('hidden');
+            loadRewardSettingsAdmin();
             loadDailyRewardsAdminList();
             loadGiftCodesAdminList();
         }
@@ -8387,6 +8655,7 @@ function formatAdminMoney(value){
         function closeDailyRewardsAdminModal() {
             document.getElementById('dailyRewardsAdminSection').classList.add('hidden');
             document.getElementById('mainAdminMenu').classList.remove('hidden');
+            rsListeners.forEach(r => { try { r.off(); } catch (e) {} }); rsListeners = [];
         }
 
         function saveDailyReward() {
@@ -8394,13 +8663,19 @@ function formatAdminMoney(value){
             const amount = Number(document.getElementById('rewardAmountInput').value);
             const maxClaims = Number(document.getElementById('rewardMaxClaimsInput').value) || 0;
             const description = document.getElementById('rewardDescInput').value.trim();
+            const title = document.getElementById('rewardTitleInput').value.trim().slice(0, 40);
+            const expRaw = document.getElementById('rewardExpiryInput').value;
+            const expiresAt = expRaw ? new Date(expRaw).getTime() : 0;
 
             if(isNaN(amount) || amount <= 0) return alert('Please enter a valid reward amount.');
+            if(expRaw && (!expiresAt || expiresAt <= Date.now())) return alert('Expiry must be a valid date/time in the future.');
 
             const rewardData = {
+                title: title,
                 amount: amount,
                 maxClaims: maxClaims,
                 description: description,
+                expiresAt: expiresAt || 0,
                 timestamp: Date.now()
             };
 
@@ -8423,15 +8698,20 @@ function formatAdminMoney(value){
             document.getElementById('rewardAmountInput').value = '';
             document.getElementById('rewardMaxClaimsInput').value = '';
             document.getElementById('rewardDescInput').value = '';
+            document.getElementById('rewardTitleInput').value = '';
+            document.getElementById('rewardExpiryInput').value = '';
             document.getElementById('saveRewardBtn').innerText = 'Save Daily Reward';
             document.getElementById('cancelRewardEditBtn').classList.add('hidden');
         }
 
-        function editDailyReward(rKey, amount, maxClaims, description) {
+        function editDailyReward(rKey) {
+            const r = adminRewardCache[rKey] || {};
             document.getElementById('editRewardKey').value = rKey;
-            document.getElementById('rewardAmountInput').value = amount;
-            document.getElementById('rewardMaxClaimsInput').value = maxClaims;
-            document.getElementById('rewardDescInput').value = description;
+            document.getElementById('rewardAmountInput').value = r.amount || '';
+            document.getElementById('rewardMaxClaimsInput').value = r.maxClaims || 0;
+            document.getElementById('rewardDescInput').value = r.description || '';
+            document.getElementById('rewardTitleInput').value = r.title || '';
+            document.getElementById('rewardExpiryInput').value = rsToLocalInput(r.expiresAt);
             document.getElementById('saveRewardBtn').innerText = 'Update Daily Reward';
             document.getElementById('cancelRewardEditBtn').classList.remove('hidden');
         }
@@ -8440,6 +8720,7 @@ function formatAdminMoney(value){
             const container = document.getElementById('dailyRewardsAdminContainer');
             db.ref('daily_rewards').on('value', snap => {
                 container.innerHTML = '';
+                adminRewardCache = {};
                 if(!snap.exists()) {
                     container.innerHTML = '<p>No daily rewards created yet.</p>';
                     return;
@@ -8448,9 +8729,11 @@ function formatAdminMoney(value){
                 snap.forEach(child => {
                     const r = child.val();
                     const rKey = child.key;
+                    adminRewardCache[rKey] = r;
 
                     db.ref('claimed_rewards/' + rKey).once('value', claimsSnap => {
                         const claimsCount = claimsSnap.numChildren();
+                        const exp = Number(r.expiresAt) || 0;
 
                         let card = document.getElementById('admin_reward_' + rKey);
                         if(!card) {
@@ -8461,11 +8744,12 @@ function formatAdminMoney(value){
                         }
 
                         card.innerHTML = `
-                            <b style="color:var(--accent-cyan); font-size:14px;">🎁 Reward Amount: ₹${r.amount}</b><br>
-                            <b>Description:</b> ${r.description || 'N/A'}<br>
+                            <b style="color:var(--accent-cyan); font-size:14px;">🎁 ${escapeHtml(r.title || 'Royal Reward')} — ₹${r.amount}</b><br>
+                            <b>Description:</b> ${escapeHtml(r.description || 'N/A')}<br>
                             <b>Claims:</b> ${claimsCount} / ${Number(r.maxClaims) === 0 ? 'Unlimited' : r.maxClaims}<br>
+                            <b>Expires:</b> ${exp ? new Date(exp).toLocaleString() + (exp <= Date.now() ? ' <span style="color:#f87171;">(expired)</span>' : '') : 'Never'}<br>
                             <div class="action-row">
-                                <button onclick="editDailyReward('${rKey}', ${r.amount}, ${r.maxClaims || 0}, '${r.description || ''}')" class="btn-yellow">Edit</button>
+                                <button onclick="editDailyReward('${rKey}')" class="btn-yellow">Edit</button>
                                 <button onclick="deleteDailyReward('${rKey}')" class="btn-red">Delete</button>
                             </div>
                         `;
@@ -10036,6 +10320,149 @@ function clearK3EntriesHistory() {
   } else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(bind,300));
   else setTimeout(bind,300);
 })();
+</script>
+
+<script id="gv-home-settings-admin">
+/* ===== Home Settings (User App home page) — data: control/homeSettings ===== */
+var HS_TILES = [
+    { id: 'games',       icon: '🎮', label: 'Play Games' },
+    { id: 'predictions', icon: '📊', label: 'Predictions' },
+    { id: 'invest',      icon: '📈', label: 'Invest & Earn' },
+    { id: 'membership',  icon: '👑', label: 'Membership' },
+    { id: 'income',      icon: '💰', label: 'Income' },
+    { id: 'events',      icon: '🎉', label: 'Events' },
+    { id: 'missions',    icon: '🎯', label: 'Missions' },
+    { id: 'refer',       icon: '🤝', label: 'Refer & Earn' },
+    { id: 'rewards',     icon: '🎁', label: 'Rewards' },
+    { id: 'support',     icon: '🎧', label: 'Support' },
+    { id: 'history',     icon: '🕐', label: 'History' }
+];
+var HS_BADGES = ['', 'NEW', 'HOT', 'VIP'];
+var hsTilesState = [];
+var hsListening = false;
+
+function hsDefaults() {
+    return {
+        style: { accent: 'gold', shimmer: true },
+        greeting: { enabled: true, text: 'Welcome back', showUid: true },
+        notice: { enabled: true, text: 'Welcome to Titan Game Verse — play smart, play royal!', buttonLabel: 'Detail', title: '', body: '' },
+        wallet: { tagline: 'Your Winning Journey Begins!', hideToggle: true, quickActions: true },
+        menu: { title: 'Royal Menu', columns: 3, tiles: HS_TILES.map(function (t) { return { id: t.id, enabled: true, label: t.label, badge: '' }; }) },
+        games: { enabled: true, title: 'Featured Games', wingo: true, k3: true, mines: true, all: true },
+        daily: { enabled: true, title: 'Daily Royal Reward', sub: 'Check in & spin the wheel every day' },
+        refer: { enabled: true, title: 'Invite Friends, Earn Rewards', sub: 'Share your link and get rewarded' },
+        footer: { enabled: true, text: 'Need help? Our royal support team is here for you.' }
+    };
+}
+function hsArr(v) { return Array.isArray(v) ? v.filter(Boolean) : (v && typeof v === 'object' ? Object.keys(v).map(function (k) { return v[k]; }) : []); }
+function hsNormalize(raw) {
+    var d = hsDefaults(), r = raw || {}, pick = function (o, k, def) { return (o && o[k] !== undefined && o[k] !== null) ? o[k] : def; };
+    var out = {
+        style: { accent: ['gold', 'amethyst', 'emerald', 'crimson'].indexOf(pick(r.style, 'accent', 'gold')) >= 0 ? pick(r.style, 'accent', 'gold') : 'gold', shimmer: pick(r.style, 'shimmer', true) !== false },
+        greeting: { enabled: pick(r.greeting, 'enabled', true) !== false, text: String(pick(r.greeting, 'text', d.greeting.text)), showUid: pick(r.greeting, 'showUid', true) !== false },
+        notice: { enabled: pick(r.notice, 'enabled', true) !== false, text: String(pick(r.notice, 'text', d.notice.text)), buttonLabel: String(pick(r.notice, 'buttonLabel', 'Detail')), title: String(pick(r.notice, 'title', '')), body: String(pick(r.notice, 'body', '')) },
+        wallet: { tagline: String(pick(r.wallet, 'tagline', d.wallet.tagline)), hideToggle: pick(r.wallet, 'hideToggle', true) !== false, quickActions: pick(r.wallet, 'quickActions', true) !== false },
+        menu: { title: String(pick(r.menu, 'title', d.menu.title)), columns: Number(pick(r.menu, 'columns', 3)) === 4 ? 4 : 3, tiles: [] },
+        games: { enabled: pick(r.games, 'enabled', true) !== false, title: String(pick(r.games, 'title', d.games.title)), wingo: pick(r.games, 'wingo', true) !== false, k3: pick(r.games, 'k3', true) !== false, mines: pick(r.games, 'mines', true) !== false, all: pick(r.games, 'all', true) !== false },
+        daily: { enabled: pick(r.daily, 'enabled', true) !== false, title: String(pick(r.daily, 'title', d.daily.title)), sub: String(pick(r.daily, 'sub', d.daily.sub)) },
+        refer: { enabled: pick(r.refer, 'enabled', true) !== false, title: String(pick(r.refer, 'title', d.refer.title)), sub: String(pick(r.refer, 'sub', d.refer.sub)) },
+        footer: { enabled: pick(r.footer, 'enabled', true) !== false, text: String(pick(r.footer, 'text', d.footer.text)) }
+    };
+    var seen = {}, saved = hsArr(r.menu && r.menu.tiles);
+    saved.forEach(function (t) {
+        var base = HS_TILES.filter(function (x) { return x.id === t.id; })[0];
+        if (!base || seen[t.id]) return; seen[t.id] = 1;
+        out.menu.tiles.push({ id: t.id, enabled: t.enabled !== false, label: String(t.label || base.label), badge: HS_BADGES.indexOf(t.badge) >= 0 ? t.badge : '' });
+    });
+    HS_TILES.forEach(function (t) { if (!seen[t.id]) out.menu.tiles.push({ id: t.id, enabled: true, label: t.label, badge: '' }); });
+    return out;
+}
+function hsEl(id) { return document.getElementById(id); }
+function hsSet(id, v) { var e = hsEl(id); if (e) e.value = v; }
+function hsChk(id, v) { var e = hsEl(id); if (e) e.checked = !!v; }
+function hsStatus(msg, bad) { var e = hsEl('hsStatus'); if (!e) return; e.style.color = bad ? '#f87171' : '#34d399'; e.textContent = msg || ''; }
+
+function hsFill(cfg) {
+    hsSet('hsAccent', cfg.style.accent); hsChk('hsShimmer', cfg.style.shimmer);
+    hsChk('hsGreetOn', cfg.greeting.enabled); hsSet('hsGreetText', cfg.greeting.text); hsChk('hsGreetUid', cfg.greeting.showUid);
+    hsChk('hsNoticeOn', cfg.notice.enabled); hsSet('hsNoticeText', cfg.notice.text); hsSet('hsNoticeBtn', cfg.notice.buttonLabel); hsSet('hsNoticeTitle', cfg.notice.title); hsSet('hsNoticeBody', cfg.notice.body);
+    hsSet('hsWalletTagline', cfg.wallet.tagline); hsChk('hsWalletHide', cfg.wallet.hideToggle); hsChk('hsWalletActions', cfg.wallet.quickActions);
+    hsSet('hsMenuTitle', cfg.menu.title); hsSet('hsMenuCols', String(cfg.menu.columns));
+    hsTilesState = cfg.menu.tiles.map(function (t) { return Object.assign({}, t); }); hsRenderTiles();
+    hsChk('hsGamesOn', cfg.games.enabled); hsSet('hsGamesTitle', cfg.games.title); hsChk('hsGameWingo', cfg.games.wingo); hsChk('hsGameK3', cfg.games.k3); hsChk('hsGameMines', cfg.games.mines); hsChk('hsGameAll', cfg.games.all);
+    hsChk('hsDailyOn', cfg.daily.enabled); hsSet('hsDailyTitle', cfg.daily.title); hsSet('hsDailySub', cfg.daily.sub);
+    hsChk('hsReferOn', cfg.refer.enabled); hsSet('hsReferTitle', cfg.refer.title); hsSet('hsReferSub', cfg.refer.sub);
+    hsChk('hsFooterOn', cfg.footer.enabled); hsSet('hsFooterText', cfg.footer.text);
+}
+function hsSyncTilesFromDom() {
+    var rows = document.querySelectorAll('#hsTiles .hs-tile');
+    rows.forEach(function (row, i) {
+        var t = hsTilesState[i]; if (!t) return;
+        t.enabled = row.querySelector('.hs-t-on').checked;
+        t.label = row.querySelector('.hs-t-label').value;
+        t.badge = row.querySelector('.hs-t-badge').value;
+    });
+}
+function hsRenderTiles() {
+    var box = hsEl('hsTiles'); if (!box) return;
+    box.innerHTML = hsTilesState.map(function (t, i) {
+        var base = HS_TILES.filter(function (x) { return x.id === t.id; })[0] || { icon: '▫️' };
+        return '<div class="hs-tile" style="display:grid;grid-template-columns:auto 26px 1fr 86px auto;gap:6px;align-items:center;margin-bottom:6px;">' +
+            '<input class="hs-t-on" type="checkbox" style="width:auto;margin:0;" ' + (t.enabled ? 'checked' : '') + '>' +
+            '<span style="font-size:18px;text-align:center;">' + base.icon + '</span>' +
+            '<input class="hs-t-label" type="text" maxlength="18" style="margin:0;" value="' + escapeHtml(t.label) + '">' +
+            '<select class="hs-t-badge" style="margin:0;">' + HS_BADGES.map(function (b) { return '<option value="' + b + '"' + (t.badge === b ? ' selected' : '') + '>' + (b || 'No badge') + '</option>'; }).join('') + '</select>' +
+            '<span style="display:flex;gap:4px;"><button type="button" class="btn-gray" style="width:auto;margin:0;padding:5px 9px;" onclick="hsMoveTile(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + '>▲</button>' +
+            '<button type="button" class="btn-gray" style="width:auto;margin:0;padding:5px 9px;" onclick="hsMoveTile(' + i + ',1)"' + (i === hsTilesState.length - 1 ? ' disabled' : '') + '>▼</button></span></div>';
+    }).join('');
+}
+function hsMoveTile(i, dir) {
+    hsSyncTilesFromDom();
+    var j = i + dir; if (j < 0 || j >= hsTilesState.length) return;
+    var t = hsTilesState.splice(i, 1)[0]; hsTilesState.splice(j, 0, t); hsRenderTiles();
+}
+function hsRead() {
+    hsSyncTilesFromDom();
+    var v = function (id) { var e = hsEl(id); return e ? String(e.value).trim() : ''; }, c = function (id) { var e = hsEl(id); return !!(e && e.checked); };
+    return {
+        style: { accent: v('hsAccent') || 'gold', shimmer: c('hsShimmer') },
+        greeting: { enabled: c('hsGreetOn'), text: v('hsGreetText').slice(0, 40), showUid: c('hsGreetUid') },
+        notice: { enabled: c('hsNoticeOn'), text: v('hsNoticeText').slice(0, 200), buttonLabel: (v('hsNoticeBtn') || 'Detail').slice(0, 14), title: v('hsNoticeTitle').slice(0, 60), body: v('hsNoticeBody').slice(0, 1200) },
+        wallet: { tagline: v('hsWalletTagline').slice(0, 60), hideToggle: c('hsWalletHide'), quickActions: c('hsWalletActions') },
+        menu: { title: v('hsMenuTitle').slice(0, 30), columns: Number(v('hsMenuCols')) === 4 ? 4 : 3, tiles: hsTilesState.map(function (t) { return { id: t.id, enabled: !!t.enabled, label: String(t.label || '').trim().slice(0, 18) || (HS_TILES.filter(function (x) { return x.id === t.id; })[0] || {}).label, badge: t.badge || '' }; }) },
+        games: { enabled: c('hsGamesOn'), title: v('hsGamesTitle').slice(0, 30), wingo: c('hsGameWingo'), k3: c('hsGameK3'), mines: c('hsGameMines'), all: c('hsGameAll') },
+        daily: { enabled: c('hsDailyOn'), title: v('hsDailyTitle').slice(0, 40), sub: v('hsDailySub').slice(0, 80) },
+        refer: { enabled: c('hsReferOn'), title: v('hsReferTitle').slice(0, 40), sub: v('hsReferSub').slice(0, 80) },
+        footer: { enabled: c('hsFooterOn'), text: v('hsFooterText').slice(0, 80) },
+        updatedAt: Date.now()
+    };
+}
+function hsSave() {
+    var data = hsRead();
+    if (!data.menu.tiles.some(function (t) { return t.enabled; }) && !confirm('All menu tiles are hidden — players will see no menu on the Home page. Save anyway?')) return;
+    hsStatus('Saving…');
+    db.ref('control/homeSettings').set(data)
+        .then(function () { hsStatus('✅ Saved. The User App home page is updating for all players now.'); })
+        .catch(function (e) { hsStatus('Save failed: ' + (e && e.message ? e.message : e), true); });
+}
+function hsResetDefaults() {
+    if (!confirm('Reset every Home Page setting back to the defaults?\n\nThe form is refilled — press Save to apply.')) return;
+    hsFill(hsNormalize(null)); hsStatus('Defaults loaded — press Save to apply.');
+}
+function hsLoad() {
+    if (!db) return;
+    db.ref('control/homeSettings').once('value').then(function (s) { hsFill(hsNormalize(s.val())); hsStatus(''); })
+        .catch(function (e) { hsFill(hsNormalize(null)); hsStatus('Could not load saved settings: ' + (e && e.message ? e.message : e), true); });
+}
+function openHomeSettingsAdminModal() {
+    var m = hsEl('mainAdminMenu'); if (m) m.classList.add('hidden');
+    var s = hsEl('homeSettingsAdminSection'); if (s) s.classList.remove('hidden');
+    hsLoad();
+}
+function closeHomeSettingsAdminModal() {
+    var s = hsEl('homeSettingsAdminSection'); if (s) s.classList.add('hidden');
+    var m = hsEl('mainAdminMenu'); if (m) m.classList.remove('hidden');
+}
 </script>
 
 </body></html>
