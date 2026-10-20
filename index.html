@@ -3685,6 +3685,37 @@ function formatAdminMoney(value){
                 if (status && !gvBrandLogoDataUrl) status.textContent = url ? 'Current global logo is active.' : 'No custom logo saved. The default logo is active.';
             });
         }
+        async function gvCompressBrandLogo(dataUrl) {
+            // Make a compact WebP copy for projects that have no Firebase Storage bucket.
+            // WebP preserves transparency, which is important for logo artwork.
+            return await new Promise(resolve => {
+                const image = new Image();
+                image.onload = function() {
+                    try {
+                        let scale = Math.min(1, 512 / Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height));
+                        for (let pass = 0; pass < 5; pass++) {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = Math.max(1, Math.round((image.naturalWidth || image.width) * scale));
+                            canvas.height = Math.max(1, Math.round((image.naturalHeight || image.height) * scale));
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) { resolve(''); return; }
+                            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                            for (const quality of [0.86, 0.76, 0.66, 0.56, 0.46]) {
+                                const compact = canvas.toDataURL('image/webp', quality);
+                                if (compact && compact.indexOf('data:image/webp') === 0 && compact.length <= 430000) {
+                                    resolve(compact); return;
+                                }
+                            }
+                            scale *= 0.75;
+                        }
+                        resolve('');
+                    } catch (err) { resolve(''); }
+                };
+                image.onerror = function() { resolve(''); };
+                image.src = dataUrl;
+            });
+        }
+
         async function gvSaveBrandLogo() {
             const status = document.getElementById('gvBrandLogoStatus');
             if (!gvBrandLogoDataUrl) {
@@ -3693,19 +3724,50 @@ function formatAdminMoney(value){
             }
             const file = (document.getElementById('gvBrandLogoFile') || {}).files?.[0];
             try {
-                if (status) status.textContent = 'Uploading logo…';
+                if (status) status.textContent = 'Saving logo…';
                 let url = gvBrandLogoDataUrl;
+                let storageError = null;
+
+                // Prefer Firebase Storage, but do not let a missing storageBucket
+                // prevent logo changes. Some Firebase projects only have Realtime Database.
                 if (typeof firebase.storage === 'function' && file) {
-                    const safeName = String(file.name || 'logo.png').replace(/[^a-zA-Z0-9._-]/g, '_').slice(-80);
-                    const snap = await firebase.storage().ref('branding/global-logo-' + Date.now() + '-' + safeName).putString(gvBrandLogoDataUrl, 'data_url', {contentType: file.type || 'image/png'});
-                    url = await snap.ref.getDownloadURL();
-                } else if (url.length > 450000) {
-                    throw new Error('Firebase Storage is unavailable and this image is too large for the database fallback.');
+                    try {
+                        const safeName = String(file.name || 'logo.png').replace(/[^a-zA-Z0-9._-]/g, '_').slice(-80);
+                        const storage = firebase.storage();
+                        const snap = await storage.ref('branding/global-logo-' + Date.now() + '-' + safeName)
+                            .putString(gvBrandLogoDataUrl, 'data_url', {contentType: file.type || 'image/png'});
+                        url = await snap.ref.getDownloadURL();
+                    } catch (storageErr) {
+                        storageError = storageErr;
+                        console.warn('[Game Verse] Firebase Storage unavailable; trying Realtime Database fallback:', storageErr);
+                        url = gvBrandLogoDataUrl;
+                    }
                 }
+
+                // Realtime Database fallback works without configuring Firebase Storage.
+                // Compress larger logos automatically before falling back to the database.
+                if (storageError && url === gvBrandLogoDataUrl && url.length > 450000) {
+                    const compactLogo = await gvCompressBrandLogo(url);
+                    if (compactLogo) url = compactLogo;
+                }
+                // Keep the data URL modest to avoid oversized database writes.
+                if (url === gvBrandLogoDataUrl && url.length > 450000) {
+                    const reason = storageError && (storageError.code === 'storage/no-default-bucket' || /no default bucket|storageBucket/i.test(storageError.message || ''))
+                        ? ' Firebase Storage has no default bucket configured.'
+                        : ' Firebase Storage upload was unavailable.';
+                    throw new Error('This logo is too large for the database fallback.' + reason + ' Please use a smaller/compressed logo (under about 300 KB) or configure storageBucket in your Firebase config.');
+                }
+
                 await db.ref('control/branding/logoUrl').set(url);
                 gvApplyBrandLogo(url);
                 gvBrandLogoDataUrl = '';
-                if (status) status.textContent = '✅ Logo saved and published across both apps.';
+                const fileInput = document.getElementById('gvBrandLogoFile');
+                if (fileInput) fileInput.value = '';
+                if (status) {
+                    status.textContent = storageError
+                        ? '✅ Logo saved to Realtime Database and published across both apps. (Firebase Storage is not configured.)'
+                        : '✅ Logo saved and published across both apps.';
+                }
             } catch (e) {
                 console.error('[Game Verse] Logo upload failed:', e);
                 if (status) status.textContent = '❌ Could not save logo: ' + (e && e.message ? e.message : e);
