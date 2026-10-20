@@ -2341,11 +2341,13 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             <div class="admin-section-card control-group" style="margin-top:0; border-top:none; padding-top:12px;">
                 <label>Deposit Settings — INR + USDT BEP-20</label>
                 <div class="two-cols">
-                    <input id="adminMinDepInput" type="number" placeholder="Minimum Deposit (₹)">
+                    <input id="adminMinDepInput" type="number" min="0" placeholder="Minimum Deposit (₹)">
+                    <input id="adminMaxDepInput" type="number" min="0" placeholder="Maximum Deposit (₹, 0 = no limit)">
                     <input id="adminUpiInput" type="text" placeholder="Admin UPI ID (e.g. merchant@upi)">
                 </div>
                 <div class="two-cols">
                     <input id="adminMinDepUsdtInput" type="number" step="0.0001" min="0" placeholder="Minimum Deposit (USDT)">
+                    <input id="adminMaxDepUsdtInput" type="number" step="0.0001" min="0" placeholder="Maximum Deposit (USDT, 0 = no limit)">
                     <input id="adminUsdtBep20AddressInput" type="text" placeholder="Admin USDT BEP-20 Deposit Address">
                 </div>
 
@@ -2368,6 +2370,8 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
 
                 <input id="adminQrUrlInput" type="text" placeholder="INR QR Code Image URL (optional)" oninput="updateAdminQrPreview()">
                 <input id="adminUsdtQrUrlInput" type="text" placeholder="USDT BEP-20 QR Code Image URL (optional)" oninput="updateAdminUsdtQrPreview()">
+                <input id="adminDepositInstructions" type="text" maxlength="240" placeholder="User deposit instructions (optional)">
+                <input id="adminDepositProcessing" type="text" maxlength="120" placeholder="Deposit processing estimate (e.g. Usually within 10–30 minutes)">
                 <div class="two-cols" style="margin-top:8px;">
                     <div id="adminQrPreviewWrap" class="hidden" style="text-align:center;"><div style="font-size:10px;color:var(--text-muted);margin-bottom:5px;">INR QR</div><img id="adminQrPreview" src="" alt="INR QR Code Preview" style="max-width:140px;width:100%;border-radius:12px;border:1px solid rgba(var(--accent-rgb),0.4);background:#fff;padding:6px;" onerror="this.parentElement.classList.add('hidden');" onload="this.parentElement.classList.remove('hidden');"></div>
                     <div id="adminUsdtQrPreviewWrap" class="hidden" style="text-align:center;"><div style="font-size:10px;color:#34d399;margin-bottom:5px;">USDT BEP-20 QR</div><img id="adminUsdtQrPreview" src="" alt="USDT BEP-20 QR Code Preview" style="max-width:140px;width:100%;border-radius:12px;border:1px solid rgba(34,197,94,.4);background:#fff;padding:6px;" onerror="this.parentElement.classList.add('hidden');" onload="this.parentElement.classList.remove('hidden');"></div>
@@ -2410,12 +2414,16 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             <div class="admin-section-card control-group" style="margin-top:0; border-top:none; padding-top:12px;">
                 <label>Withdrawal Settings — INR + USDT</label>
                 <div class="two-cols">
-                    <input id="adminMinWithdrawInput" type="number" placeholder="Minimum Withdrawal (₹)">
+                    <input id="adminMinWithdrawInput" type="number" min="0" placeholder="Minimum Withdrawal (₹)">
+                    <input id="adminMaxWithdrawInput" type="number" min="0" placeholder="Maximum Withdrawal (₹, 0 = no limit)">
                     <input id="adminWithdrawTaxInput" type="number" placeholder="INR Withdrawal Tax (%)">
                 </div>
                 <div class="two-cols">
                     <input id="adminMinWithdrawUsdtInput" type="number" step="0.0001" min="0" placeholder="Minimum Withdrawal (USDT)">
+                    <input id="adminMaxWithdrawUsdtInput" type="number" step="0.0001" min="0" placeholder="Maximum Withdrawal (USDT, 0 = no limit)">
                     <input id="adminWithdrawTaxUsdtInput" type="number" step="0.01" min="0" max="100" placeholder="USDT Withdrawal Tax (%)">
+                    <input id="adminWithdrawInstructions" type="text" maxlength="240" placeholder="User withdrawal instructions (optional)">
+                    <input id="adminWithdrawProcessing" type="text" maxlength="120" placeholder="Withdrawal processing estimate (e.g. Usually within 1–24 hours)">
                 </div>
                 <button onclick="saveWithdrawConfig()" class="btn-green" style="margin-top:6px;">💾 Save Withdrawal Settings</button>
             </div>
@@ -6578,18 +6586,22 @@ function formatAdminMoney(value){
             const qrCodeUrl=document.getElementById('adminQrUrlInput').value.trim();
             const usdtQrCodeUrl=document.getElementById('adminUsdtQrUrlInput').value.trim();
             const minDepositUsdt=Number(document.getElementById('adminMinDepUsdtInput').value)||0;
+            const maxDeposit=Math.max(0,Number(document.getElementById('adminMaxDepInput').value)||0);
+            const maxDepositUsdt=Math.max(0,Number(document.getElementById('adminMaxDepUsdtInput').value)||0);
+            const instructions=document.getElementById('adminDepositInstructions').value.trim();
+            const processingTime=document.getElementById('adminDepositProcessing').value.trim();
             const usdtBep20Address=document.getElementById('adminUsdtBep20AddressInput').value.trim();
             const depositBonusType=String(document.getElementById('adminDepositBonusType').value||'off').toLowerCase();
             const depositBonusPercent=Math.max(0,Math.min(100,Number(document.getElementById('adminDepositBonusPercent').value)||0));
             const depositBonusFixedInr=Math.max(0,Number(document.getElementById('adminDepositBonusFixedInr').value)||0);
             const depositBonusFixedUsdt=Math.max(0,Number(document.getElementById('adminDepositBonusFixedUsdt').value)||0);
-            if(minDeposit<0||minDepositUsdt<0) return alert('Please enter valid minimum deposit amounts.');
+            if(minDeposit<0||minDepositUsdt<0||(maxDeposit>0&&maxDeposit<minDeposit)||(maxDepositUsdt>0&&maxDepositUsdt<minDepositUsdt)) return alert('Please check deposit minimum and maximum amounts.');
             if(depositBonusPercent<0||depositBonusPercent>100) return alert('Bonus percentage must be between 0% and 100%.');
             if(!upiId && !usdtBep20Address) return alert('Enter at least one INR UPI ID or USDT BEP-20 address.');
             if(depositBonusType==='percent' && depositBonusPercent<=0) return alert('Enter a bonus percentage greater than 0.');
             if(depositBonusType==='fixed' && depositBonusFixedInr<=0 && depositBonusFixedUsdt<=0) return alert('Enter at least one fixed bonus amount.');
             db.ref('control/depositConfig').update({
-                minDeposit,upiId,qrCodeUrl,usdtQrCodeUrl,minDepositUsdt,usdtBep20Address,
+                minDeposit,maxDeposit,maxDepositUsdt,instructions,processingTime,upiId,qrCodeUrl,usdtQrCodeUrl,minDepositUsdt,usdtBep20Address,
                 depositBonusType,depositBonusPercent,depositBonusFixedInr,depositBonusFixedUsdt
             }).then(()=>alert('INR + USDT deposit settings and automatic bonus updated successfully!'));
         }
@@ -6601,6 +6613,10 @@ function formatAdminMoney(value){
                 document.getElementById('adminQrUrlInput').value=d.qrCodeUrl||'';
                 document.getElementById('adminUsdtQrUrlInput').value=d.usdtQrCodeUrl||'';
                 document.getElementById('adminMinDepUsdtInput').value=d.minDepositUsdt||0;
+                document.getElementById('adminMaxDepInput').value=d.maxDeposit||0;
+                document.getElementById('adminMaxDepUsdtInput').value=d.maxDepositUsdt||0;
+                document.getElementById('adminDepositInstructions').value=d.instructions||'';
+                document.getElementById('adminDepositProcessing').value=d.processingTime||'';
                 document.getElementById('adminUsdtBep20AddressInput').value=d.usdtBep20Address||'';
                 document.getElementById('adminDepositBonusType').value=String(d.depositBonusType||'off').toLowerCase();
                 document.getElementById('adminDepositBonusPercent').value=d.depositBonusPercent||0;
@@ -6847,9 +6863,13 @@ function formatAdminMoney(value){
             const minWithdraw=Number(document.getElementById('adminMinWithdrawInput').value)||0;
             const taxPercent=Number(document.getElementById('adminWithdrawTaxInput').value)||0;
             const minWithdrawUsdt=Number(document.getElementById('adminMinWithdrawUsdtInput').value)||0;
+            const maxWithdraw=Math.max(0,Number(document.getElementById('adminMaxWithdrawInput').value)||0);
+            const maxWithdrawUsdt=Math.max(0,Number(document.getElementById('adminMaxWithdrawUsdtInput').value)||0);
+            const instructions=document.getElementById('adminWithdrawInstructions').value.trim();
+            const processingTime=document.getElementById('adminWithdrawProcessing').value.trim();
             const taxPercentUsdt=Number(document.getElementById('adminWithdrawTaxUsdtInput').value)||0;
-            if(minWithdraw<0||minWithdrawUsdt<0||taxPercent<0||taxPercent>100||taxPercentUsdt<0||taxPercentUsdt>100) return alert('Enter valid withdrawal limits/taxes.');
-            db.ref('control/withdrawConfig').update({minWithdraw,taxPercent,minWithdrawUsdt,taxPercentUsdt}).then(()=>alert('INR + USDT withdrawal settings updated successfully!'));
+            if(minWithdraw<0||minWithdrawUsdt<0||(maxWithdraw>0&&maxWithdraw<minWithdraw)||(maxWithdrawUsdt>0&&maxWithdrawUsdt<minWithdrawUsdt)||taxPercent<0||taxPercent>100||taxPercentUsdt<0||taxPercentUsdt>100) return alert('Enter valid withdrawal limits/taxes.');
+            db.ref('control/withdrawConfig').update({minWithdraw,maxWithdraw,maxWithdrawUsdt,instructions,processingTime,taxPercent,minWithdrawUsdt,taxPercentUsdt}).then(()=>alert('INR + USDT withdrawal settings updated successfully!'));
         }
         function loadWithdrawConfigSetting() {
             db.ref('control/withdrawConfig').once('value',snap=>{
@@ -6857,6 +6877,10 @@ function formatAdminMoney(value){
                 document.getElementById('adminMinWithdrawInput').value=d.minWithdraw||0;
                 document.getElementById('adminWithdrawTaxInput').value=d.taxPercent||0;
                 document.getElementById('adminMinWithdrawUsdtInput').value=d.minWithdrawUsdt||0;
+                document.getElementById('adminMaxWithdrawInput').value=d.maxWithdraw||0;
+                document.getElementById('adminMaxWithdrawUsdtInput').value=d.maxWithdrawUsdt||0;
+                document.getElementById('adminWithdrawInstructions').value=d.instructions||'';
+                document.getElementById('adminWithdrawProcessing').value=d.processingTime||'';
                 document.getElementById('adminWithdrawTaxUsdtInput').value=d.taxPercentUsdt||0;
             });
         }
