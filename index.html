@@ -5,6 +5,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
     <style>
         :root {
             --bg-darkblue: #050505;
@@ -2576,7 +2577,13 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             </div>
             <div class="control-group" style="margin-top:0;margin-bottom:10px;padding-top:4px;">
                 <input type="hidden" id="editEventKey" value="">
-                <input id="eventImageUrl" type="text" placeholder="Banner Image URL (wide image recommended)">
+                <input id="eventImageUrl" type="text" placeholder="Banner Image URL (or upload an image below)">
+                <div class="event-upload-box" style="margin:7px 0;padding:11px;border:1px dashed rgba(222,185,97,.6);border-radius:12px;background:linear-gradient(145deg,rgba(29,24,43,.85),rgba(7,10,18,.9));">
+                    <label for="eventImageFile" style="display:block;color:#f3d68a;font-weight:800;font-size:12px;margin-bottom:7px;">♛ Upload event banner from device</label>
+                    <input id="eventImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onchange="handleEventImageUpload(this)" style="width:100%;padding:7px;border:1px solid rgba(222,185,97,.35);border-radius:8px;background:#090b13;color:#f5e7c0;">
+                    <small id="eventImageUploadStatus" style="display:block;color:var(--text-muted);font-size:10px;margin-top:6px;">Choose a wide image. It will be resized before upload.</small>
+                    <img id="eventImagePreview" alt="Event banner preview" style="display:none;width:100%;max-height:150px;object-fit:contain;margin-top:8px;border-radius:8px;border:1px solid rgba(222,185,97,.3);">
+                </div>
                 <input id="eventTitle" type="text" placeholder="Event Title (e.g. Diwali Bonanza)">
                 <div class="two-cols">
                     <input id="eventCategory" type="text" placeholder="Category (e.g. Bonus, Announcement)">
@@ -2673,6 +2680,11 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <label class="restriction-toggle"><input id="hsGameWingo" type="checkbox"> WINGO card</label>
                 <label class="restriction-toggle"><input id="hsGameK3" type="checkbox"> K3 card</label>
                 <label class="restriction-toggle"><input id="hsGameMines" type="checkbox"> Mines card</label>
+                <label class="restriction-toggle"><input id="hsGameRocketJump" type="checkbox"> Rocket Jump card</label>
+                <label class="restriction-toggle"><input id="hsGameHighCard" type="checkbox"> Dragon vs Tiger (High Card) card</label>
+                <label class="restriction-toggle"><input id="hsGameSpinWheel" type="checkbox"> Fortune Wheel card</label>
+                <label class="restriction-toggle"><input id="hsGameCoinFlip" type="checkbox"> Lucky Coin Flip card</label>
+                <label class="restriction-toggle"><input id="hsGameNumberGuess" type="checkbox"> Number Master card</label>
                 <label class="restriction-toggle"><input id="hsGameAll" type="checkbox"> "All Games" card</label>
                 <p class="hint-text">Cards show LIVE / LOCKED automatically from the game's own admin settings and the global games switch.</p>
             </div>
@@ -7402,9 +7414,44 @@ function formatAdminMoney(value){
             const d=new Date(t); const pad=n=>String(n).padStart(2,'0');
             return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
         }
-        function saveEvent(){
+        let eventImageDataUrl = '';
+        let eventImageOriginalName = '';
+        function handleEventImageUpload(input){
+            const file=input&&input.files&&input.files[0]; if(!file)return;
+            if(!/^image\/(png|jpeg|webp|gif)$/.test(file.type)){alert('Please choose a PNG, JPG, WEBP or GIF image.');input.value='';return;}
+            if(file.size>12*1024*1024){alert('Please choose an image smaller than 12 MB.');input.value='';return;}
+            const status=document.getElementById('eventImageUploadStatus'); if(status)status.textContent='Preparing image…';
+            const reader=new FileReader();
+            reader.onload=function(ev){
+                const img=new Image(); img.onload=function(){
+                    const maxW=1500,maxH=900,scale=Math.min(1,maxW/img.width,maxH/img.height);
+                    const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));
+                    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);
+                    eventImageDataUrl=canvas.toDataURL('image/jpeg',0.78);eventImageOriginalName=file.name||'event-banner.jpg';
+                    const preview=document.getElementById('eventImagePreview');if(preview){preview.src=eventImageDataUrl;preview.style.display='block';}
+                    const url=document.getElementById('eventImageUrl');if(url)url.value='';
+                    if(status)status.textContent='Image ready: '+canvas.width+' × '+canvas.height+' px. It will upload when you publish/save.';
+                }; img.onerror=function(){if(status)status.textContent='Could not read this image. Please choose another file.';};img.src=ev.target.result;
+            }; reader.onerror=function(){if(status)status.textContent='Image could not be loaded.';};reader.readAsDataURL(file);
+        }
+        async function eventResolveImageUrl(){
+            if(!eventImageDataUrl)return document.getElementById('eventImageUrl').value.trim();
+            if(window.firebase&&typeof firebase.storage==='function'){
+                const storage=firebase.storage();
+                if(storage&&typeof storage.ref==='function'){
+                    const safeName=eventImageOriginalName.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-80)||'event-banner.jpg';
+                    const path='event-banners/'+Date.now()+'_'+safeName;
+                    const task=storage.ref(path).putString(eventImageDataUrl,'data_url',{contentType:'image/jpeg'});
+                    const snap=await task;return await snap.ref.getDownloadURL();
+                }
+            }
+            // Fallback for projects without Firebase Storage: keep small images in RTDB.
+            if(eventImageDataUrl.length>450000)throw new Error('Firebase Storage is not configured and this image is too large for the safe database fallback. Configure Firebase Storage or use a smaller image / image URL.');
+            return eventImageDataUrl;
+        }
+        async function saveEvent(){
             const editKey=document.getElementById('editEventKey').value;
-            const imageUrl=document.getElementById('eventImageUrl').value.trim();
+            let imageUrl=document.getElementById('eventImageUrl').value.trim();
             const title=document.getElementById('eventTitle').value.trim();
             const link=document.getElementById('eventLink').value.trim();
             const description=document.getElementById('eventDesc').value.trim();
@@ -7417,9 +7464,12 @@ function formatAdminMoney(value){
             const startRaw=document.getElementById('eventStartAt').value;
             const endRaw=document.getElementById('eventEndAt').value;
             const startAt=startRaw?new Date(startRaw).getTime():0, endAt=endRaw?new Date(endRaw).getTime():0;
-            if(!imageUrl)return alert('Please enter the banner image URL.');
+            if(!imageUrl&&!eventImageDataUrl)return alert('Please enter a banner image URL or upload an image from your device.');
             if(!title)return alert('Please enter an event title.');
             if(startAt&&endAt&&endAt<=startAt)return alert('End time must be later than start time.');
+            try{
+                if(eventImageDataUrl){const statusEl=document.getElementById('eventImageUploadStatus');if(statusEl)statusEl.textContent='Uploading event banner…';imageUrl=await eventResolveImageUrl();}
+            }catch(uploadErr){alert('Event image upload failed: '+(uploadErr&&uploadErr.message||uploadErr));return;}
             const eventData={imageUrl,title,link,description,category,ctaText,priority,pinned,featured,status};
             if(startAt)eventData.startAt=startAt; else if(editKey)eventData.startAt=null;
             if(endAt)eventData.endAt=endAt; else if(editKey)eventData.endAt=null;
@@ -7437,12 +7487,12 @@ function formatAdminMoney(value){
             task.then(()=>{alert(editKey?'Event updated successfully!':'Event published successfully!');resetEventForm();}).catch(err=>alert('Event save failed: '+err.message));
         }
         function resetEventForm(){
-            ['editEventKey','eventImageUrl','eventTitle','eventCategory','eventLink','eventDesc','eventStartAt','eventEndAt'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+            ['editEventKey','eventImageUrl','eventTitle','eventCategory','eventLink','eventDesc','eventStartAt','eventEndAt','eventImageFile'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});eventImageDataUrl='';eventImageOriginalName='';const evPreview=document.getElementById('eventImagePreview');if(evPreview){evPreview.removeAttribute('src');evPreview.style.display='none';}const evStatus=document.getElementById('eventImageUploadStatus');if(evStatus)evStatus.textContent='Choose a wide image. It will be resized before upload.';
             document.getElementById('eventPriority').value='0';document.getElementById('eventCtaText').value='View Event';document.getElementById('eventPinned').value='no';document.getElementById('eventFeatured').value='no';document.getElementById('eventStatus').value='active';
             document.getElementById('saveEventBtn').innerText='Publish Event';document.getElementById('cancelEventEditBtn').classList.add('hidden');
         }
         function editEventByKey(eKey){
-            db.ref('events/'+eKey).once('value').then(snap=>{const e=snap.val();if(!e)return;document.getElementById('editEventKey').value=eKey;document.getElementById('eventImageUrl').value=e.imageUrl||'';document.getElementById('eventTitle').value=e.title||'';document.getElementById('eventCategory').value=e.category||'';document.getElementById('eventLink').value=e.link||'';document.getElementById('eventCtaText').value=e.ctaText||'View Event';document.getElementById('eventDesc').value=e.description||'';document.getElementById('eventPriority').value=Number(e.priority)||0;document.getElementById('eventStartAt').value=eventAdminDateValue(e.startAt);document.getElementById('eventEndAt').value=eventAdminDateValue(e.endAt);document.getElementById('eventPinned').value=e.pinned?'yes':'no';document.getElementById('eventFeatured').value=e.featured?'yes':'no';document.getElementById('eventStatus').value=e.status||'active';document.getElementById('saveEventBtn').innerText='Update Event';document.getElementById('cancelEventEditBtn').classList.remove('hidden');document.getElementById('eventsAdminSection').scrollTop=0;});
+            db.ref('events/'+eKey).once('value').then(snap=>{const e=snap.val();if(!e)return;document.getElementById('editEventKey').value=eKey;eventImageDataUrl='';eventImageOriginalName='';document.getElementById('eventImageFile').value='';document.getElementById('eventImageUrl').value=e.imageUrl||'';const evPreview=document.getElementById('eventImagePreview');if(evPreview){if(e.imageUrl){evPreview.src=e.imageUrl;evPreview.style.display='block';}else{evPreview.style.display='none';}}document.getElementById('eventTitle').value=e.title||'';document.getElementById('eventCategory').value=e.category||'';document.getElementById('eventLink').value=e.link||'';document.getElementById('eventCtaText').value=e.ctaText||'View Event';document.getElementById('eventDesc').value=e.description||'';document.getElementById('eventPriority').value=Number(e.priority)||0;document.getElementById('eventStartAt').value=eventAdminDateValue(e.startAt);document.getElementById('eventEndAt').value=eventAdminDateValue(e.endAt);document.getElementById('eventPinned').value=e.pinned?'yes':'no';document.getElementById('eventFeatured').value=e.featured?'yes':'no';document.getElementById('eventStatus').value=e.status||'active';document.getElementById('saveEventBtn').innerText='Update Event';document.getElementById('cancelEventEditBtn').classList.remove('hidden');document.getElementById('eventsAdminSection').scrollTop=0;});
         }
         function toggleEventStatus(eKey,currentStatus){db.ref('events/'+eKey).update({status:currentStatus==='active'?'inactive':'active'});}
         function deleteEvent(eKey){if(confirm('Are you sure you want to delete this event?'))db.ref('events/'+eKey).remove().then(()=>alert('Event deleted successfully!'));}
@@ -8613,15 +8663,56 @@ function formatAdminMoney(value){
                     (e.__key ? '<button type="button" class="btn-red" title="Delete this record" style="float:right;width:auto;margin:2px 0 0;padding:3px 9px;font-size:11px;" onclick="rsDeleteActivity(\'' + String(e.__key).replace(/[^A-Za-z0-9_\-]/g, '') + '\')">🗑️ Delete</button>' : '') + '</div>').join('');
             });
         }
-        // Delete one record from "Recent Reward Activity" (log only — reward_stats totals and player wallets are untouched).
+        // Delete the admin activity item and its matching entry in that user's Rewards history.
+        // This is history cleanup only: wallet balances and paid/stat totals are not changed.
         function rsDeleteActivity(key) {
             if (!key) return;
-            if (!confirm('Delete this reward activity record?\n\nThis only removes the log entry. Player balances and the PAID totals above are not changed.')) return;
-            db.ref('reward_activity/' + key).remove().catch(e => alert('Could not delete: ' + (e && e.message ? e.message : e)));
+            if (!confirm('Delete this reward activity record from both Recent Reward Activity and the user\'s Rewards history?\n\nWallet balances and PAID totals will not change.')) return;
+            const activityRef = db.ref('reward_activity/' + key);
+            activityRef.once('value').then(snap => {
+                const item = snap.val();
+                if (!item) return;
+                const removeUserLog = item.uid
+                    ? (item.userLogKey
+                        ? db.ref('user_reward_log/' + item.uid + '/' + item.userLogKey).remove()
+                        : db.ref('user_reward_log/' + item.uid).once('value').then(logSnap => {
+                            const matches = [];
+                            logSnap.forEach(child => {
+                                const v = child.val() || {};
+                                if (Number(v.timestamp) === Number(item.timestamp) && v.type === item.type &&
+                                    Number(v.amount || 0) === Number(item.amount || 0) && String(v.label || '') === String(item.label || '')) {
+                                    matches.push(child.ref.remove());
+                                }
+                            });
+                            return Promise.all(matches);
+                        })
+                    )
+                    : Promise.resolve();
+                return Promise.all([removeUserLog, activityRef.remove()]);
+            }).catch(e => alert('Could not delete reward history: ' + (e && e.message ? e.message : e)));
         }
         function rsClearAllActivity() {
-            if (!confirm('Delete ALL reward activity records?\n\nThis only clears the log. Player balances and the PAID totals above are not changed. This cannot be undone.')) return;
-            db.ref('reward_activity').remove().catch(e => alert('Could not clear: ' + (e && e.message ? e.message : e)));
+            if (!confirm('Delete ALL reward activity from Recent Reward Activity and the matching user Rewards histories?\n\nWallet balances and PAID totals will not change. This cannot be undone.')) return;
+            db.ref('reward_activity').once('value').then(snap => {
+                const removals = [];
+                snap.forEach(child => {
+                    const item = child.val() || {};
+                    if (item.uid && item.userLogKey) removals.push(db.ref('user_reward_log/' + item.uid + '/' + item.userLogKey).remove());
+                    else if (item.uid) removals.push(db.ref('user_reward_log/' + item.uid).once('value').then(logSnap => {
+                        const matches = [];
+                        logSnap.forEach(logChild => {
+                            const v = logChild.val() || {};
+                            if (Number(v.timestamp) === Number(item.timestamp) && v.type === item.type &&
+                                Number(v.amount || 0) === Number(item.amount || 0) && String(v.label || '') === String(item.label || '')) {
+                                matches.push(logChild.ref.remove());
+                            }
+                        });
+                        return Promise.all(matches);
+                    }));
+                });
+                removals.push(db.ref('reward_activity').remove());
+                return Promise.all(removals);
+            }).catch(e => alert('Could not clear reward history: ' + (e && e.message ? e.message : e)));
         }
         function saveRewardSettings() {
             const days = []; for (let i = 0; i < 7; i++) { const e = document.getElementById('rsDay' + i); days.push(Math.max(0, Number(e && e.value) || 0)); }
@@ -10348,7 +10439,7 @@ function hsDefaults() {
         notice: { enabled: true, text: 'Welcome to Titan Game Verse — play smart, play royal!', buttonLabel: 'Detail', title: '', body: '' },
         wallet: { tagline: 'Your Winning Journey Begins!', hideToggle: true, quickActions: true },
         menu: { title: 'Royal Menu', columns: 3, tiles: HS_TILES.map(function (t) { return { id: t.id, enabled: true, label: t.label, badge: '' }; }) },
-        games: { enabled: true, title: 'Featured Games', wingo: true, k3: true, mines: true, all: true },
+        games: { enabled: true, title: 'Featured Games', wingo: true, k3: true, mines: true, rocket_jump: true, high_card: true, spin_wheel: true, coin_flip: true, number_guess: true, all: true },
         daily: { enabled: true, title: 'Daily Royal Reward', sub: 'Check in & spin the wheel every day' },
         refer: { enabled: true, title: 'Invite Friends, Earn Rewards', sub: 'Share your link and get rewarded' },
         footer: { enabled: true, text: 'Need help? Our royal support team is here for you.' }
@@ -10363,7 +10454,7 @@ function hsNormalize(raw) {
         notice: { enabled: pick(r.notice, 'enabled', true) !== false, text: String(pick(r.notice, 'text', d.notice.text)), buttonLabel: String(pick(r.notice, 'buttonLabel', 'Detail')), title: String(pick(r.notice, 'title', '')), body: String(pick(r.notice, 'body', '')) },
         wallet: { tagline: String(pick(r.wallet, 'tagline', d.wallet.tagline)), hideToggle: pick(r.wallet, 'hideToggle', true) !== false, quickActions: pick(r.wallet, 'quickActions', true) !== false },
         menu: { title: String(pick(r.menu, 'title', d.menu.title)), columns: Number(pick(r.menu, 'columns', 3)) === 4 ? 4 : 3, tiles: [] },
-        games: { enabled: pick(r.games, 'enabled', true) !== false, title: String(pick(r.games, 'title', d.games.title)), wingo: pick(r.games, 'wingo', true) !== false, k3: pick(r.games, 'k3', true) !== false, mines: pick(r.games, 'mines', true) !== false, all: pick(r.games, 'all', true) !== false },
+        games: { enabled: pick(r.games, 'enabled', true) !== false, title: String(pick(r.games, 'title', d.games.title)), wingo: pick(r.games, 'wingo', true) !== false, k3: pick(r.games, 'k3', true) !== false, mines: pick(r.games, 'mines', true) !== false, rocket_jump: pick(r.games, 'rocket_jump', true) !== false, high_card: pick(r.games, 'high_card', true) !== false, spin_wheel: pick(r.games, 'spin_wheel', true) !== false, coin_flip: pick(r.games, 'coin_flip', true) !== false, number_guess: pick(r.games, 'number_guess', true) !== false, all: pick(r.games, 'all', true) !== false },
         daily: { enabled: pick(r.daily, 'enabled', true) !== false, title: String(pick(r.daily, 'title', d.daily.title)), sub: String(pick(r.daily, 'sub', d.daily.sub)) },
         refer: { enabled: pick(r.refer, 'enabled', true) !== false, title: String(pick(r.refer, 'title', d.refer.title)), sub: String(pick(r.refer, 'sub', d.refer.sub)) },
         footer: { enabled: pick(r.footer, 'enabled', true) !== false, text: String(pick(r.footer, 'text', d.footer.text)) }
@@ -10389,7 +10480,7 @@ function hsFill(cfg) {
     hsSet('hsWalletTagline', cfg.wallet.tagline); hsChk('hsWalletHide', cfg.wallet.hideToggle); hsChk('hsWalletActions', cfg.wallet.quickActions);
     hsSet('hsMenuTitle', cfg.menu.title); hsSet('hsMenuCols', String(cfg.menu.columns));
     hsTilesState = cfg.menu.tiles.map(function (t) { return Object.assign({}, t); }); hsRenderTiles();
-    hsChk('hsGamesOn', cfg.games.enabled); hsSet('hsGamesTitle', cfg.games.title); hsChk('hsGameWingo', cfg.games.wingo); hsChk('hsGameK3', cfg.games.k3); hsChk('hsGameMines', cfg.games.mines); hsChk('hsGameAll', cfg.games.all);
+    hsChk('hsGamesOn', cfg.games.enabled); hsSet('hsGamesTitle', cfg.games.title); hsChk('hsGameWingo', cfg.games.wingo); hsChk('hsGameK3', cfg.games.k3); hsChk('hsGameMines', cfg.games.mines); hsChk('hsGameRocketJump', cfg.games.rocket_jump); hsChk('hsGameHighCard', cfg.games.high_card); hsChk('hsGameSpinWheel', cfg.games.spin_wheel); hsChk('hsGameCoinFlip', cfg.games.coin_flip); hsChk('hsGameNumberGuess', cfg.games.number_guess); hsChk('hsGameAll', cfg.games.all);
     hsChk('hsDailyOn', cfg.daily.enabled); hsSet('hsDailyTitle', cfg.daily.title); hsSet('hsDailySub', cfg.daily.sub);
     hsChk('hsReferOn', cfg.refer.enabled); hsSet('hsReferTitle', cfg.refer.title); hsSet('hsReferSub', cfg.refer.sub);
     hsChk('hsFooterOn', cfg.footer.enabled); hsSet('hsFooterText', cfg.footer.text);
@@ -10430,7 +10521,7 @@ function hsRead() {
         notice: { enabled: c('hsNoticeOn'), text: v('hsNoticeText').slice(0, 200), buttonLabel: (v('hsNoticeBtn') || 'Detail').slice(0, 14), title: v('hsNoticeTitle').slice(0, 60), body: v('hsNoticeBody').slice(0, 1200) },
         wallet: { tagline: v('hsWalletTagline').slice(0, 60), hideToggle: c('hsWalletHide'), quickActions: c('hsWalletActions') },
         menu: { title: v('hsMenuTitle').slice(0, 30), columns: Number(v('hsMenuCols')) === 4 ? 4 : 3, tiles: hsTilesState.map(function (t) { return { id: t.id, enabled: !!t.enabled, label: String(t.label || '').trim().slice(0, 18) || (HS_TILES.filter(function (x) { return x.id === t.id; })[0] || {}).label, badge: t.badge || '' }; }) },
-        games: { enabled: c('hsGamesOn'), title: v('hsGamesTitle').slice(0, 30), wingo: c('hsGameWingo'), k3: c('hsGameK3'), mines: c('hsGameMines'), all: c('hsGameAll') },
+        games: { enabled: c('hsGamesOn'), title: v('hsGamesTitle').slice(0, 30), wingo: c('hsGameWingo'), k3: c('hsGameK3'), mines: c('hsGameMines'), rocket_jump: c('hsGameRocketJump'), high_card: c('hsGameHighCard'), spin_wheel: c('hsGameSpinWheel'), coin_flip: c('hsGameCoinFlip'), number_guess: c('hsGameNumberGuess'), all: c('hsGameAll') },
         daily: { enabled: c('hsDailyOn'), title: v('hsDailyTitle').slice(0, 40), sub: v('hsDailySub').slice(0, 80) },
         refer: { enabled: c('hsReferOn'), title: v('hsReferTitle').slice(0, 40), sub: v('hsReferSub').slice(0, 80) },
         footer: { enabled: c('hsFooterOn'), text: v('hsFooterText').slice(0, 80) },
