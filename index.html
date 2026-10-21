@@ -887,7 +887,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             <div class="sidebar-nav-item" onclick="navTo('Memberships', openMembershipAdminModal, this)"><span class="icon">⭐</span> Memberships</div>
             <div class="sidebar-nav-item" onclick="navTo('Rewards &amp; Bonuses', openDailyRewardsAdminModal, this)"><span class="icon">🎁</span> Rewards &amp; Bonuses</div>
             <div class="sidebar-nav-item" onclick="navTo('Missions', openMissionsAdminModal, this)"><span class="icon">🎯</span> Missions</div>
-            <div class="sidebar-nav-item" onclick="navTo('Refer &amp; Earn', openReferAdminModal, this)"><span class="icon">🤝</span> Refer &amp; Earn</div>
+            <div class="sidebar-nav-item" onclick="navTo('Promotion', openReferAdminModal, this)"><span class="icon">🤝</span> Promotion</div>
             <div class="sidebar-nav-item" onclick="navTo('Events &amp; Activity', openEventsAdminModal, this)"><span class="icon">🎉</span> Events &amp; Activity</div>
             <div class="sidebar-nav-item" onclick="navTo('Home Settings', openHomeSettingsAdminModal, this)"><span class="icon">🏠</span> Home Settings</div>
             <div class="sidebar-nav-item" onclick="navTo('Support Tickets', openSupportRequestsModal, this)"><span class="icon">📞</span> Support Tickets</div>
@@ -1581,9 +1581,9 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 </div>
             </div>
             <div class="control-group">
-                <label>Refer &amp; Earn:</label>
-                <p class="hint-text">Reward amount, when it is paid, milestone bonuses and the share message are managed in the Refer &amp; Earn section.</p>
-                <button onclick="navTo('Refer &amp; Earn', openReferAdminModal, null)" class="btn-green">Open Refer &amp; Earn Settings</button>
+                <label>Promotion:</label>
+                <p class="hint-text">Reward amount, when it is paid, milestone bonuses and the share message are managed in the Promotion section.</p>
+                <button onclick="navTo('Promotion', openReferAdminModal, null)" class="btn-green">Open Promotion Settings</button>
             </div>
             <div class="control-group">
                 <label>App Availability Control:</label>
@@ -2491,10 +2491,10 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             <div id="supportRequestsContainer" class="gv-support-list">Loading support tickets...</div>
         </div>
 
-        <!-- Refer & Earn Management Section -->
+        <!-- Promotion Management Section -->
         <div id="referAdminSection" class="hidden">
-            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🤝 Refer &amp; Earn</h3>
-            <p class="hint-text" style="margin-bottom:12px;">Control referral rewards, when they are paid, milestone bonuses and the share message shown to users.</p>
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">🤝 Promotion</h3>
+            <p class="hint-text" style="margin-bottom:12px;">Control referral rewards, when they are paid, milestone bonuses, the share message and the multi-level Agency commission shown to users.</p>
 
             <div id="rfaStats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin-bottom:14px;">Loading stats...</div>
 
@@ -2535,7 +2535,57 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <label>Share message — use {code}, {link}, {amount}:</label>
                 <textarea id="rfaShareText" rows="3" placeholder="Join me on Game Verse! Sign up with my code {code} and start playing. {link}"></textarea>
 
-                <button onclick="saveReferralConfig()" class="btn-green">Save Refer &amp; Earn Settings</button>
+                <button onclick="saveReferralConfig()" class="btn-green">Save Promotion Settings</button>
+            </div>
+
+            <div class="admin-section-card control-group">
+                <label style="font-weight:800;">🏦 Agency Commission (team / downline)</label>
+                <p class="hint-text">Pays a percentage of each approved INR deposit to the people above the depositor in the referral chain. Level 1 = the person who directly referred the depositor, Level 2 = who referred them, and so on up to Level 6. The user app's Promotion page shows this as Agency, Subordinate data, Commission detail and Promotion data.</p>
+
+                <label>Agency commission status:</label>
+                <select id="agcEnabled">
+                    <option value="0">Paused — no commission is paid</option>
+                    <option value="1">Enabled — commission is paid on approved deposits</option>
+                </select>
+
+                <label>Commission rate per level (% of the deposit — 0 = level not paid):</label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:8px;">
+                    <div><small class="hint-text">Level 1 %</small><input id="agcRate1" type="number" min="0" max="100" step="0.01" placeholder="e.g. 5"></div>
+                    <div><small class="hint-text">Level 2 %</small><input id="agcRate2" type="number" min="0" max="100" step="0.01" placeholder="e.g. 2"></div>
+                    <div><small class="hint-text">Level 3 %</small><input id="agcRate3" type="number" min="0" max="100" step="0.01" placeholder="e.g. 1"></div>
+                    <div><small class="hint-text">Level 4 %</small><input id="agcRate4" type="number" min="0" max="100" step="0.01" placeholder="0"></div>
+                    <div><small class="hint-text">Level 5 %</small><input id="agcRate5" type="number" min="0" max="100" step="0.01" placeholder="0"></div>
+                    <div><small class="hint-text">Level 6 %</small><input id="agcRate6" type="number" min="0" max="100" step="0.01" placeholder="0"></div>
+                </div>
+
+                <label>Which deposits earn commission?</label>
+                <select id="agcFirstOnly">
+                    <option value="0">Every approved deposit</option>
+                    <option value="1">Only the depositor's first approved deposit</option>
+                </select>
+
+                <label>Minimum deposit to earn commission (₹, 0 = no minimum):</label>
+                <input id="agcMinDeposit" type="number" min="0" placeholder="0">
+                <p class="hint-text">Commission is credited to the upline user's wallet the moment you approve the deposit (once per deposit) and follows the same bonus turnover / expiry rules as other referral rewards. USDT deposits do not pay commission.</p>
+
+                <button onclick="saveAgencyConfig()" class="btn-green">Save Agency Commission Settings</button>
+            </div>
+
+            <div class="admin-section-card">
+                <label style="font-weight:800;">🔎 User agency data</label>
+                <p class="hint-text">Look up any user by UID to see their team, deposits, commission earned and who referred them.</p>
+                <div style="display:flex; gap:8px;">
+                    <input id="agvUid" type="text" placeholder="Enter user UID" style="margin:0;flex:1;" onkeydown="if(event.key==='Enter')agvLoad()">
+                    <button type="button" class="btn-green" style="width:auto;margin:0;padding:0 16px;" onclick="agvLoad()">View</button>
+                </div>
+                <div id="agvTop" style="margin-top:10px;"></div>
+                <div id="agvBody" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="admin-section-card">
+                <label style="font-weight:800;">💲 Agency commission payouts</label>
+                <div id="agcStats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin:8px 0;">Loading...</div>
+                <div id="agcRecent" style="max-height:320px; overflow-y:auto;">Loading...</div>
             </div>
 
             <div class="admin-section-card">
@@ -2724,8 +2774,8 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             </div>
 
             <div class="dash-panel">
-                <div class="dash-panel-head"><h4>🤝 Refer &amp; Earn Card</h4></div>
-                <label class="restriction-toggle"><input id="hsReferOn" type="checkbox"> Show Refer &amp; Earn promo card</label>
+                <div class="dash-panel-head"><h4>🤝 Promotion Card</h4></div>
+                <label class="restriction-toggle"><input id="hsReferOn" type="checkbox"> Show Promotion card</label>
                 <label for="hsReferTitle" style="margin-top:8px;">Title</label>
                 <input id="hsReferTitle" type="text" maxlength="40" placeholder="Invite Friends, Earn Rewards">
                 <label for="hsReferSub">Subtitle</label>
@@ -4414,7 +4464,7 @@ function formatAdminMoney(value){
             db.ref('broadcasts/' + key).remove();
         }
 
-        /* ===== Refer & Earn (admin) ===== */
+        /* ===== Promotion (admin) ===== */
         function rfaNormalizeConfig(raw, legacyBonus) {
             raw = raw || {};
             const mode = ['signup', 'first_deposit', 'min_deposit'].includes(raw.mode) ? raw.mode : 'signup';
@@ -4530,11 +4580,236 @@ function formatAdminMoney(value){
             }
         }
 
+        /* ===== Agency commission (admin) =====
+           Pays level-based commission to the referral chain above a depositor when a deposit is approved.
+           Log key = {depositId}_{level}: created inside a transaction, so a deposit can never pay the same level twice. */
+        function rfaNormalizeAgency(raw) {
+            raw = raw || {};
+            let r = Array.isArray(raw.rates) ? raw.rates.slice() : Object.values(raw.rates || {});
+            r = r.slice(0, 6).map(x => Math.max(0, Math.min(100, Number(x) || 0)));
+            while (r.length < 6) r.push(0);
+            let levels = 0; r.forEach((x, i) => { if (x > 0) levels = i + 1; });
+            return { enabled: raw.enabled === true, rates: r, levels: levels, firstDepositOnly: raw.firstDepositOnly === true, minDeposit: Math.max(0, Number(raw.minDeposit) || 0) };
+        }
+        async function rfaGetAgencyConfig() { return rfaNormalizeAgency((await db.ref('control/agencyConfig').once('value')).val()); }
+
+        async function rfaAgencyOnDepositApproved(childKey, depKey, amount, currency) {
+            try {
+                if (String(currency || 'INR').toUpperCase() !== 'INR') return 0;
+                const cfg = await rfaGetAgencyConfig();
+                amount = Number(amount) || 0;
+                if (!cfg.enabled || !cfg.levels || amount <= 0 || amount < cfg.minDeposit) return 0;
+                const child = (await db.ref('users/' + childKey).once('value')).val() || {};
+
+                // First deposit = no other approved INR deposit by this user.
+                const ds = await db.ref('deposits').orderByChild('userId').equalTo(childKey).once('value');
+                let others = 0;
+                ds.forEach(d => { const x = d.val() || {}; if (d.key !== depKey && x.status === 'approved' && String(x.currency || 'INR').toUpperCase() !== 'USDT') others++; });
+                const isFirst = others === 0;
+                if (cfg.firstDepositOnly && !isFirst) return 0;
+
+                let cur = child, total = 0; const visited = {}; visited[childKey] = true;
+                for (let level = 1; level <= cfg.levels; level++) {
+                    const refUid = String(cur.referredBy || '').trim();
+                    if (!refUid || refUid.toUpperCase() === 'ADMIN') break;
+                    const rs = await db.ref('users').orderByChild('customUid').equalTo(refUid).once('value');
+                    let pKey = null, p = null;
+                    rs.forEach(ch => { if (!pKey) { pKey = ch.key; p = ch.val() || {}; } });
+                    if (!pKey || visited[pKey]) break;
+                    visited[pKey] = true;
+                    cur = p;
+                    if (p.status === 'deleted' || p.status === 'blocked') continue; // skip this person, keep walking up
+
+                    const rate = cfg.rates[level - 1] || 0;
+                    const amt = Number((amount * rate / 100).toFixed(2));
+                    const now = Date.now();
+                    const log = {
+                        toUid: pKey, toCustomUid: refUid, fromUid: childKey, fromCustomUid: child.customUid || '',
+                        level: level, depositId: depKey, depositAmount: amount, rate: rate, amount: amt, isFirst: isFirst, timestamp: now
+                    };
+                    const claim = await db.ref('commission_logs/' + depKey + '_' + level).transaction(c => c ? undefined : log);
+                    if (!claim.committed) continue; // already paid for this deposit + level
+                    if (amt <= 0) continue;         // logged for the user's deposit statistics only
+                    const tx = await db.ref('users/' + pKey).transaction(u => {
+                        if (!u) return u;
+                        const n = Object.assign({}, u);
+                        n.balance = Number(((Number(u.balance) || 0) + amt).toFixed(2));
+                        n.agencyCommissionTotal = Number(((Number(u.agencyCommissionTotal) || 0) + amt).toFixed(2));
+                        return n;
+                    });
+                    if (!tx.committed) { await db.ref('commission_logs/' + depKey + '_' + level).remove(); continue; }
+                    total += amt;
+                    await rfaRecordBonusCredit(pKey, amt, { kind: 'agency_commission', level: level, fromCustomUid: child.customUid || '' }).catch(() => {});
+                }
+                return Number(total.toFixed(2));
+            } catch (e) {
+                console.warn('Agency commission skipped:', e);
+                return 0;
+            }
+        }
+
+        /* ===== Per-user agency viewer (admin) ===== */
+        const agvS = { uid: '', user: null, subs: [], logs: [], level: 'all', date: '', tab: 'subs', limit: 50 };
+        function agvDay(ts) { const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+        function agvRange(k) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(k || ''); return m ? [new Date(+m[1], +m[2] - 1, +m[3]).getTime(), new Date(+m[1], +m[2] - 1, +m[3] + 1).getTime()] : null; }
+        function agvIn(ts, r) { ts = Number(ts) || 0; return !r || (ts >= r[0] && ts < r[1]); }
+        function agvLv(l, f) { return f === 'all' || Number(l) === Number(f); }
+        function agvN(n) { return (Math.round((Number(n) || 0) * 100) / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 }); }
+
+        async function agvLoad(uidArg) {
+            const uid = String(uidArg || document.getElementById('agvUid').value || '').trim();
+            const body = document.getElementById('agvBody'), top = document.getElementById('agvTop');
+            if (!uid) { // empty search bar: hide whatever was shown before
+                agvS.user = null; agvS.uid = ''; agvS.subs = []; agvS.logs = [];
+                top.innerHTML = ''; body.innerHTML = ''; return;
+            }
+            document.getElementById('agvUid').value = uid;
+            top.innerHTML = ''; body.innerHTML = '<p class="hint-text">Loading...</p>';
+            try {
+                const us = await db.ref('users').orderByChild('customUid').equalTo(uid).once('value');
+                let key = null, user = null; us.forEach(ch => { if (!key) { key = ch.key; user = ch.val() || {}; } });
+                if (!key) { body.innerHTML = '<p class="hint-text">No user found with UID ' + rfaEsc(uid) + '.</p>'; return; }
+                const subs = [], seen = {}; seen[uid] = 1; let frontier = [{ customUid: uid }];
+                for (let lvl = 1; lvl <= 6 && frontier.length; lvl++) {
+                    const next = [];
+                    for (let i = 0; i < frontier.length; i += 15) {
+                        const chunk = frontier.slice(i, i + 15);
+                        const res = await Promise.all(chunk.map(f => db.ref('users').orderByChild('referredBy').equalTo(f.customUid).once('value')));
+                        res.forEach((snap, idx) => snap.forEach(ch => {
+                            const v = ch.val() || {};
+                            if (v.referredBy !== chunk[idx].customUid || v.status === 'deleted' || seen[v.customUid]) return;
+                            seen[v.customUid] = 1;
+                            next.push({ customUid: v.customUid || ch.key, level: lvl, joinedAt: Number(v.joinedAt) || Number(v.createdAt) || 0, parent: chunk[idx].customUid, blocked: v.status === 'blocked' });
+                        }));
+                    }
+                    next.forEach(n => subs.push(n)); frontier = next;
+                }
+                const ls = await db.ref('commission_logs').orderByChild('toCustomUid').equalTo(uid).once('value');
+                const logs = []; ls.forEach(ch => { logs.push(ch.val() || {}); });
+                logs.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+                subs.sort((a, b) => b.joinedAt - a.joinedAt);
+                Object.assign(agvS, { uid: uid, user: Object.assign({ __key: key }, user), subs: subs, logs: logs, level: 'all', date: '', tab: 'subs', limit: 50 });
+                agvRender();
+            } catch (e) { body.innerHTML = '<p class="hint-text">Could not load: ' + rfaEsc(e.message) + '</p>'; }
+        }
+        function agvSet(k, v) { agvS[k] = v; agvS.limit = 50; agvRender(); }
+        function agvRender() {
+            const u = agvS.user, top = document.getElementById('agvTop'), body = document.getElementById('agvBody');
+            if (!u) return;
+            const r = agvRange(agvS.date);
+            const card = (label, val, color) => '<div style="background:rgba(10,10,10,.7);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;padding:10px;text-align:center;">' +
+                '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700;">' + label + '</div>' +
+                '<div style="font-size:18px;font-weight:800;margin-top:3px;color:' + (color || '#fff') + ';">' + val + '</div></div>';
+            // top: identity + all-time totals
+            const direct = agvS.subs.filter(s => s.level === 1).length, team = agvS.subs.length - direct;
+            const earned = agvS.logs.reduce((s, l) => s + (Number(l.amount) || 0), 0);
+            const upline = String(u.referredBy || '').trim();
+            top.innerHTML = '<div style="margin-bottom:8px;font-size:13px;"><b>UID:</b> <span class="uid-badge">' + rfaEsc(u.customUid) + '</span> &nbsp; ' + rfaEsc(u.email || '') +
+                ' &nbsp; <b>Referred by:</b> ' + (upline && upline.toUpperCase() !== 'ADMIN' ? '<a href="#" style="color:var(--accent-cyan);" onclick="agvLoad(\'' + rfaEsc(upline) + '\');return false;">' + rfaEsc(upline) + '</a>' : rfaEsc(upline || '—')) +
+                ' &nbsp; <b>Wallet:</b> ' + rfaMoney(u.balance) + '</div>' +
+                '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;">' +
+                card('Direct', direct) + card('Team (L2+)', team) + card('Commission earned', rfaMoney(earned), '#34d399') +
+                card('Team deposits', rfaMoney(agvS.logs.reduce((s, l) => s + (Number(l.depositAmount) || 0), 0)), '#f4a73b') + '</div>';
+
+            // filtered summary
+            const sm = { reg: 0, depN: 0, dep: 0, firstN: 0, first: 0, comm: 0 };
+            agvS.subs.forEach(s => { if (agvLv(s.level, agvS.level) && agvIn(s.joinedAt, r)) sm.reg++; });
+            agvS.logs.forEach(l => {
+                if (!agvLv(l.level, agvS.level) || !agvIn(l.timestamp, r)) return;
+                sm.depN++; sm.dep += Number(l.depositAmount) || 0; sm.comm += Number(l.amount) || 0;
+                if (l.isFirst) { sm.firstN++; sm.first += Number(l.depositAmount) || 0; }
+            });
+            const lvOpts = '<option value="all">All levels</option>' + [1, 2, 3, 4, 5, 6].map(i => '<option value="' + i + '"' + (String(agvS.level) === String(i) ? ' selected' : '') + '>Level ' + i + '</option>').join('');
+            const tabBtn = (k, t) => '<button type="button" class="' + (agvS.tab === k ? 'btn-green' : 'btn-gray') + '" style="margin:0;flex:1;" onclick="agvSet(\'tab\',\'' + k + '\')">' + t + '</button>';
+            let list = '';
+            if (agvS.tab === 'subs') {
+                const byUid = {};
+                agvS.logs.forEach(l => { if (!agvIn(l.timestamp, r)) return; const o = byUid[l.fromCustomUid] || (byUid[l.fromCustomUid] = { dep: 0, comm: 0 }); o.dep += Number(l.depositAmount) || 0; o.comm += Number(l.amount) || 0; });
+                const rows = agvS.subs.filter(s => agvLv(s.level, agvS.level) && (!r || agvIn(s.joinedAt, r) || byUid[s.customUid]));
+                list = rows.length ? rows.slice(0, agvS.limit).map(s => { const o = byUid[s.customUid] || { dep: 0, comm: 0 };
+                    return '<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;">' +
+                        '<span><a href="#" style="color:var(--accent-cyan);" onclick="agvLoad(\'' + rfaEsc(s.customUid) + '\');return false;"><span class="uid-badge">' + rfaEsc(s.customUid) + '</span></a> · L' + s.level + (s.blocked ? ' · 🚫' : '') +
+                        '<br><span style="color:var(--text-muted);">joined ' + agvDay(s.joinedAt) + ' · via ' + rfaEsc(s.parent) + '</span></span>' +
+                        '<span style="text-align:right;">Dep <b style="color:#f4a73b;">' + agvN(o.dep) + '</b><br>Comm <b style="color:#34d399;">' + agvN(o.comm) + '</b></span></div>'; }).join('') : '<p class="hint-text">No subordinates for this filter.</p>';
+                if (rows.length > agvS.limit) list += '<button type="button" class="btn-gray" onclick="agvS.limit+=50;agvRender()">Show more (' + (rows.length - agvS.limit) + ' left)</button>';
+            } else {
+                const rows = agvS.logs.filter(l => agvLv(l.level, agvS.level) && agvIn(l.timestamp, r));
+                list = rows.length ? rows.slice(0, agvS.limit).map(l =>
+                    '<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;">' +
+                    '<span>' + rfaDate(l.timestamp) + ' · from <span class="uid-badge">' + rfaEsc(l.fromCustomUid) + '</span> · L' + rfaEsc(l.level) + (l.isFirst ? ' · 1st deposit' : '') +
+                    '<br><span style="color:var(--text-muted);">' + rfaMoney(l.depositAmount) + ' @ ' + rfaEsc(l.rate) + '%</span></span><b style="color:#34d399;">+' + rfaMoney(l.amount) + '</b></div>').join('') : '<p class="hint-text">No commission records for this filter.</p>';
+                if (rows.length > agvS.limit) list += '<button type="button" class="btn-gray" onclick="agvS.limit+=50;agvRender()">Show more (' + (rows.length - agvS.limit) + ' left)</button>';
+            }
+            body.innerHTML =
+                '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
+                '<select style="margin:0;flex:1;min-width:110px;" onchange="agvSet(\'level\',this.value)">' + lvOpts + '</select>' +
+                '<input type="date" value="' + rfaEsc(agvS.date) + '" max="' + agvDay(Date.now()) + '" style="margin:0;flex:1;min-width:130px;" onchange="agvSet(\'date\',this.value)">' +
+                '<button type="button" class="btn-gray" style="margin:0;width:auto;padding:0 12px;" onclick="agvSet(\'date\',\'\')">All dates</button></div>' +
+                '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px;">' +
+                card('Registered', sm.reg) + card('Deposit no.', sm.depN) + card('Deposit amt', rfaMoney(sm.dep), '#f4a73b') +
+                card('1st deposits', sm.firstN) + card('1st dep amt', rfaMoney(sm.first), '#f4a73b') + card('Commission', rfaMoney(sm.comm), '#34d399') + '</div>' +
+                '<div style="display:flex;gap:8px;margin-bottom:6px;">' + tabBtn('subs', '👥 Subordinates') + tabBtn('comm', '💲 Commission detail') + '</div>' +
+                '<div style="max-height:420px;overflow-y:auto;">' + list + '</div>';
+        }
+
+        function loadAgencyConfigIntoForm() {
+            if (!document.getElementById('agcEnabled')) return;
+            rfaGetAgencyConfig().then(c => {
+                document.getElementById('agcEnabled').value = c.enabled ? '1' : '0';
+                for (let i = 1; i <= 6; i++) document.getElementById('agcRate' + i).value = c.rates[i - 1] || '';
+                document.getElementById('agcFirstOnly').value = c.firstDepositOnly ? '1' : '0';
+                document.getElementById('agcMinDeposit').value = c.minDeposit || '';
+            }).catch(e => console.warn('Could not load agency settings:', e));
+        }
+
+        function saveAgencyConfig() {
+            const rates = []; let sum = 0;
+            for (let i = 1; i <= 6; i++) {
+                const v = Number(document.getElementById('agcRate' + i).value) || 0;
+                if (v < 0 || v > 100) return alert('Level ' + i + ' rate must be between 0 and 100.');
+                rates.push(v); sum += v;
+            }
+            if (sum > 100) return alert('The level rates add up to ' + sum + '%, which is more than 100% of a deposit. Please lower them.');
+            const minDeposit = Number(document.getElementById('agcMinDeposit').value) || 0;
+            if (minDeposit < 0) return alert('Minimum deposit cannot be negative.');
+            const enabled = document.getElementById('agcEnabled').value === '1';
+            if (enabled && sum <= 0) return alert('Enter at least one level rate above 0 before enabling.');
+            const cfg = { enabled: enabled, rates: rates, firstDepositOnly: document.getElementById('agcFirstOnly').value === '1', minDeposit: minDeposit, updatedAt: Date.now() };
+            db.ref('control/agencyConfig').set(cfg).then(() => alert('Agency commission settings saved.')).catch(e => alert('Could not save settings: ' + e.message));
+        }
+
+        function loadAgencyAdminReport() {
+            const stEl = document.getElementById('agcStats'), listEl = document.getElementById('agcRecent');
+            if (!stEl || !listEl) return;
+            db.ref('commission_logs').once('value').then(s => {
+                const logs = []; s.forEach(ch => { logs.push(ch.val() || {}); });
+                const today = new Date(); today.setHours(0, 0, 0, 0); const t0 = today.getTime();
+                let all = 0, td = 0, n = 0;
+                logs.forEach(l => { const a = Number(l.amount) || 0; all += a; if (a > 0) n++; if ((Number(l.timestamp) || 0) >= t0) td += a; });
+                const card = (label, val, color) => '<div style="background:rgba(10,10,10,.7);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;padding:12px;text-align:center;">' +
+                    '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700;">' + label + '</div>' +
+                    '<div style="font-size:20px;font-weight:800;margin-top:4px;color:' + (color || '#fff') + ';">' + val + '</div></div>';
+                stEl.innerHTML = card('Paid today', rfaMoney(td), '#34d399') + card('Paid in total', rfaMoney(all), '#34d399') + card('Payouts', n);
+                const earnMap = {}; logs.forEach(l => { const k = l.toCustomUid; if (!k) return; earnMap[k] = (earnMap[k] || 0) + (Number(l.amount) || 0); });
+                const topE = Object.entries(earnMap).sort((x, y) => y[1] - x[1]).slice(0, 10);
+                const topHtml = topE.length ? '<div style="margin:6px 0 10px;"><b style="font-size:12px;">🏅 Top earners</b>' + topE.map((t, i) =>
+                    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;"><span>#' + (i + 1) + ' <a href="#" style="color:var(--accent-cyan);" onclick="document.getElementById(\'agvUid\').scrollIntoView({block:\'center\'});agvLoad(\'' + rfaEsc(t[0]) + '\');return false;"><span class="uid-badge">' + rfaEsc(t[0]) + '</span></a></span><b style="color:#34d399;">' + rfaMoney(t[1]) + '</b></div>').join('') + '</div>' : '';
+                logs.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+                listEl.innerHTML = topHtml + (logs.length ? logs.slice(0, 40).map(l =>
+                    '<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;">' +
+                    '<span>' + rfaDate(l.timestamp) + ' · <span class="uid-badge">' + rfaEsc(l.toCustomUid) + '</span> ← <span class="uid-badge">' + rfaEsc(l.fromCustomUid) + '</span> · L' + rfaEsc(l.level) +
+                    ' · ' + rfaMoney(l.depositAmount) + ' @ ' + rfaEsc(l.rate) + '%</span><b style="color:#34d399;">' + rfaMoney(l.amount) + '</b></div>'
+                ).join('') : '<p class="hint-text">No commission payouts yet.</p>');
+            }).catch(e => { stEl.innerHTML = '<p class="hint-text">Could not load commission report: ' + rfaEsc(e.message) + '</p>'; listEl.innerHTML = ''; });
+        }
+
         function openReferAdminModal() {
             document.getElementById('mainAdminMenu').classList.add('hidden');
             document.getElementById('referAdminSection').classList.remove('hidden');
             loadReferralConfigIntoForm();
             loadReferralAdminReport();
+            loadAgencyConfigIntoForm();
+            loadAgencyAdminReport();
         }
 
         function rfaToggleMode() {
@@ -4591,7 +4866,7 @@ function formatAdminMoney(value){
             };
             // referBonus is kept in sync for compatibility with older screens.
             db.ref('control').update({ referralConfig: cfg, referBonus: bonus }).then(() => {
-                alert('Refer & Earn settings saved.');
+                alert('Promotion settings saved.');
             }).catch(e => alert('Could not save settings: ' + e.message));
         }
 
@@ -5948,12 +6223,12 @@ function formatAdminMoney(value){
             const card=document.getElementById('staffDetailCard');
             if(!r||!card)return;
             card.classList.remove('hidden');
-            card.innerHTML=`<div class="staff-user-box"><b>⏳ Loading Refer & Earn Downline...</b><small>Loading the direct referral users for ${staffEscape(r.name||r.staffUid||'this staff member')}.</small></div>`;
+            card.innerHTML=`<div class="staff-user-box"><b>⏳ Loading Promotion Downline...</b><small>Loading the direct referral users for ${staffEscape(r.name||r.staffUid||'this staff member')}.</small></div>`;
             card.scrollIntoView({behavior:'smooth',block:'nearest'});
 
             const uid=String(r.staffUid||'').trim();
             if(!uid){
-                card.innerHTML='<div class="staff-user-box"><b>⚠️ Refer & Earn Downline</b><small>This staff member has no Game Verse UID, so their referral downline cannot be loaded.</small></div>';
+                card.innerHTML='<div class="staff-user-box"><b>⚠️ Promotion Downline</b><small>This staff member has no Game Verse UID, so their referral downline cannot be loaded.</small></div>';
                 return;
             }
 
@@ -5964,7 +6239,7 @@ function formatAdminMoney(value){
                     db.ref('referral_earnings').once('value')
                 ]);
 
-                // Match the User App Refer & Earn logic exactly.
+                // Match the User App Promotion logic exactly.
                 // Every user whose referredBy equals this UID counts, except deleted/blocked users.
                 const downline=[];
                 if(usersSnap.exists()){
@@ -6005,22 +6280,22 @@ function formatAdminMoney(value){
                 card.innerHTML=`
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
                         <div>
-                            <h4 style="margin:0;color:#facc15;">🔗 Refer & Earn Downline — ${staffEscape(r.name||'Staff')}</h4>
+                            <h4 style="margin:0;color:#facc15;">🔗 Promotion Downline — ${staffEscape(r.name||'Staff')}</h4>
                             <div style="font-size:9px;color:var(--text-muted);margin-top:4px;">Staff UID: ${staffEscape(uid)} · Role: ${staffEscape(staffRoleLabel(r.role))} · Status: ${staffEscape(r.status||'active')}</div>
                         </div>
-                        <div style="font-size:9px;color:#34d399;font-weight:800;">Refer &amp; Earn details</div>
+                        <div style="font-size:9px;color:#34d399;font-weight:800;">Promotion details</div>
                     </div>
                     <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px;">
                         <div class="staff-user-box"><b>👥 Referrals</b><small>${downline.length}</small></div>
                         <div class="staff-user-box"><b>💳 Deposited</b><small>₹${totalDeposited.toFixed(2)}</small></div>
                         <div class="staff-user-box"><b>💰 Earned</b><small>₹${totalEarned.toFixed(2)}</small></div>
                     </div>
-                    <div style="margin-top:12px;font-size:10px;color:#facc15;font-weight:900;">REFER &amp; EARN DOWNLINE (${downline.length})</div>
+                    <div style="margin-top:12px;font-size:10px;color:#facc15;font-weight:900;">PROMOTION DOWNLINE (${downline.length})</div>
                     <div class="staff-downline" style="margin-top:6px;">${downline.length?`<table class="staff-table"><thead><tr><th>Downline User</th><th>UID</th><th>Joined</th><th>Status</th><th>Deposited</th><th>Earned</th></tr></thead><tbody>${downline.map(d=>{
                         const deposited=Number(deposits[d.customUid])||0;
                         const earned=Number(earnings[d.customUid])||0;
                         return `<tr><td><b>${staffEscape(d.email||d.customUid||d.key)}</b></td><td style="color:#facc15;font-weight:800;">${staffEscape(d.customUid||'—')}</td><td>${d.joinedAt?new Date(d.joinedAt).toLocaleDateString():'—'}</td><td><span class="staff-status-pill ${d.status==='blocked'?'off':'on'}">${d.status==='blocked'?'Blocked':'Active'}</span></td><td>₹${deposited.toFixed(2)}</td><td style="color:#34d399;font-weight:800;">₹${earned.toFixed(2)}</td></tr>`;
-                    }).join('')}</tbody></table>`:'<div style="padding:10px 4px;color:var(--text-muted);font-size:9px;">No Refer &amp; Earn users found for this user.</div>'}</div>`;
+                    }).join('')}</tbody></table>`:'<div style="padding:10px 4px;color:var(--text-muted);font-size:9px;">No Promotion users found for this user.</div>'}</div>`;
                 card.scrollIntoView({behavior:'smooth',block:'nearest'});
             }catch(e){
                 card.innerHTML=`<div class="staff-user-box"><b style="color:#f87171;">⚠️ Could not load referral downline</b><small>${staffEscape(e.message||e)}</small></div>`;
@@ -6987,13 +7262,17 @@ function formatAdminMoney(value){
                             bonusPercent:bonusType==='percent'?bonusPercent:0,
                             totalCredited:Number((depositAmount+bonusAmount).toFixed(currency==='USDT'?4:2))
                         });
-                    }).then(()=>rfaOnDepositApproved(userId, depositAmount, currency).then(referralPaid=>({
+                    }).then(()=>Promise.all([
+                        rfaOnDepositApproved(userId, depositAmount, currency),
+                        rfaAgencyOnDepositApproved(userId, reqKey, depositAmount, currency)
+                    ]).then(paid=>({
                         currency,
                         depositAmount,
                         bonusAmount,
                         bonusType,
                         bonusPercent,
-                        referralPaid
+                        referralPaid: paid[0],
+                        agencyPaid: paid[1]
                     })));
                 });
             }).then(result=>{
@@ -7002,7 +7281,7 @@ function formatAdminMoney(value){
                     ? ` Bonus ${result.currency==='USDT'?'USDT '+result.bonusAmount.toFixed(4):'₹'+result.bonusAmount.toFixed(2)} added automatically.`
                     : ' No deposit bonus is currently enabled.';
                 const baseMsg = `Deposit approved: ${result.currency==='USDT'?'USDT '+result.depositAmount.toFixed(4):'₹'+result.depositAmount.toFixed(2)} credited.`;
-                alert(baseMsg + bonusText + (result.referralPaid > 0 ? ' Referral reward of ₹' + result.referralPaid + ' credited to the referrer.' : ''));
+                alert(baseMsg + bonusText + (result.referralPaid > 0 ? ' Referral reward of ₹' + result.referralPaid + ' credited to the referrer.' : '') + (result.agencyPaid > 0 ? ' Agency commission of ₹' + result.agencyPaid + ' credited to the upline.' : ''));
             }).catch(e=>alert('Could not approve deposit: '+e.message));
         }
 
@@ -10614,7 +10893,7 @@ var HS_TILES = [
     { id: 'income',      icon: '💰', label: 'Income' },
     { id: 'events',      icon: '🎉', label: 'Events' },
     { id: 'missions',    icon: '🎯', label: 'Missions' },
-    { id: 'refer',       icon: '🤝', label: 'Refer & Earn' },
+    { id: 'refer',       icon: '🤝', label: 'Promotion' },
     { id: 'rewards',     icon: '🎁', label: 'Rewards' },
     { id: 'support',     icon: '🎧', label: 'Support' },
     { id: 'history',     icon: '🕐', label: 'History' }
