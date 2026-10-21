@@ -875,6 +875,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
 
             <div class="sidebar-group-label">MANAGEMENT</div>
             <div class="sidebar-nav-item" onclick="navTo('Users', openUserListModal, this)"><span class="icon">👥</span> Users</div>
+<div class="sidebar-nav-item" onclick="navTo('Numeric UIDs', openUidMigrationModal, this)"><span class="icon">🔢</span> Numeric UIDs</div>
             <div class="sidebar-nav-item" onclick="navTo('STAFF', openStaffManagementModal, this)"><span class="icon">🧑‍💼</span> STAFF</div>
             <div class="sidebar-nav-item" onclick="navTo('Deposits', openDepositRequestsModal, this)"><span class="icon">💳</span> Deposits</div>
             <div class="sidebar-nav-item" onclick="navTo('Withdrawals', openWithdrawRequestsModal, this)"><span class="icon">💸</span> Withdrawals</div>
@@ -2691,6 +2692,26 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             <div id="eventsAdminContainer" style="max-height:360px;overflow-y:auto;margin:10px 0;">Loading events...</div>
         </div>
 
+        <!-- Numeric UID Migration Section — converts character UIDs (e.g. A1B2C3) into unique numeric UIDs everywhere -->
+        <div id="uidMigrationAdminSection" class="hidden">
+            <h3 style="color:var(--accent-cyan); margin-top:0; font-size:16px;">🔢 Numeric UID Migration</h3>
+            <p class="hint-text" style="margin-bottom:12px;">New players already receive a unique 8-digit numeric UID at sign-up. Use this tool once to convert every existing character UID (like <b>A1B2C3</b>) into a unique numeric UID. The new UID is applied everywhere it is stored: user profiles, referral links &amp; downlines, deposits, withdrawals, income transactions, commissions, referral earnings, game bets, investments, memberships, predictions, support tickets, reward logs and staff assignments.</p>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>📋 Scan result</h4></div>
+                <div id="uidmSummary" style="font-size:13px;line-height:1.6;">Scanning users…</div>
+                <div id="uidmPreview" style="margin-top:8px;"></div>
+                <div class="btn-group" style="margin-top:10px;">
+                    <button type="button" class="btn-gray" onclick="uidmScan()">🔍 Re-scan users</button>
+                    <button type="button" class="btn-green" id="uidmRunBtn" onclick="uidmRun()" disabled>🔢 Convert all to numeric UIDs</button>
+                </div>
+                <div class="live-status" id="uidmStatus" style="margin-top:8px;"></div>
+                <pre id="uidmLog" style="margin-top:8px;max-height:260px;overflow:auto;white-space:pre-wrap;font-size:11px;line-height:1.5;padding:10px;border-radius:10px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);color:#cbd5e1;display:none;"></pre>
+            </div>
+            <p class="hint-text">Tip: run this when few players are active. Keep this page open until it says “Migration complete”. After that, ask players to refresh the app. The old→new mapping is saved under <code>uid_migration/map</code> so an interrupted run can be repeated safely.</p>
+            <button type="button" onclick="goToDashboardHome()" class="btn-gray" style="margin-top:12px;">⬅ Back to Dashboard</button>
+        </div>
+
         <!-- Home Settings Section (controls the User App home page) — data: control/homeSettings -->
         <div id="homeSettingsAdminSection" class="hidden">
             <h3 style="color:var(--accent-cyan); margin-top:0; font-size:16px;">🏠 Home Page Settings</h3>
@@ -3445,7 +3466,7 @@ function formatAdminMoney(value){
         // flow), we must hide every section before opening a new one — otherwise
         // jumping straight from one section to another via the sidebar would leave
         // both visible at once.
-        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','referAdminSection','dashboard20Section','colourClashAdminSection','k3AdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','homeSettingsAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
+        const ALL_ADMIN_SECTION_IDS = ['mainAdminMenu','referAdminSection','dashboard20Section','colourClashAdminSection','k3AdminSection','playHistoryDigestSection','investmentSection','minesSection','membershipAdminSection','userListSection','depositSection','withdrawSection','supportSection','predictionsAdminSection','eventsAdminSection','dailyRewardsAdminSection','homeSettingsAdminSection','uidMigrationAdminSection','missionsAdminSection','transactionsAdminSection','gamesManagementAdminSection','notificationsAdminSection','settingsAdminSection','restrictionsAdminSection','staffManagementSection'];
 
         function hideAllAdminSections() {
             ALL_ADMIN_SECTION_IDS.forEach(id => {
@@ -6421,7 +6442,7 @@ function formatAdminMoney(value){
             if (query) {
                 list = list.filter(u =>
                     (u.email || '').toLowerCase().includes(query) ||
-                    (u.customUid || '').toLowerCase().includes(query)
+                    String(u.customUid || '').toLowerCase().includes(query)
                 );
             }
 
@@ -11024,6 +11045,177 @@ function closeHomeSettingsAdminModal() {
     var s = hsEl('homeSettingsAdminSection'); if (s) s.classList.add('hidden');
     var m = hsEl('mainAdminMenu'); if (m) m.classList.remove('hidden');
 }
+</script>
+
+<script id="gv-numeric-uid-migration">
+/* ===== Numeric UID Migration (Admin > Numeric UIDs) =====
+   Converts every character UID (customUid like "A1B2C3") into a unique 8-digit numeric UID and rewrites
+   every stored reference to it. Field names that hold a player's UID are listed in UIDM_FIELDS. */
+(function () {
+  var UIDM_FIELDS = { customUid: 1, fromCustomUid: 1, toCustomUid: 1, referrerCustomUid: 1, referredBy: 1, userUid: 1, staffUid: 1 };
+  var UIDM_DB_URL = 'https://titan-gameverse-default-rtdb.firebaseio.com';
+  var UIDM_FALLBACK_NODES = ["admin_transaction_credit_log", "admin_transactions", "bonus_credits", "branding", "broadcasts", "claimed_rewards", "colour_clash", "commission_logs", "control", "daily_bonus_claims", "daily_rewards", "deposits", "email_registry", "events", "game_rounds", "games", "gift_code_claims", "gift_codes", "gift_codes_history", "investment_claims", "investments", "k3", "memberships", "mines_rounds", "predictions", "referral_earnings", "restrictionAudit", "reward_activity", "reward_checkin", "reward_settings", "reward_spin", "reward_stats", "reward_stats_daily", "rocket_live", "scheduled_broadcasts", "staff", "staff_roles", "support_requests", "user_gift_claims", "user_memberships", "user_predictions", "user_reward_log", "users", "withdrawals"];
+  var UIDM_SKIP = { uid_migration: 1, uid_registry: 1 };
+  var plan = null, running = false;
+
+  function $(id) { return document.getElementById(id); }
+  function isNum(v) { return /^\d+$/.test(String(v == null ? '' : v).trim()); }
+  function esc(s) { var d = document.createElement('div'); d.innerText = String(s == null ? '' : s); return d.innerHTML; }
+  function setStatus(html) { var e = $('uidmStatus'); if (e) e.innerHTML = html; }
+  function log(msg) {
+    var e = $('uidmLog'); if (!e) return;
+    e.style.display = 'block';
+    e.textContent += (e.textContent ? '\n' : '') + msg;
+    e.scrollTop = e.scrollHeight;
+  }
+  function newId(taken) {
+    for (var i = 0; i < 1000; i++) {
+      var c = String(Math.floor(10000000 + Math.random() * 90000000));
+      if (!taken[c]) { taken[c] = 1; return c; }
+    }
+    throw new Error('Could not generate a unique numeric UID.');
+  }
+  async function loadSavedMap() {
+    var saved = {};
+    try { var s = await db.ref('uid_migration/map').once('value'); saved = s.val() || {}; } catch (e) {}
+    try { var l = JSON.parse(localStorage.getItem('gvUidMigrationMap') || '{}'); Object.keys(l).forEach(function (k) { if (!saved[k]) saved[k] = l[k]; }); } catch (e) {}
+    var clean = {};
+    Object.keys(saved).forEach(function (k) { if (isNum(saved[k]) && !isNum(k)) clean[k] = String(saved[k]); });
+    return clean;
+  }
+
+  window.openUidMigrationModal = function () {
+    var m = $('mainAdminMenu'); if (m) m.classList.add('hidden');
+    var s = $('uidMigrationAdminSection'); if (s) s.classList.remove('hidden');
+    window.uidmScan();
+  };
+
+  window.uidmScan = async function (keepStatus) {
+    if (running) return;
+    var sum = $('uidmSummary'), btn = $('uidmRunBtn');
+    if (btn) btn.disabled = true;
+    if (sum) sum.textContent = 'Scanning users…';
+    try {
+      var snap = await db.ref('users').once('value');
+      var users = snap.val() || {};
+      var taken = {};
+      try { var reg = await db.ref('uid_registry').once('value'); Object.keys(reg.val() || {}).forEach(function (k) { taken[k] = 1; }); } catch (e) {}
+      var saved = await loadSavedMap();
+      Object.keys(saved).forEach(function (k) { taken[saved[k]] = 1; });
+
+      var keys = Object.keys(users), total = 0, already = 0;
+      keys.forEach(function (k) { var u = users[k] || {}; if (u.role === 'admin') return; total++; var cu = String(u.customUid || '').trim(); if (isNum(cu)) { taken[cu] = 1; already++; } });
+
+      var map = Object.assign({}, saved), direct = {}, seen = {}, legacy = 0, missing = 0;
+      keys.forEach(function (k) {
+        var u = users[k] || {}; if (u.role === 'admin') return;
+        var cu = String(u.customUid || '').trim();
+        if (isNum(cu)) return;
+        if (!cu) { direct[k] = newId(taken); missing++; return; }
+        legacy++;
+        if (seen[cu]) { direct[k] = newId(taken); return; }   // duplicate legacy UID: give this user its own number
+        seen[cu] = 1;
+        if (!map[cu]) map[cu] = newId(taken);
+      });
+
+      plan = { map: map, direct: direct, users: users };
+      var pending = Object.keys(map).length + Object.keys(direct).length;
+      var html = '<b>' + total + '</b> players · <b style="color:#34d399">' + already + '</b> already numeric · <b style="color:#facc15">' + legacy + '</b> with character UIDs' + (missing ? ' · <b style="color:#f87171">' + missing + '</b> without any UID' : '');
+      if (!legacy && !missing && !Object.keys(saved).length) html += '<br>✅ Every player already has a numeric UID. Nothing to convert.';
+      else if (!legacy && !missing) html += '<br>All player records are numeric. You can still run the tool to repair any leftover old references from an earlier interrupted run.';
+      if (sum) sum.innerHTML = html;
+
+      var rows = Object.keys(map).slice(0, 8).map(function (o) { return '<tr><td><span class="uid-badge">' + esc(o) + '</span></td><td>→</td><td><span class="uid-badge">' + esc(map[o]) + '</span></td></tr>'; }).join('');
+      var pv = $('uidmPreview'); if (pv) pv.innerHTML = rows ? '<div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">Preview of conversions:</div><table style="font-size:12px;">' + rows + '</table>' : '';
+      if (btn) btn.disabled = !pending;
+      if (keepStatus !== true) setStatus('');
+    } catch (err) {
+      if (sum) sum.innerHTML = '<span style="color:#f87171">Scan failed: ' + esc(err.message) + '</span>';
+    }
+  };
+
+  async function listTopNodes() {
+    try {
+      var u = firebase.auth().currentUser; if (!u) throw new Error('not signed in');
+      var token = await u.getIdToken();
+      var r = await fetch(UIDM_DB_URL + '/.json?shallow=true&auth=' + encodeURIComponent(token));
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var j = await r.json();
+      var ks = Object.keys(j || {});
+      if (ks.length) return ks;
+    } catch (e) { log('Could not list database nodes (' + e.message + ') — using the built-in node list.'); }
+    return UIDM_FALLBACK_NODES.slice();
+  }
+
+  function walk(val, path, out, map) {
+    if (val === null || typeof val !== 'object') return;
+    for (var k in val) {
+      if (!Object.prototype.hasOwnProperty.call(val, k)) continue;
+      var v = val[k];
+      if (v !== null && typeof v === 'object') walk(v, path + '/' + k, out, map);
+      else if (typeof v === 'string' && UIDM_FIELDS[k]) { var t = map[v.trim()]; if (t) out[path + '/' + k] = t; }
+    }
+  }
+
+  async function applyUpdates(out) {
+    var paths = Object.keys(out), n = 0;
+    for (var i = 0; i < paths.length; i += 200) {
+      var chunk = {};
+      paths.slice(i, i + 200).forEach(function (p) { chunk[p] = out[p]; });
+      await db.ref().update(chunk);
+      n += Object.keys(chunk).length;
+    }
+    return n;
+  }
+
+  window.uidmRun = async function () {
+    if (running || !plan) return;
+    var map = plan.map, direct = plan.direct;
+    if (!confirm('Convert ALL character UIDs to numeric UIDs now?\n\nThis rewrites every record that stores a player UID. Keep this page open until it finishes.')) return;
+    running = true;
+    var btn = $('uidmRunBtn'); if (btn) btn.disabled = true;
+    $('uidmLog').textContent = '';
+    var totalFields = 0, errors = 0;
+    try {
+      setStatus('⏳ Saving the old → new mapping…');
+      try { localStorage.setItem('gvUidMigrationMap', JSON.stringify(map)); } catch (e) {}
+      try { await db.ref('uid_migration/map').update(map); } catch (e) { log('Warning: could not save mapping to the database (' + e.message + '). A local backup is kept in this browser.'); }
+      try {
+        var reg = {}; Object.keys(map).forEach(function (o) { reg[map[o]] = true; }); Object.keys(direct).forEach(function (k) { reg[direct[k]] = true; });
+        await db.ref('uid_registry').update(reg);
+      } catch (e) { log('Note: uid_registry not updated (' + e.message + ').'); }
+
+      var nodes = await listTopNodes();
+      nodes = nodes.filter(function (n) { return !UIDM_SKIP[n] && n.charAt(0) !== '.'; });
+      nodes.sort(function (a, b) { return (a === 'users' ? -1 : 0) - (b === 'users' ? -1 : 0); });   // users first
+      log('Scanning ' + nodes.length + ' database nodes…');
+
+      for (var i = 0; i < nodes.length; i++) {
+        var name = nodes[i];
+        setStatus('⏳ Processing <b>' + esc(name) + '</b> (' + (i + 1) + '/' + nodes.length + ')…');
+        try {
+          var snap = await db.ref(name).once('value');
+          var out = {};
+          walk(snap.val(), name, out, map);
+          snap = null;
+          if (name === 'users') Object.keys(direct).forEach(function (k) { out['users/' + k + '/customUid'] = direct[k]; });
+          var n = Object.keys(out).length;
+          if (n) { await applyUpdates(out); totalFields += n; log('✔ ' + name + ': ' + n + ' value(s) updated'); }
+        } catch (e) { errors++; log('✖ ' + name + ': ' + e.message); }
+      }
+      try { await db.ref('uid_migration/meta').set({ completedAt: Date.now(), converted: Object.keys(map).length + Object.keys(direct).length, fieldsUpdated: totalFields, errors: errors }); } catch (e) {}
+      if (!errors) { try { localStorage.removeItem('gvUidMigrationMap'); } catch (e) {} }
+      setStatus(errors
+        ? '⚠️ Finished with ' + errors + ' node(s) skipped. Check the log, then press “Re-scan” and run again to retry — the saved mapping is reused.'
+        : '✅ <b>Migration complete.</b> ' + totalFields + ' stored values now use numeric UIDs. Ask players to refresh the app.');
+    } catch (err) {
+      setStatus('<span style="color:#f87171">Migration stopped: ' + esc(err.message) + '. It is safe to run it again.</span>');
+      log('✖ ' + err.message);
+    }
+    running = false;
+    window.uidmScan(true);
+  };
+})();
 </script>
 
 </body></html>
