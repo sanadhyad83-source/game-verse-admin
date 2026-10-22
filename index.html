@@ -842,6 +842,28 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
 .overview-detail-table th,.dash2-table th,.staff-table th{color:#fbbf24!important;background:#fbbf240d!important}
 </style>
 
+<style id="gv-admin-v3-features">
+.gvx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.gvx-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:10px 0}
+.gvx-filters label{display:block;font-size:10px;color:var(--text-muted);margin:0 0 3px;font-weight:700}
+.gvx-filters input,.gvx-filters select{margin:0!important;width:100%}
+.gvx-wrap{overflow:auto;border:1px solid rgba(var(--accent-rgb),.16);border-radius:12px;margin:8px 0}
+.gvx-table{width:100%;border-collapse:collapse;font-size:11px;min-width:560px}
+.gvx-table th{padding:8px 9px;text-align:left;color:#fbbf24;background:rgba(251,191,36,.06);border-bottom:1px solid rgba(var(--accent-rgb),.16);font-size:10px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.gvx-table td{padding:8px 9px;border-bottom:1px solid rgba(255,255,255,.06);color:#f8fafc;vertical-align:middle}
+.gvx-pos{color:#34d399;font-weight:800}.gvx-neg{color:#f87171;font-weight:800}.gvx-zero{color:#cbd5e1;font-weight:700}
+.gvx-bar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;min-width:70px}
+.gvx-bar i{display:block;height:100%;border-radius:4px}
+.gvx-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:760px){.gvx-two{grid-template-columns:1fr}}
+.gvx-chip{display:inline-block;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:800;border:1px solid rgba(var(--accent-rgb),.3);background:rgba(var(--accent-rgb),.08)}
+.gvx-preview{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.gvx-preview span{font-size:10px;padding:3px 7px;border-radius:8px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2)}
+.gvx-inline-btns{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.gvx-inline-btns button{width:auto!important;margin:0!important;padding:7px 11px!important;font-size:11px!important}
+#staffEditBanner{padding:7px 10px;border-radius:9px;border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.08);font-size:10px;color:#fbbf24;margin-bottom:8px}
+</style>
+
 </head>
 <body class="admin-shell-active">
 
@@ -1123,7 +1145,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
         <!-- Dashboard 2.0 -->
         <div id="dashboard20Section" class="hidden">
             <div class="dash2-hero">
-                <div class="dash2-title">🛰️ DASHBOARD 2.0 — Operations Center <span style="font-size:8px;opacity:.65;">CONTROL ROOM v2.2</span></div>
+                <div class="dash2-title">🛰️ DASHBOARD 2.0 — Operations Center <span style="font-size:8px;opacity:.65;">CONTROL ROOM v3.0</span></div>
                 <div class="dash2-sub">A separate operational view focused on live queues, account activity, system switches and service health. These controls are independent from the existing Dashboard analytics.</div>
             </div>
 
@@ -1137,6 +1159,18 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <div class="dash2-stat"><span>Referral Network</span><b id="d20ReferralUsers">0</b><small>Live referrers with ≥1 active downline</small></div>
             </div>
 
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>📅 Today at a Glance</h4><span class="view-all-link" onclick="d20RefreshExtras()">Refresh →</span></div>
+                <div class="dash2-ops-grid" id="d20GlanceGrid" style="grid-template-columns:repeat(3,minmax(0,1fr));"><div class="dash2-mini"><div class="m-label">Loading…</div></div></div>
+            </div>
+            <div class="dash-panel" style="border-color:rgba(248,113,113,.35);">
+                <div class="dash-panel-head"><h4>🚨 Emergency Controls</h4><span id="d20PanicState" style="font-size:10px;"></span></div>
+                <div class="dash2-control-desc" style="margin-bottom:8px;">One click pauses all games and turns OFF deposits, withdrawals and registrations. The previous switch states are saved so <b>Restore</b> puts everything back exactly as it was.</div>
+                <div class="dash2-action-row">
+                    <button class="btn-red" onclick="d20Panic()">🚨 Emergency Stop</button>
+                    <button class="btn-green" onclick="d20Restore()">♻ Restore Previous State</button>
+                </div>
+            </div>
             <div class="dash-panel">
                 <div class="dash-panel-head"><h4>🎛️ Live Service Controls</h4><span class="view-all-link" onclick="loadDashboard20()">Refresh →</span></div>
                 <div class="dash2-control-grid">
@@ -1161,6 +1195,72 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     </div>
             </div>
 
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>⏲ Timed Pauses &amp; Player Messages</h4><span style="font-size:9px;color:var(--text-muted);">Auto-resume · custom text shown to players</span></div>
+                <div class="dash2-control-grid">
+                    <div class="dash2-control">
+                        <div class="dash2-control-title">💳 Deposits</div>
+                        <div class="dash2-control-desc">Temporarily stop new deposit requests; it resumes by itself.</div>
+                        <div id="d20PauseState_deposits" style="font-size:10px;font-weight:800;margin:7px 0;">—</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                            <select id="d20PauseDur_deposits" style="width:auto;margin:0;"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="360">6 hours</option><option value="1440">24 hours</option></select>
+                            <button class="btn-gray" style="width:auto;margin:0;padding:6px 10px;font-size:10px;" onclick="d20PauseService('deposits')">⏸ Pause</button>
+                            <button class="btn-green" style="width:auto;margin:0;padding:6px 10px;font-size:10px;" onclick="d20ResumeService('deposits')">▶ Resume now</button>
+                        </div>
+                        <input id="d20SvcMsg_deposits" type="text" maxlength="160" placeholder="Message players see when unavailable (optional)" style="margin-top:8px;">
+                        <button class="btn-gray" style="width:auto;margin:6px 0 0;padding:6px 10px;font-size:10px;" onclick="d20SaveSvcMessage('deposits')">💾 Save message</button>
+                    </div>
+                    <div class="dash2-control">
+                        <div class="dash2-control-title">💸 Withdrawals</div>
+                        <div class="dash2-control-desc">Temporarily stop new withdrawal requests; it resumes by itself.</div>
+                        <div id="d20PauseState_withdrawals" style="font-size:10px;font-weight:800;margin:7px 0;">—</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                            <select id="d20PauseDur_withdrawals" style="width:auto;margin:0;"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="360">6 hours</option><option value="1440">24 hours</option></select>
+                            <button class="btn-gray" style="width:auto;margin:0;padding:6px 10px;font-size:10px;" onclick="d20PauseService('withdrawals')">⏸ Pause</button>
+                            <button class="btn-green" style="width:auto;margin:0;padding:6px 10px;font-size:10px;" onclick="d20ResumeService('withdrawals')">▶ Resume now</button>
+                        </div>
+                        <input id="d20SvcMsg_withdrawals" type="text" maxlength="160" placeholder="Message players see when unavailable (optional)" style="margin-top:8px;">
+                        <button class="btn-gray" style="width:auto;margin:6px 0 0;padding:6px 10px;font-size:10px;" onclick="d20SaveSvcMessage('withdrawals')">💾 Save message</button>
+                    </div>
+                    <div class="dash2-control">
+                        <div class="dash2-control-title">📝 New Registrations</div>
+                        <div class="dash2-control-desc">Temporarily stop new account sign-ups; it resumes by itself.</div>
+                        <div id="d20PauseState_registration" style="font-size:10px;font-weight:800;margin:7px 0;">—</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                            <select id="d20PauseDur_registration" style="width:auto;margin:0;"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="360">6 hours</option><option value="1440">24 hours</option></select>
+                            <button class="btn-gray" style="width:auto;margin:0;padding:6px 10px;font-size:10px;" onclick="d20PauseService('registration')">⏸ Pause</button>
+                            <button class="btn-green" style="width:auto;margin:0;padding:6px 10px;font-size:10px;" onclick="d20ResumeService('registration')">▶ Resume now</button>
+                        </div>
+                        <input id="d20SvcMsg_registration" type="text" maxlength="160" placeholder="Message players see when unavailable (optional)" style="margin-top:8px;">
+                        <button class="btn-gray" style="width:auto;margin:6px 0 0;padding:6px 10px;font-size:10px;" onclick="d20SaveSvcMessage('registration')">💾 Save message</button>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🧩 More Service Switches</h4><span style="font-size:9px;color:var(--text-muted);">Enforced live in the User App</span></div>
+                <div class="dash2-control-grid">
+                    <div class="dash2-control"><div class="dash2-control-head"><div><div class="dash2-control-title">🎧 Support Tickets</div><div class="dash2-control-desc">Allow users to submit new support requests.</div></div><label class="dash2-switch"><input type="checkbox" id="d20SupportEnabled" checked onchange="d20SaveExtra('supportEnabled',this.checked)"> Enabled</label></div></div>
+                    <div class="dash2-control"><div class="dash2-control-head"><div><div class="dash2-control-title">🎁 Daily Rewards &amp; Check-in</div><div class="dash2-control-desc">Allow users to claim daily check-in and daily rewards.</div></div><label class="dash2-switch"><input type="checkbox" id="d20RewardsEnabled" checked onchange="d20SaveExtra('rewardsEnabled',this.checked)"> Enabled</label></div></div>
+                </div>
+            </div>
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>📥 Priority Queue Watch</h4><span id="d20QueueAlertLabel" style="font-size:10px;"></span></div>
+                <div class="gvx-filters">
+                    <div><label>Overdue after (minutes)</label><input id="d20QueueAlertMin" type="number" min="1" step="1" placeholder="30"></div>
+                    <div><label>Flag large INR requests ≥ (0 = off)</label><input id="d20LargeAmount" type="number" min="0" step="1" placeholder="10000"></div>
+                    <div><label>Sound alert</label><label class="dash2-switch" style="margin-top:6px;"><input type="checkbox" id="d20AlertSound"> Beep on new overdue request</label></div>
+                </div>
+                <button class="btn-gray" style="width:auto;margin:0 0 10px;padding:7px 12px;font-size:11px;" onclick="d20SaveQueueSettings()">💾 Save alert settings</button>
+                <div class="gvx-two">
+                    <div><b style="font-size:11px;color:#facc15;">💳 Deposits</b><div id="d20QueueDeposits">Loading…</div></div>
+                    <div><b style="font-size:11px;color:#facc15;">💸 Withdrawals</b><div id="d20QueueWithdrawals">Loading…</div></div>
+                </div>
+                <div style="font-size:9px;color:var(--text-muted);margin-top:6px;">Overdue requests also add a count to the browser tab title so you notice them from another tab.</div>
+            </div>
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>🧾 Control Audit Log</h4><span><span class="view-all-link" onclick="d20RefreshExtras()">Refresh</span> · <span class="view-all-link" onclick="d20ExportAudit()">Export CSV →</span></span></div>
+                <div id="d20AuditList">Loading…</div>
+            </div>
             <div class="dash-panel">
                 <div class="dash-panel-head"><h4>🩺 System Health &amp; Queue Watch</h4><span id="d20QueueHealthLabel" style="font-size:9px;color:var(--text-muted);">Checking…</span></div>
                 <div class="dash2-health">
@@ -1476,6 +1576,11 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     <div><label>Maximum Gift Reward per User / Day (₹) · 0 = off</label><input id="bonusMaxGiftAmountDay" type="number" min="0" step="0.01" placeholder="0"></div>
                     <div><label>Cooldown Between Gift-Code Claims (minutes) · 0 = off</label><input id="bonusGiftCooldown" type="number" min="0" step="1" placeholder="0"></div>
                 </div>
+                <div class="two-cols">
+                    <div><label>Default Expiry For New Gift Codes (hours) · 0 = never</label><input id="bonusGiftDefaultExpiryHours" type="number" min="0" step="1" placeholder="0"></div>
+                    <div><label>Default Max Claims For New Gift Codes · 0 = none</label><input id="bonusGiftDefaultMaxClaims" type="number" min="0" step="1" placeholder="0"></div>
+                </div>
+                <label class="restriction-toggle"><input id="bonusGiftAllowUnlimited" type="checkbox" checked> Allow admins to create unlimited-claim gift codes</label>
                 <label class="restriction-toggle"><input id="bonusRequireDepositGift" type="checkbox"> Require approved deposit before gift-code claim</label>
                 <label>Minimum Approved Deposit for Gift Code (₹)</label>
                 <input id="bonusMinimumDepositGift" type="number" min="0" step="0.01" placeholder="0">
@@ -1922,21 +2027,57 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
         </div>
 
         <div id="playHistoryDigestSection" class="hidden">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
                 <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">📊 User Play History Digest</h3>
-                <button onclick="clearPlayHistoryDigest()" class="btn-red" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">🗑️ Clear Records</button>
+                <div class="gvx-inline-btns" style="margin:0;">
+                    <button onclick="loadPlayHistoryDigest()" class="btn-gray">↻ Reload</button>
+                    <button onclick="exportPlayHistoryDigestCSV('users')" class="btn-gray">⬇ Users CSV</button>
+                    <button onclick="exportPlayHistoryDigestCSV('rounds')" class="btn-gray">⬇ Rounds CSV</button>
+                    <button onclick="clearPlayHistoryDigest()" class="btn-red">🗑️ Clear Records</button>
+                </div>
             </div>
-            <p style="color:var(--text-muted); font-size:12px; margin-top:-6px;">Total wagered, total won, and net position per user across all games (Mines, Rocket Jump, Fortune Wheel, Coin Flip, Number Master). WINGO has its own dedicated stats panel and isn't included here.</p>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:4px;">Wagered, paid out and house result across Mines, Rocket Jump, Fortune Wheel, Coin Flip, Number Master and WINGO. Pending WINGO entries are left out until they settle. Use the filters to narrow by date, currency, game or player.</p>
+
+            <div class="gvx-filters">
+                <div><label>Period</label>
+                    <select id="phdRange" onchange="phdRangeChanged()">
+                        <option value="all">All time</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d">Last 30 days</option>
+                        <option value="custom">Custom range…</option>
+                    </select></div>
+                <div id="phdFromWrap" class="hidden"><label>From</label><input type="date" id="phdFrom" onchange="applyPlayHistoryFilters()"></div>
+                <div id="phdToWrap" class="hidden"><label>To</label><input type="date" id="phdTo" onchange="applyPlayHistoryFilters()"></div>
+                <div><label>Currency</label>
+                    <select id="phdCurrency" onchange="applyPlayHistoryFilters()">
+                        <option value="">INR + USDT</option><option value="INR">INR only</option><option value="USDT">USDT only</option>
+                    </select></div>
+                <div><label>Game</label><select id="phdGame" onchange="applyPlayHistoryFilters()"><option value="">All games</option></select></div>
+                <div><label>Player UID</label><input id="phdUserSearch" oninput="applyPlayHistoryFilters()" placeholder="Search UID…"></div>
+            </div>
+            <div id="phdFilterNote" style="font-size:10px;color:var(--text-muted);margin-bottom:6px;"></div>
 
             <div class="stats-grid" style="margin: 10px 0;">
                 <div class="stat-card"><span>Total Rounds</span><b id="phdTotalRounds">—</b></div>
+                <div class="stat-card"><span>Unique Players</span><b id="phdPlayers">—</b></div>
                 <div class="stat-card"><span>Total Wagered</span><b id="phdTotalWagered">—</b></div>
                 <div class="stat-card"><span>Total Paid Out</span><b id="phdTotalPaidOut">—</b></div>
                 <div class="stat-card"><span>🏦 House Net Profit</span><b id="phdNetProfit">—</b></div>
+                <div class="stat-card"><span>Observed RTP</span><b id="phdRtp">—</b></div>
+                <div class="stat-card"><span>Avg Bet</span><b id="phdAvgBet">—</b></div>
+                <div class="stat-card"><span>Biggest Single Win</span><b id="phdBiggestWin">—</b></div>
             </div>
 
-            <h4 style="color:var(--accent-cyan); margin:16px 0 8px 0; font-size:14px;">🎮 Breakdown By Game</h4>
+            <h4 style="color:var(--accent-cyan); margin:16px 0 6px 0; font-size:14px;">🎮 Breakdown By Game</h4>
             <div id="playHistoryGameBreakdownContainer" style="margin-bottom: 6px;">Loading...</div>
+
+            <h4 style="color:var(--accent-cyan); margin:16px 0 6px 0; font-size:14px;">📅 Daily Trend</h4>
+            <div id="phdDailyContainer">Loading...</div>
+
+            <h4 style="color:var(--accent-cyan); margin:16px 0 6px 0; font-size:14px;">🏆 Top Players</h4>
+            <div id="phdTopContainer">Loading...</div>
 
             <h4 style="color:var(--accent-cyan); margin:16px 0 8px 0; font-size:14px;">👥 Breakdown By User</h4>
             <div style="display:flex; gap:6px; flex-wrap:wrap; margin: 10px 0;">
@@ -1944,8 +2085,9 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <button onclick="renderPlayHistoryDigest('won')" class="btn-gray" style="width:auto; margin:0; padding:8px 10px; font-size:11px;">Sort: Total Won</button>
                 <button onclick="renderPlayHistoryDigest('net')" class="btn-gray" style="width:auto; margin:0; padding:8px 10px; font-size:11px;">Sort: House P&amp;L</button>
                 <button onclick="renderPlayHistoryDigest('rounds')" class="btn-gray" style="width:auto; margin:0; padding:8px 10px; font-size:11px;">Sort: Rounds Played</button>
+                <button onclick="renderPlayHistoryDigest('recent')" class="btn-gray" style="width:auto; margin:0; padding:8px 10px; font-size:11px;">Sort: Last Played</button>
             </div>
-            <div id="playHistoryDigestContainer" style="max-height: 400px; overflow-y: auto;">Loading play history...</div>
+            <div id="playHistoryDigestContainer" style="max-height: 480px; overflow-y: auto;">Loading play history...</div>
         </div>
 
         <!-- Investment Settings Section -->
@@ -2036,12 +2178,21 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
         <div id="minesSection" class="hidden">
             <h3 style="color:var(--accent-cyan); margin-top:0; font-size: 16px;">💣 Mines Game Control</h3>
 
+            <div class="dash-panel" style="margin-bottom:12px;">
+                <div class="dash-panel-head"><h4>📈 Mines Performance</h4><span class="view-all-link" onclick="loadMinesRoundsForAdmin()">Refresh →</span></div>
+                <div class="gvx-grid" id="minesStatsGrid"><div class="stat-card"><span>Loading…</span><b>—</b></div></div>
+                <div id="minesStatsNote" style="font-size:10px;color:var(--text-muted);"></div>
+            </div>
+
             <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
                 <label>Game Availability:</label>
                 <select id="minesEnabledSelect">
                     <option value="true">ON (Players Can Play)</option>
                     <option value="false">OFF (Game Locked)</option>
                 </select>
+
+                <label>Message shown to players when OFF (optional):</label>
+                <input id="minesOffMessageInput" type="text" maxlength="140" placeholder="e.g. Mines is under maintenance, back at 6 PM">
 
                 <label>Bet Amount Range (₹ INR):</label>
                 <div class="two-cols">
@@ -2057,26 +2208,75 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
 
                 <label>Mine Count Range (per round, out of 25 tiles):</label>
                 <div class="two-cols">
-                    <input id="minesMinCountInput" type="number" placeholder="Min Mines" min="1" max="24">
-                    <input id="minesMaxCountInput" type="number" placeholder="Max Mines" min="1" max="24">
+                    <input id="minesMinCountInput" type="number" placeholder="Min Mines" min="1" max="24" oninput="renderMinesPreview()">
+                    <input id="minesMaxCountInput" type="number" placeholder="Max Mines" min="1" max="24" oninput="renderMinesPreview()">
                 </div>
+
+                <label>Default mine count pre-selected for players:</label>
+                <input id="minesDefaultCountInput" type="number" min="1" max="24" placeholder="Default Mines (e.g. 3)">
 
                 <label>Payout RTP % (Return to Player):</label>
-                <input id="minesRtpInput" type="number" step="0.1" placeholder="RTP Percentage (e.g. 95)">
+                <input id="minesRtpInput" type="number" step="0.1" placeholder="RTP Percentage (e.g. 95)" oninput="renderMinesPreview()">
                 <p class="hint-text">Mine positions are always generated randomly and can't be seen or set by admin. RTP% only scales the payout multiplier curve — lower RTP means a bigger house edge, higher RTP means more generous payouts.</p>
 
-                <button onclick="saveMinesConfig()" class="btn-green" style="margin-top:8px;">Save Mines Settings</button>
+                <h4 style="margin:14px 0 6px;color:#fbbf24;font-size:13px;">🛡️ Risk Limits <span class="gvx-chip">NEW</span></h4>
+                <label>Maximum multiplier per round (0 = no cap):</label>
+                <input id="minesMaxMultInput" type="number" min="0" step="0.01" placeholder="e.g. 1000" oninput="renderMinesPreview()">
+                <label>Maximum payout per round (0 = no cap):</label>
+                <div class="two-cols">
+                    <input id="minesMaxPayoutInrInput" type="number" min="0" step="0.01" placeholder="Max INR payout">
+                    <input id="minesMaxPayoutUsdtInput" type="number" min="0" step="0.0001" placeholder="Max USDT payout">
+                </div>
+                <p class="hint-text">When a round reaches either cap, it is cashed out automatically at the capped amount so the player is never left with an unpayable multiplier.</p>
+                <label>Cool-down between rounds in seconds (0 = none):</label>
+                <input id="minesCooldownInput" type="number" min="0" max="3600" step="1" placeholder="e.g. 3">
+                <label>Daily round limit per player (0 = unlimited):</label>
+                <input id="minesDailyLimitInput" type="number" min="0" step="1" placeholder="e.g. 200">
+
+                <div style="margin-top:10px;padding:10px;border:1px solid rgba(251,191,36,.25);border-radius:12px;background:rgba(251,191,36,.05);">
+                    <b style="font-size:11px;color:#fbbf24;">🔎 Multiplier Preview</b>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+                        <span style="font-size:10px;color:var(--text-muted);">With</span>
+                        <select id="minesPreviewMines" onchange="renderMinesPreview()" style="width:auto;margin:0;"></select>
+                        <span style="font-size:10px;color:var(--text-muted);">mines — multiplier after N safe tiles, using the RTP and cap above:</span>
+                    </div>
+                    <div id="minesPreviewBox" class="gvx-preview"></div>
+                </div>
+
+                <button onclick="saveMinesConfig()" class="btn-green" style="margin-top:10px;">Save Mines Settings</button>
                 <div class="gv-admin-game-ui-note" style="margin-top:10px;padding:10px;border:1px solid rgba(96,165,250,.22);border-radius:12px;background:linear-gradient(145deg,rgba(59,130,246,.08),rgba(168,85,247,.05));">
-                    <b style="font-size:11px;color:#93c5fd;">🎨 User App UI Sync</b>
-                    <div style="font-size:9px;color:var(--text-muted);margin-top:4px;line-height:1.45;">Mines now uses the refreshed 5×5 tile board, clearer multiplier/potential-win display and the same currency/bet limits configured above. No separate UI setting is required.</div>
+                    <b style="font-size:11px;color:#93c5fd;">🎨 User App Sync</b>
+                    <div style="font-size:9px;color:var(--text-muted);margin-top:4px;line-height:1.45;">All settings above (including risk limits, cool-down, daily limit, default mines and the OFF message) are read live by the User App. No separate UI setting is required.</div>
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; justify-content:space-between; margin:16px 0 8px 0;">
-                <h4 style="color:var(--accent-cyan); margin:0; font-size:14px;">📜 Recent Mines Rounds</h4>
-                <button onclick="clearMinesRoundsHistory()" class="btn-red" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">🗑️ Clear History</button>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin:16px 0 8px 0;">
+                <h4 style="color:var(--accent-cyan); margin:0; font-size:14px;">📜 Mines Rounds</h4>
+                <div class="gvx-inline-btns" style="margin:0;">
+                    <button onclick="exportMinesRoundsCSV()" class="btn-gray">⬇ Export CSV</button>
+                    <button onclick="clearMinesRoundsHistory()" class="btn-red">🗑️ Clear History</button>
+                </div>
             </div>
-            <div id="minesRoundsContainer" style="max-height: 220px; overflow-y: auto; margin: 10px 0;">Loading rounds...</div>
+            <div class="gvx-filters">
+                <div><label>Status</label><select id="minesFStatus" onchange="renderMinesRoundsList()"><option value="">All</option><option value="active">Active</option><option value="cashed_out">Cashed out</option><option value="busted">Busted</option><option value="abandoned">Abandoned</option><option value="refunded">Refunded</option></select></div>
+                <div><label>Currency</label><select id="minesFCurrency" onchange="renderMinesRoundsList()"><option value="">All</option><option value="INR">INR</option><option value="USDT">USDT</option></select></div>
+                <div><label>Player UID</label><input id="minesFUid" oninput="renderMinesRoundsList()" placeholder="Search UID…"></div>
+                <div><label>Load last</label><select id="minesFLimit" onchange="loadMinesRoundsForAdmin()"><option value="100">100 rounds</option><option value="300" selected>300 rounds</option><option value="1000">1000 rounds</option><option value="5000">5000 rounds</option></select></div>
+            </div>
+            <div id="minesRoundsContainer" style="max-height: 320px; overflow-y: auto; margin: 10px 0;">Loading rounds...</div>
+
+            <div class="dash-panel" style="margin-top:14px;">
+                <div class="dash-panel-head"><h4>🧹 Stuck Round Cleanup <span class="gvx-chip">NEW</span></h4></div>
+                <div style="font-size:10px;color:var(--text-muted);line-height:1.5;">If a player closes the app mid-round, the bet stays debited and the round shows as <b>active</b> forever. Settle those here — either close them as lost (house keeps the bet) or refund the bet to the player's wallet.</div>
+                <div class="two-cols" style="margin-top:8px;">
+                    <input id="minesStuckMinutes" type="number" min="10" value="30" placeholder="Older than (minutes, min 10)">
+                    <div id="minesStuckCount" style="font-size:11px;align-self:center;color:#fbbf24;"></div>
+                </div>
+                <div class="gvx-inline-btns">
+                    <button onclick="settleStuckMinesRounds('abandon')" class="btn-gray">Close as lost</button>
+                    <button onclick="settleStuckMinesRounds('refund')" class="btn-green">Refund bets</button>
+                </div>
+            </div>
         </div>
 
         <!-- Membership Management Section -->
@@ -2197,6 +2397,10 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <div class="staff-kpi"><span>Total Staff</span><b id="staffTotalCount">0</b></div>
                 <div class="staff-kpi"><span>Active Staff</span><b id="staffActiveCount">0</b></div>
                 <div class="staff-kpi"><span>Custom Roles</span><b id="staffCustomRoleCount">0</b></div>
+                <div class="staff-kpi"><span>Disabled</span><b id="staffDisabledCount">0</b></div>
+                <div class="staff-kpi"><span>Team Referrals</span><b id="staffRefTotal">0</b></div>
+                <div class="staff-kpi"><span>Team Deposits</span><b id="staffDepTotal">₹0</b></div>
+                <div class="staff-kpi"><span>Salary / Pay Logged</span><b id="staffPaidTotal">₹0</b></div>
             </div>
             <div class="staff-grid">
                 <div class="staff-card">
@@ -2207,9 +2411,16 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                         <select id="staffRoleInput" onchange="renderStaffRoleHint()"></select>
                     </div>
                     <input id="staffContactInput" placeholder="Contact / work reference (optional)" style="margin-top:7px;">
+                    <div class="staff-form-grid" style="margin-top:7px;">
+                        <input id="staffSalaryInput" type="number" min="0" step="0.01" placeholder="Monthly salary ₹ (optional)">
+                        <input id="staffCommissionInput" type="number" min="0" max="100" step="0.1" placeholder="Commission % note (optional)">
+                        <input id="staffJoinDateInput" type="date" title="Joining date">
+                    </div>
                     <textarea id="staffNoteInput" rows="2" placeholder="Work notes / responsibilities (optional)" style="margin-top:7px;resize:vertical;"></textarea>
                     <div id="staffRoleHint" style="font-size:9px;color:var(--text-muted);margin:7px 0;">Select a role.</div>
-                    <button onclick="saveStaffRecord()" class="btn-green">💾 Save Staff Record</button>
+                    <div id="staffEditBanner" class="hidden">✏️ Editing an existing staff record — the UID is locked.</div>
+                    <button onclick="saveStaffRecord()" class="btn-green" id="staffSaveBtn">💾 Save Staff Record</button>
+                    <button onclick="clearStaffForm()" class="btn-gray hidden" id="staffCancelEditBtn" style="margin-top:6px;">✖ Cancel Edit</button>
                 </div>
                 <div class="staff-card">
                     <h4>⚙️ Create Custom Role</h4>
@@ -2241,6 +2452,9 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                         <option value="name">Sort: Name</option>
                         <option value="referrals">Sort: Referrals</option>
                         <option value="newest">Sort: Newest</option>
+                        <option value="deposited">Sort: Downline Deposits</option>
+                        <option value="earned">Sort: Referral Earned</option>
+                        <option value="paid">Sort: Pay Logged</option>
                     </select>
                 </div>
                 <div id="staffDirectorySummary" style="font-size:9px;color:var(--text-muted);margin-top:7px;"></div>
@@ -2896,13 +3110,46 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
 
             <h3 style="color:var(--accent-cyan); margin-top:22px; font-size: 16px; border-top: 1px solid rgba(var(--accent-rgb),0.25); padding-top:16px;">🎟️ Gift Codes</h3>
             <div class="control-group" style="margin-top:0; margin-bottom:10px; padding-top:4px;">
-                <input id="giftCodeCreateInput" type="text" placeholder="Gift Code (4-12 letters/numbers, e.g. WELCOME25)" maxlength="12" style="text-transform:uppercase;" oninput="this.value = this.value.toUpperCase();">
-                <input id="giftCodeAmountInput" type="number" placeholder="Reward Amount (₹)">
-                <input id="giftCodeMaxClaimsInput" type="number" placeholder="Max Claim Limit (e.g. 100, 0 for Unlimited)">
+                <label>Gift Code (4-30 letters/numbers)</label>
+                <input id="giftCodeCreateInput" type="text" placeholder="Gift Code (4-30 letters/numbers, e.g. WELCOME25)" maxlength="30" style="text-transform:uppercase;" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); updateGiftCodeLenHint();">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; align-items:end;">
+                    <div><label>Auto-generate length (4-30)</label><input id="giftCodeGenLenInput" type="number" min="4" max="30" step="1" value="10"></div>
+                    <div><button type="button" onclick="generateGiftCode()" class="btn-gray" style="width:100%;">🎲 Generate Random Code</button></div>
+                </div>
+                <p class="hint-text" id="giftCodeLenHint">0 / 30 characters (minimum 4)</p>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div><label>Reward Amount (min)</label><input id="giftCodeAmountInput" type="number" min="0" step="0.01" placeholder="Reward Amount"></div>
+                    <div><label>Random Reward Up To (optional)</label><input id="giftCodeAmountMaxInput" type="number" min="0" step="0.01" placeholder="Blank = fixed amount"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div><label>Reward Currency</label>
+                        <select id="giftCodeCurrencySelect">
+                            <option value="any">User's selected wallet</option>
+                            <option value="INR">Always INR (₹)</option>
+                            <option value="USDT">Always USDT</option>
+                        </select>
+                    </div>
+                    <div><label>Max Claim Limit</label><input id="giftCodeMaxClaimsInput" type="number" min="0" step="1" placeholder="e.g. 100, 0 for Unlimited"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div><label>Active From (optional)</label><input id="giftCodeStartsInput" type="datetime-local"></div>
+                    <div><label>Expires At (optional)</label><input id="giftCodeExpiryInput" type="datetime-local"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div><label>Min Approved Deposit Needed (₹) · 0 = none</label><input id="giftCodeMinDepositInput" type="number" min="0" step="0.01" placeholder="0"></div>
+                    <div><label>Turnover Multiplier Override · blank = global</label><input id="giftCodeTurnoverInput" type="number" min="0" max="1000" step="0.1" placeholder="Blank = use global rule"></div>
+                </div>
+                <label>Restrict to One User UID (optional)</label>
+                <input id="giftCodeUidInput" type="text" placeholder="Leave blank so anyone can redeem (e.g. A4F8K9)">
+                <label>Note shown to user after redeeming (optional)</label>
+                <input id="giftCodeNoteInput" type="text" maxlength="120" placeholder="e.g. Welcome bonus!">
+                <label class="restriction-toggle"><input id="giftCodeActiveInput" type="checkbox" checked> Code is active (users can redeem it)</label>
                 <div class="btn-group">
                     <button id="saveGiftCodeBtn" onclick="saveGiftCode()" class="btn-green">Create Gift Code</button>
+                    <button id="cancelGiftCodeEditBtn" onclick="resetGiftCodeForm()" class="btn-gray hidden">Cancel Edit</button>
                 </div>
-                <p class="hint-text">Each code can be redeemed once per user, up to the claim limit set above. Codes are not case-sensitive.</p>
+                <p class="hint-text">Each code can be redeemed once per user, up to the claim limit. Codes are not case-sensitive. Defaults for blank expiry / claim limit come from the Bonus / Gift Code rules.</p>
             </div>
             <div id="giftCodesAdminContainer" style="max-height: 250px; overflow-y: auto; margin: 10px 0;">Loading gift codes...</div>
 
@@ -2924,6 +3171,56 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <div class="kpi-card kpi-blue"><div class="kpi-label">🔁 RECURRING COMMITMENT</div><div class="kpi-value" id="txKpiRecurringTotal" style="font-size:18px;">₹0</div><div class="kpi-sub">Per cycle, active only</div></div>
                 <div class="kpi-card kpi-yellow"><div class="kpi-label">⚡ INSTANT CREDITED</div><div class="kpi-value" id="txKpiInstantTotal" style="font-size:18px;">₹0</div><div class="kpi-sub">All-time, one-time credits</div></div>
                 <div class="kpi-card kpi-purple"><div class="kpi-label">⏸ PAUSED RECORDS</div><div class="kpi-value" id="txKpiPausedCount" style="font-size:18px;">0</div></div>
+            </div>
+
+            <div class="dash-panel">
+                <div class="dash-panel-head"><h4>⚙️ Income Page &amp; Payout Settings</h4></div>
+                <div class="control-group" style="margin-top:0; margin-bottom:0; padding-top:0; border-top:none;">
+                    <p class="hint-text">Controls what users see on their Income page and how income payouts behave. Set a number to 0 to turn that rule off.</p>
+
+                    <label style="color:var(--accent-cyan); font-weight:700;">👁️ User Income Page</label>
+                    <label class="restriction-toggle"><input id="incSetPageEnabled" type="checkbox" checked> Show the Income page to users</label>
+                    <label>Message shown when the page is turned off</label>
+                    <input id="incSetDisabledMsg" type="text" maxlength="160" placeholder="The Income page is temporarily unavailable.">
+                    <label>Page title</label>
+                    <input id="incSetTitle" type="text" maxlength="60" placeholder="💰 Your Income Records">
+                    <label>Page intro text</label>
+                    <input id="incSetSubtitle" type="text" maxlength="160" placeholder="View all incomes, salaries, bonuses, and commissions assigned by the admin panel.">
+                    <label class="restriction-toggle"><input id="incSetShowSummary" type="checkbox" checked> Show summary cards (totals &amp; next credit)</label>
+                    <label class="restriction-toggle"><input id="incSetShowHistory" type="checkbox" checked> Show "Credit History" tab (recurring payouts received)</label>
+                    <label class="restriction-toggle"><input id="incSetShowNext" type="checkbox" checked> Show next-credit time &amp; payout progress on recurring records</label>
+                    <label class="restriction-toggle"><input id="incSetShowFilters" type="checkbox" checked> Show search, filters &amp; sorting</label>
+                    <label class="restriction-toggle"><input id="incSetHidePaused" type="checkbox"> Hide paused records from users</label>
+                    <label class="restriction-toggle"><input id="incSetHideCompleted" type="checkbox"> Hide completed records from users</label>
+                    <label>Records shown per user before "Show all" · 0 = show everything</label>
+                    <input id="incSetMaxRecords" type="number" min="0" step="1" placeholder="0">
+
+                    <label style="color:var(--accent-cyan); font-weight:700; margin-top:10px; display:block;">💸 Payout Rules</label>
+                    <label class="restriction-toggle"><input id="incSetAutoPaused" type="checkbox"> Pause ALL automatic (recurring) payouts</label>
+                    <div class="two-cols">
+                        <div><label>Max Amount Per Income Record · 0 = off</label><input id="incSetMaxAmount" type="number" min="0" step="0.01" placeholder="0"></div>
+                        <div><label>Max Active Recurring Records Per User · 0 = off</label><input id="incSetMaxAutoPerUser" type="number" min="0" step="1" placeholder="0"></div>
+                    </div>
+                    <label>Default credit time for new recurring records</label>
+                    <input id="incSetDefaultTime" type="time" value="00:00">
+
+                    <label style="color:var(--accent-cyan); font-weight:700; margin-top:10px; display:block;">🔒 Withdrawal Turnover on Income</label>
+                    <p class="hint-text">When above 0, credited income must be wagered this many times before it can be withdrawn (uses the same bonus-turnover lock as gift codes — make sure "Block withdrawal while bonus/gift turnover is incomplete" is on).</p>
+                    <div class="two-cols">
+                        <div><label>Turnover Multiplier · 0 = no lock</label><input id="incSetTurnover" type="number" min="0" max="1000" step="0.1" placeholder="0"></div>
+                        <div><label>Lock Expiry (days) · 0 = never</label><input id="incSetTurnoverExpiry" type="number" min="0" step="1" placeholder="0"></div>
+                    </div>
+                    <label>Apply turnover to these income types</label>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px 14px; margin-bottom:6px;">
+                        <label class="restriction-toggle" style="margin:0;"><input id="incSetTT_salary" type="checkbox" checked> Salary</label>
+                        <label class="restriction-toggle" style="margin:0;"><input id="incSetTT_bonus" type="checkbox" checked> Bonus</label>
+                        <label class="restriction-toggle" style="margin:0;"><input id="incSetTT_commission" type="checkbox" checked> Commission</label>
+                        <label class="restriction-toggle" style="margin:0;"><input id="incSetTT_reward" type="checkbox" checked> Reward</label>
+                        <label class="restriction-toggle" style="margin:0;"><input id="incSetTT_advance" type="checkbox" checked> Advance</label>
+                        <label class="restriction-toggle" style="margin:0;"><input id="incSetTT_refund" type="checkbox" checked> Refund</label>
+                    </div>
+                    <button onclick="saveIncomeSettings()" class="btn-green" style="margin-top:10px;">💾 Save Income Settings</button>
+                </div>
             </div>
 
             <div class="dash-panel">
@@ -2967,6 +3264,12 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                         <label>Time of Credit (HH:MM):</label>
                         <input id="txTime" type="time" value="00:00">
                         <p class="hint-text">Credited automatically the moment any admin has this panel open at/after the scheduled time — there's no background server, so it runs on a 60-second check while the panel is open.</p>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                            <div><label>Don't Start Before (optional)</label><input id="txStartAt" type="datetime-local"></div>
+                            <div><label>Stop After (optional)</label><input id="txEndAt" type="datetime-local"></div>
+                        </div>
+                        <label>Maximum Number of Payouts · 0 = unlimited</label>
+                        <input id="txMaxPayouts" type="number" min="0" step="1" placeholder="0">
                     </div>
 
                     <button onclick="assignAdminTransaction()" class="btn-green" style="margin-top:12px;">Assign Income Record</button>
@@ -2991,6 +3294,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                         <option value="all">All Status</option>
                         <option value="active">Active Only</option>
                         <option value="paused">Paused Only</option>
+                        <option value="completed">Completed Only</option>
                     </select>
                 </div>
                 <div id="adminTransactionsContainer" style="max-height: 320px; overflow-y: auto;">Loading income records...</div>
@@ -9456,43 +9760,179 @@ function formatAdminMoney(value){
             }
         }
 
+        // ---- Gift code helpers (4-30 character codes) ----
+        const GIFT_CODE_MIN_LEN = 4, GIFT_CODE_MAX_LEN = 30;
+
+        function updateGiftCodeLenHint() {
+            const el = document.getElementById('giftCodeLenHint');
+            const inp = document.getElementById('giftCodeCreateInput');
+            if (!el || !inp) return;
+            const n = (inp.value || '').length;
+            el.innerText = n + ' / ' + GIFT_CODE_MAX_LEN + ' characters (minimum ' + GIFT_CODE_MIN_LEN + ')';
+            el.style.color = (n > 0 && n < GIFT_CODE_MIN_LEN) ? 'var(--accent-red)' : '';
+        }
+
+        function generateGiftCode() {
+            let len = parseInt(document.getElementById('giftCodeGenLenInput').value, 10);
+            if (isNaN(len)) len = 10;
+            len = Math.min(GIFT_CODE_MAX_LEN, Math.max(GIFT_CODE_MIN_LEN, len));
+            document.getElementById('giftCodeGenLenInput').value = len;
+            // Skip look-alike characters (0/O, 1/I) so codes are easy to read out loud.
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let out = '';
+            const buf = new Uint32Array(len);
+            (window.crypto || window.msCrypto).getRandomValues(buf);
+            for (let i = 0; i < len; i++) out += chars[buf[i] % chars.length];
+            document.getElementById('giftCodeCreateInput').value = out;
+            updateGiftCodeLenHint();
+        }
+
+        function giftCodeToLocalInput(ms) {
+            if (!ms) return '';
+            const d = new Date(Number(ms));
+            const p = n => String(n).padStart(2, '0');
+            return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+        }
+
+        function resetGiftCodeForm() {
+            ['giftCodeCreateInput','giftCodeAmountInput','giftCodeAmountMaxInput','giftCodeMaxClaimsInput','giftCodeStartsInput','giftCodeExpiryInput','giftCodeMinDepositInput','giftCodeTurnoverInput','giftCodeUidInput','giftCodeNoteInput'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = '';
+            });
+            document.getElementById('giftCodeCurrencySelect').value = 'any';
+            document.getElementById('giftCodeActiveInput').checked = true;
+            document.getElementById('giftCodeCreateInput').disabled = false;
+            document.getElementById('saveGiftCodeBtn').innerText = 'Create Gift Code';
+            document.getElementById('cancelGiftCodeEditBtn').classList.add('hidden');
+            updateGiftCodeLenHint();
+        }
+
+        function editGiftCode(code) {
+            db.ref('gift_codes/' + code).once('value').then(snap => {
+                if (!snap.exists()) return alert('This gift code no longer exists.');
+                const g = snap.val() || {};
+                const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = (v == null ? '' : v); };
+                set('giftCodeCreateInput', code);
+                document.getElementById('giftCodeCreateInput').disabled = true;
+                set('giftCodeAmountInput', g.amount);
+                set('giftCodeAmountMaxInput', Number(g.amountMax) > 0 ? g.amountMax : '');
+                set('giftCodeMaxClaimsInput', Number(g.maxClaims) || 0);
+                set('giftCodeCurrencySelect', (g.currency === 'INR' || g.currency === 'USDT') ? g.currency : 'any');
+                set('giftCodeStartsInput', giftCodeToLocalInput(g.startsAt));
+                set('giftCodeExpiryInput', giftCodeToLocalInput(g.expiresAt));
+                set('giftCodeMinDepositInput', Number(g.minDeposit) > 0 ? g.minDeposit : '');
+                set('giftCodeTurnoverInput', (g.turnoverOverride === 0 || Number(g.turnoverOverride) > 0) ? g.turnoverOverride : '');
+                set('giftCodeUidInput', g.allowedUid || '');
+                set('giftCodeNoteInput', g.note || '');
+                document.getElementById('giftCodeActiveInput').checked = g.active !== false;
+                document.getElementById('saveGiftCodeBtn').innerText = 'Save Changes';
+                document.getElementById('cancelGiftCodeEditBtn').classList.remove('hidden');
+                updateGiftCodeLenHint();
+                document.getElementById('giftCodeCreateInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+
+        function toggleGiftCodeActive(code, makeActive) {
+            db.ref('gift_codes/' + code).update({ active: !!makeActive, updatedAt: Date.now() });
+        }
+
         function saveGiftCode() {
             const codeInput = document.getElementById('giftCodeCreateInput');
             const code = (codeInput.value || '').trim().toUpperCase();
+            const isEdit = codeInput.disabled;
             const amount = Number(document.getElementById('giftCodeAmountInput').value);
-            const maxClaims = Number(document.getElementById('giftCodeMaxClaimsInput').value) || 0;
+            const amountMaxRaw = document.getElementById('giftCodeAmountMaxInput').value;
+            const amountMax = amountMaxRaw === '' ? 0 : Number(amountMaxRaw);
+            const maxClaimsRaw = document.getElementById('giftCodeMaxClaimsInput').value;
+            const startsRaw = document.getElementById('giftCodeStartsInput').value;
+            const expiryRaw = document.getElementById('giftCodeExpiryInput').value;
+            const minDeposit = Math.max(0, Number(document.getElementById('giftCodeMinDepositInput').value) || 0);
+            const turnoverRaw = document.getElementById('giftCodeTurnoverInput').value;
+            const allowedUid = (document.getElementById('giftCodeUidInput').value || '').trim().toUpperCase();
+            const note = (document.getElementById('giftCodeNoteInput').value || '').trim();
+            const currency = document.getElementById('giftCodeCurrencySelect').value;
+            const active = document.getElementById('giftCodeActiveInput').checked;
 
-            if (!/^[A-Z0-9]{4,12}$/.test(code)) {
-                return alert('Please enter a valid gift code: 4-12 characters, letters and/or numbers only.');
+            if (!new RegExp('^[A-Z0-9]{' + GIFT_CODE_MIN_LEN + ',' + GIFT_CODE_MAX_LEN + '}$').test(code)) {
+                return alert('Please enter a valid gift code: ' + GIFT_CODE_MIN_LEN + '-' + GIFT_CODE_MAX_LEN + ' characters, letters and/or numbers only.');
             }
             if (isNaN(amount) || amount <= 0) {
                 return alert('Please enter a valid reward amount.');
             }
+            if (amountMaxRaw !== '' && (isNaN(amountMax) || amountMax <= amount)) {
+                return alert('"Random Reward Up To" must be greater than the minimum Reward Amount (or leave it blank for a fixed amount).');
+            }
+            if (maxClaimsRaw !== '' && (isNaN(Number(maxClaimsRaw)) || Number(maxClaimsRaw) < 0)) {
+                return alert('Max Claim Limit must be 0 or more.');
+            }
+            let turnoverOverride = null;
+            if (turnoverRaw !== '') {
+                turnoverOverride = Number(turnoverRaw);
+                if (isNaN(turnoverOverride) || turnoverOverride < 0 || turnoverOverride > 1000) return alert('Turnover multiplier must be between 0 and 1000.');
+            }
+            const startsAt = startsRaw ? new Date(startsRaw).getTime() : 0;
+            let expiresAt = expiryRaw ? new Date(expiryRaw).getTime() : 0;
+            if (startsRaw && isNaN(startsAt)) return alert('Invalid "Active From" date.');
+            if (expiryRaw && isNaN(expiresAt)) return alert('Invalid expiry date.');
+            if (startsAt && expiresAt && expiresAt <= startsAt) return alert('Expiry must be after the "Active From" date.');
+            if (expiresAt && expiresAt <= Date.now() && !isEdit) return alert('Expiry must be in the future.');
 
-            db.ref('gift_codes/' + code).once('value').then(existingSnap => {
-                if (existingSnap.exists()) {
+            Promise.all([
+                db.ref('gift_codes/' + code).once('value'),
+                db.ref('control/bonusRestrictions').once('value')
+            ]).then(([existingSnap, cfgSnap]) => {
+                const cfg = cfgSnap.val() || {};
+                let maxClaims = maxClaimsRaw === '' ? (Number(cfg.giftDefaultMaxClaims) || 0) : Number(maxClaimsRaw);
+                if (cfg.giftAllowUnlimited === false && maxClaims === 0) {
+                    return alert('Unlimited-claim gift codes are disabled in Bonus / Gift Code rules. Please set a Max Claim Limit above 0.');
+                }
+                if (!expiresAt && Number(cfg.giftDefaultExpiryHours) > 0 && !(existingSnap.exists() && isEdit)) {
+                    expiresAt = Date.now() + Number(cfg.giftDefaultExpiryHours) * 3600000;
+                }
+                if (existingSnap.exists() && !isEdit) {
                     if (!confirm('A gift code "' + code + '" already exists. Overwrite its details?')) return;
                 }
-
-                const createdAt = Date.now();
-
-                db.ref('gift_codes/' + code).set({
+                const prev = existingSnap.val() || {};
+                const now = Date.now();
+                const payload = {
                     amount: amount,
+                    amountMax: amountMax > 0 ? amountMax : 0,
                     maxClaims: maxClaims,
-                    timestamp: createdAt
-                }).then(() => {
+                    currency: currency,
+                    startsAt: startsAt,
+                    expiresAt: expiresAt,
+                    minDeposit: minDeposit,
+                    turnoverOverride: turnoverOverride,
+                    allowedUid: allowedUid,
+                    note: note,
+                    active: active,
+                    timestamp: prev.timestamp || now,
+                    updatedAt: now
+                };
+                db.ref('gift_codes/' + code).set(payload).then(() => {
                     db.ref('gift_codes_history').push({
-                        code: code,
-                        amount: amount,
-                        maxClaims: maxClaims,
-                        timestamp: createdAt
+                        code: code, amount: amount, amountMax: payload.amountMax, maxClaims: maxClaims,
+                        currency: currency, startsAt: startsAt, expiresAt: expiresAt, minDeposit: minDeposit,
+                        allowedUid: allowedUid, action: existingSnap.exists() ? 'updated' : 'created',
+                        timestamp: now
                     });
-                    alert('Gift code "' + code + '" created successfully!');
-                    codeInput.value = '';
-                    document.getElementById('giftCodeAmountInput').value = '';
-                    document.getElementById('giftCodeMaxClaimsInput').value = '';
-                });
+                    alert('Gift code "' + code + '" ' + (existingSnap.exists() ? 'updated' : 'created') + ' successfully!');
+                    resetGiftCodeForm();
+                }).catch(e => alert('Could not save gift code: ' + e.message));
             });
+        }
+
+        function giftCodeAmountLabel(g) {
+            const sym = g.currency === 'USDT' ? 'USDT ' : '₹';
+            const max = Number(g.amountMax) || 0;
+            return max > Number(g.amount) ? sym + g.amount + ' – ' + sym + max + ' (random)' : sym + g.amount;
+        }
+
+        function giftCodeStatusLabel(g) {
+            const now = Date.now();
+            if (g.active === false) return '<span style="color:#94a3b8; font-weight:800;">⏸ DISABLED</span>';
+            if (Number(g.expiresAt) > 0 && Number(g.expiresAt) <= now) return '<span style="color:var(--accent-red); font-weight:800;">⌛ EXPIRED</span>';
+            if (Number(g.startsAt) > now) return '<span style="color:var(--accent-gold); font-weight:800;">🕒 SCHEDULED</span>';
+            return '<span style="color:#34d399; font-weight:800;">✅ ACTIVE</span>';
         }
 
         function loadGiftCodesAdminList() {
@@ -9505,13 +9945,14 @@ function formatAdminMoney(value){
                 }
 
                 snap.forEach(child => {
-                    const g = child.val();
+                    const g = child.val() || {};
                     const code = child.key;
                     const maxClaims = Number(g.maxClaims) || 0;
 
                     db.ref('gift_code_claims/' + code).once('value', claimsSnap => {
                         const claimsCount = claimsSnap.numChildren();
                         const createdStr = g.timestamp ? new Date(g.timestamp).toLocaleString() : 'N/A';
+                        const fmt = ms => ms ? new Date(Number(ms)).toLocaleString() : '—';
 
                         let card = document.getElementById('admin_giftcode_' + code);
                         if (!card) {
@@ -9521,13 +9962,24 @@ function formatAdminMoney(value){
                             container.appendChild(card);
                         }
 
+                        const extra = [];
+                        if (Number(g.startsAt) > 0) extra.push('<b>Active From:</b> ' + fmt(g.startsAt));
+                        if (Number(g.expiresAt) > 0) extra.push('<b>Expires:</b> ' + fmt(g.expiresAt));
+                        if (Number(g.minDeposit) > 0) extra.push('<b>Min Deposit:</b> ₹' + g.minDeposit);
+                        if (g.turnoverOverride === 0 || Number(g.turnoverOverride) > 0) extra.push('<b>Turnover:</b> ' + g.turnoverOverride + '×');
+                        if (g.allowedUid) extra.push('<b>Only UID:</b> ' + g.allowedUid);
+                        if (g.note) extra.push('<b>Note:</b> ' + String(g.note).replace(/</g, '&lt;'));
+
                         card.innerHTML = `
-                            <b style="color:var(--accent-cyan); font-size:14px;">🎟️ Code: ${code}</b><br>
-                            <b>Amount:</b> ₹${g.amount}<br>
+                            <b style="color:var(--accent-cyan); font-size:14px;">🎟️ Code: ${code}</b> ${giftCodeStatusLabel(g)}<br>
+                            <b>Amount:</b> ${giftCodeAmountLabel(g)}<br>
                             <b>Claim Limit:</b> ${maxClaims === 0 ? 'Unlimited' : maxClaims}<br>
                             <b>Times Redeemed:</b> ${claimsCount} / ${maxClaims === 0 ? 'Unlimited' : maxClaims}<br>
+                            ${extra.length ? extra.join('<br>') + '<br>' : ''}
                             <b>Created:</b> ${createdStr}<br>
                             <div class="action-row">
+                                <button onclick="editGiftCode('${code}')" class="btn-gray">✏️ Edit</button>
+                                <button onclick="toggleGiftCodeActive('${code}', ${g.active === false})" class="btn-yellow">${g.active === false ? '▶️ Enable' : '⏸ Disable'}</button>
                                 <button onclick="deleteGiftCode('${code}')" class="btn-red">Delete</button>
                             </div>
                         `;
@@ -9577,10 +10029,12 @@ function formatAdminMoney(value){
                     const card = document.createElement('div');
                     card.className = 'reward-admin-item';
                     card.innerHTML = `
-                        <b style="color:var(--accent-cyan); font-size:14px;">🎟️ Code: ${entry.code}</b><br>
-                        <b>Amount:</b> ₹${entry.amount}<br>
+                        <b style="color:var(--accent-cyan); font-size:14px;">🎟️ Code: ${entry.code}</b> <span style="color:var(--text-muted); font-size:11px;">(${entry.action || 'created'})</span><br>
+                        <b>Amount:</b> ${giftCodeAmountLabel(entry)}<br>
                         <b>Claim Limit:</b> ${maxClaims === 0 ? 'Unlimited' : maxClaims}<br>
-                        <b>Created:</b> ${createdStr}<br>
+                        ${Number(entry.expiresAt) > 0 ? '<b>Expires:</b> ' + new Date(Number(entry.expiresAt)).toLocaleString() + '<br>' : ''}
+                        ${entry.allowedUid ? '<b>Only UID:</b> ' + entry.allowedUid + '<br>' : ''}
+                        <b>Logged:</b> ${createdStr}<br>
                     `;
                     container.appendChild(card);
                 });
@@ -9924,6 +10378,7 @@ function formatAdminMoney(value){
             document.getElementById('mainAdminMenu').classList.add('hidden');
             document.getElementById('transactionsAdminSection').classList.remove('hidden');
             loadAdminTransactionsList();
+            loadIncomeSettings();
         }
 
         function closeTransactionsAdminModal() {
@@ -9941,6 +10396,100 @@ function formatAdminMoney(value){
             }
         }
 
+        // ---- Income page / payout settings (stored at control/incomeSettings) ----
+        let adminIncomeSettings = {};
+        const ADMIN_INCOME_TYPES = ['salary', 'bonus', 'commission', 'reward', 'advance', 'refund'];
+
+        function fillIncomeSettingsForm() {
+            const s = adminIncomeSettings || {};
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = (v == null ? '' : v); };
+            const ck = (id, v) => { const el = document.getElementById(id); if (el) el.checked = !!v; };
+            ck('incSetPageEnabled', s.pageEnabled !== false);
+            set('incSetDisabledMsg', s.disabledMessage || '');
+            set('incSetTitle', s.pageTitle || '');
+            set('incSetSubtitle', s.pageSubtitle || '');
+            ck('incSetShowSummary', s.showSummary !== false);
+            ck('incSetShowHistory', s.showCreditHistory !== false);
+            ck('incSetShowNext', s.showNextCredit !== false);
+            ck('incSetShowFilters', s.showFilters !== false);
+            ck('incSetHidePaused', s.hidePaused);
+            ck('incSetHideCompleted', s.hideCompleted);
+            set('incSetMaxRecords', s.maxRecordsShown || 0);
+            ck('incSetAutoPaused', s.autoPayoutsPaused);
+            set('incSetMaxAmount', s.maxAmountPerRecord || 0);
+            set('incSetMaxAutoPerUser', s.maxActiveAutoPerUser || 0);
+            set('incSetDefaultTime', s.defaultCreditTime || '00:00');
+            set('incSetTurnover', s.turnoverMultiplier || 0);
+            set('incSetTurnoverExpiry', s.turnoverExpiryDays || 0);
+            const tt = s.turnoverTypes || {};
+            ADMIN_INCOME_TYPES.forEach(t => ck('incSetTT_' + t, tt[t] !== false));
+            const tm = document.getElementById('txTime');
+            if (tm && s.defaultCreditTime) tm.value = s.defaultCreditTime;
+        }
+
+        function loadIncomeSettings() {
+            return db.ref('control/incomeSettings').once('value').then(snap => {
+                adminIncomeSettings = snap.val() || {};
+                fillIncomeSettingsForm();
+                return adminIncomeSettings;
+            }).catch(() => adminIncomeSettings);
+        }
+
+        function saveIncomeSettings() {
+            const n = id => Math.max(0, Number((document.getElementById(id) || {}).value) || 0);
+            const ck = id => !!(document.getElementById(id) || {}).checked;
+            const tv = id => ((document.getElementById(id) || {}).value || '').trim();
+            const turnoverTypes = {};
+            ADMIN_INCOME_TYPES.forEach(t => { turnoverTypes[t] = ck('incSetTT_' + t); });
+            const c = {
+                pageEnabled: ck('incSetPageEnabled'),
+                disabledMessage: tv('incSetDisabledMsg'),
+                pageTitle: tv('incSetTitle'),
+                pageSubtitle: tv('incSetSubtitle'),
+                showSummary: ck('incSetShowSummary'),
+                showCreditHistory: ck('incSetShowHistory'),
+                showNextCredit: ck('incSetShowNext'),
+                showFilters: ck('incSetShowFilters'),
+                hidePaused: ck('incSetHidePaused'),
+                hideCompleted: ck('incSetHideCompleted'),
+                maxRecordsShown: Math.floor(n('incSetMaxRecords')),
+                autoPayoutsPaused: ck('incSetAutoPaused'),
+                maxAmountPerRecord: n('incSetMaxAmount'),
+                maxActiveAutoPerUser: Math.floor(n('incSetMaxAutoPerUser')),
+                defaultCreditTime: tv('incSetDefaultTime') || '00:00',
+                turnoverMultiplier: n('incSetTurnover'),
+                turnoverExpiryDays: Math.floor(n('incSetTurnoverExpiry')),
+                turnoverTypes: turnoverTypes,
+                updatedAt: Date.now()
+            };
+            if (c.turnoverMultiplier > 1000) return alert('Turnover multiplier cannot exceed 1000×.');
+            db.ref('control/incomeSettings').set(c).then(() => {
+                adminIncomeSettings = c;
+                alert('Income settings saved successfully.');
+            }).catch(e => alert('Could not save income settings: ' + e.message));
+        }
+
+        // Creates the withdrawal-turnover lock entry for credited income (same tree the gift-code lock uses).
+        function adminRecordIncomeTurnover(userAuthKey, amount, currency, incomeType) {
+            const s = adminIncomeSettings || {};
+            const m = Number(s.turnoverMultiplier) || 0;
+            amount = Number(amount) || 0;
+            if (!userAuthKey || m <= 0 || amount <= 0) return Promise.resolve();
+            if ((s.turnoverTypes || {})[incomeType] === false) return Promise.resolve();
+            const days = Number(s.turnoverExpiryDays) || 0, t = Date.now();
+            return db.ref('bonus_credits/' + userAuthKey).push({
+                source: 'income', incomeType: incomeType, amount: amount,
+                currency: String(currency || 'INR').toUpperCase(), timestamp: t,
+                turnoverMultiplier: m, requiredTurnover: Number((amount * m).toFixed(2)),
+                expiresAt: days > 0 ? t + days * 86400000 : 0, status: 'active'
+            });
+        }
+
+        function adminCreditWallet(userAuthKey, currency, amount) {
+            const walletField = currency === 'USDT' ? 'usdtBalance' : 'balance';
+            return db.ref('users/' + userAuthKey + '/' + walletField).transaction(b => (Number(b) || 0) + Number(amount));
+        }
+
         function assignAdminTransaction() {
             const targetUid = document.getElementById('txUserUid').value.trim();
             const incomeType = document.getElementById('txIncomeType').value;
@@ -9948,9 +10497,28 @@ function formatAdminMoney(value){
             const currency = document.getElementById('txCurrency')?.value || 'INR';
             const description = document.getElementById('txDescription').value.trim();
             const mode = document.getElementById('txMode').value;
+            const cfg = adminIncomeSettings || {};
 
             if (!targetUid) return alert('Please enter target user UID.');
             if (isNaN(amount) || amount <= 0) return alert('Please enter a valid amount.');
+            if (Number(cfg.maxAmountPerRecord) > 0 && amount > Number(cfg.maxAmountPerRecord)) {
+                return alert('Amount exceeds the maximum allowed per income record (' + Number(cfg.maxAmountPerRecord) + '). Change this in Income Page & Payout Settings.');
+            }
+
+            let startAt = 0, endAt = 0, maxPayouts = 0;
+            if (mode === 'automatic') {
+                const sRaw = document.getElementById('txStartAt').value, eRaw = document.getElementById('txEndAt').value;
+                startAt = sRaw ? new Date(sRaw).getTime() : 0;
+                endAt = eRaw ? new Date(eRaw).getTime() : 0;
+                maxPayouts = Math.max(0, Math.floor(Number(document.getElementById('txMaxPayouts').value) || 0));
+                if ((sRaw && isNaN(startAt)) || (eRaw && isNaN(endAt))) return alert('Invalid start/stop date.');
+                if (startAt && endAt && endAt <= startAt) return alert('"Stop After" must be later than "Don\'t Start Before".');
+                if (endAt && endAt <= Date.now()) return alert('"Stop After" must be in the future.');
+                if (Number(cfg.maxActiveAutoPerUser) > 0) {
+                    const active = adminTransactionsCache.filter(t => t.userUid === targetUid && t.mode === 'automatic' && t.status !== 'completed').length;
+                    if (active >= Number(cfg.maxActiveAutoPerUser)) return alert('This user already has the maximum number of recurring income records (' + Number(cfg.maxActiveAutoPerUser) + ').');
+                }
+            }
 
             db.ref('users').orderByChild('customUid').equalTo(targetUid).once('value').then(snap => {
                 if (!snap.exists()) {
@@ -9976,16 +10544,16 @@ function formatAdminMoney(value){
                     txPayload.frequency = document.getElementById('txFrequency').value;
                     txPayload.weekendDay = document.getElementById('txWeekendDay').value;
                     txPayload.time = document.getElementById('txTime').value;
+                    txPayload.startAt = startAt;
+                    txPayload.endAt = endAt;
+                    txPayload.maxPayouts = maxPayouts;
+                    txPayload.payoutCount = 0;
                 }
 
                 const newRef = db.ref('admin_transactions').push();
                 newRef.set(txPayload).then(() => {
                     if (mode === 'instant') {
-                        const walletField = currency === 'USDT' ? 'usdtBalance' : 'balance';
-                        db.ref('users/' + userAuthKey + '/' + walletField).once('value', bSnap => {
-                            const curBal = Number(bSnap.val()) || 0;
-                            db.ref('users/' + userAuthKey).update({ [walletField]: curBal + amount });
-                        });
+                        adminCreditWallet(userAuthKey, currency, amount).then(() => adminRecordIncomeTurnover(userAuthKey, amount, currency, incomeType));
                         alert(`Instant ${currency} ${incomeType} of ${amount} successfully assigned and credited to UID ${targetUid}!`);
                     } else {
                         alert(`Automatic recurring ${currency} ${incomeType} of ${amount} successfully assigned to UID ${targetUid}! It will be credited automatically per the schedule while an admin has this panel open.`);
@@ -9993,6 +10561,7 @@ function formatAdminMoney(value){
                     document.getElementById('txUserUid').value = '';
                     document.getElementById('txAmount').value = '';
                     document.getElementById('txDescription').value = '';
+                    ['txStartAt', 'txEndAt', 'txMaxPayouts'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
                 });
             });
         }
@@ -10030,8 +10599,9 @@ function formatAdminMoney(value){
             if (search) rows = rows.filter(tx => String(tx.userUid || '').toLowerCase().includes(search));
             if (typeFilter !== 'all') rows = rows.filter(tx => tx.incomeType === typeFilter);
             if (currencyFilter !== 'all') rows = rows.filter(tx => (tx.currency || 'INR') === currencyFilter);
-            if (statusFilter === 'active') rows = rows.filter(tx => tx.status !== 'paused');
+            if (statusFilter === 'active') rows = rows.filter(tx => tx.status !== 'paused' && tx.status !== 'completed');
             else if (statusFilter === 'paused') rows = rows.filter(tx => tx.status === 'paused');
+            else if (statusFilter === 'completed') rows = rows.filter(tx => tx.status === 'completed');
             rows.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
             const countEl = document.getElementById('txRecordCount');
@@ -10040,7 +10610,7 @@ function formatAdminMoney(value){
             // KPI summary — computed from the full (unfiltered) cache, not the search/filter result.
             let activeCount = 0, recurringTotal = 0, instantTotal = 0, pausedCount = 0;
             adminTransactionsCache.forEach(tx => {
-                if (tx.status !== 'paused' && tx.mode === 'automatic') { activeCount++; recurringTotal += Number(tx.amount) || 0; }
+                if (tx.status !== 'paused' && tx.status !== 'completed' && tx.mode === 'automatic') { activeCount++; recurringTotal += Number(tx.amount) || 0; }
                 if (tx.status === 'paused') pausedCount++;
                 if (tx.mode === 'instant') instantTotal += Number(tx.amount) || 0;
             });
@@ -10066,22 +10636,29 @@ function formatAdminMoney(value){
 
             container.innerHTML = rows.map(tx => {
                 const isPaused = tx.status === 'paused';
-                const modeColor = tx.mode === 'automatic' ? (isPaused ? '#94a3b8' : '#34d399') : 'var(--accent-gold)';
+                const isDone = tx.status === 'completed';
+                const modeColor = tx.mode === 'automatic' ? ((isPaused || isDone) ? '#94a3b8' : '#34d399') : 'var(--accent-gold)';
                 const freqDetails = tx.mode === 'automatic' ? ` | Freq: ${tx.frequency || 'every_day'} (${tx.weekendDay || 'all'}), Time: ${tx.time || '00:00'}` : '';
                 const lastCreditedLine = tx.mode === 'automatic'
                     ? `<div class="u360-row" style="margin-top:2px;"><b>Last Credited:</b> ${tx.lastCreditedAt ? new Date(tx.lastCreditedAt).toLocaleString() : 'Not yet — waiting for next scheduled run'}</div>`
+                    : '';
+                const payoutLine = tx.mode === 'automatic'
+                    ? `<div class="u360-row" style="margin-top:2px;"><b>Payouts:</b> ${Number(tx.payoutCount) || 0} / ${Number(tx.maxPayouts) > 0 ? Number(tx.maxPayouts) : '∞'}${Number(tx.startAt) > 0 ? ' | <b>Starts:</b> ' + new Date(Number(tx.startAt)).toLocaleString() : ''}${Number(tx.endAt) > 0 ? ' | <b>Ends:</b> ' + new Date(Number(tx.endAt)).toLocaleString() : ''}</div>`
                     : '';
                 const typeIcon = typeIcons[tx.incomeType] || '💰';
                 return `
                     <div class="transaction-admin-item">
                         <b>${typeIcon} UID:</b> <span class="uid-badge">${tx.userUid}</span> | <b>Type:</b> ${(tx.incomeType || '').toUpperCase()}
-                        ${isPaused ? '<span style="color:#94a3b8; font-weight:800; font-size:10.5px; margin-left:6px;">⏸ PAUSED</span>' : ''}<br>
+                        ${isPaused ? '<span style="color:#94a3b8; font-weight:800; font-size:10.5px; margin-left:6px;">⏸ PAUSED</span>' : ''}
+                        ${isDone ? '<span style="color:#34d399; font-weight:800; font-size:10.5px; margin-left:6px;">✅ COMPLETED</span>' : ''}<br>
                         <b>Amount:</b> <span style="color:var(--accent-gold); font-weight:bold;">${tx.currency === 'USDT' ? 'USDT ' : '₹'}${tx.amount}</span> | <b>Description:</b> ${tx.description || 'N/A'}<br>
                         <b>Mode:</b> <span style="color:${modeColor}; font-weight:bold;">${(tx.mode || '').toUpperCase()}${freqDetails}</span>
                         ${lastCreditedLine}
+                        ${payoutLine}
                         <div class="u360-row" style="margin-top:2px; color:var(--text-muted); font-size:11px;">Assigned on: ${tx.timestamp ? new Date(tx.timestamp).toLocaleString() : 'N/A'}</div>
                         <div class="action-row">
-                            ${tx.mode === 'automatic' ? `<button onclick="toggleAdminTransactionPause('${tx.key}', '${tx.status || 'active'}')" class="btn-yellow">${isPaused ? '▶️ Resume' : '⏸ Pause'}</button>` : ''}
+                            ${tx.mode === 'automatic' && !isDone ? `<button onclick="toggleAdminTransactionPause('${tx.key}', '${tx.status || 'active'}')" class="btn-yellow">${isPaused ? '▶️ Resume' : '⏸ Pause'}</button>` : ''}
+                            ${tx.mode === 'automatic' && !isDone ? `<button onclick="editAdminTransaction('${tx.key}')" class="btn-gray">✏️ Edit</button>` : ''}
                             <button onclick="deleteAdminTransaction('${tx.key}')" class="btn-red">🗑️ Stop / Remove</button>
                         </div>
                     </div>
@@ -10092,6 +10669,24 @@ function formatAdminMoney(value){
         function toggleAdminTransactionPause(txKey, currentStatus) {
             const newStatus = currentStatus === 'paused' ? 'active' : 'paused';
             db.ref('admin_transactions/' + txKey).update({ status: newStatus });
+        }
+
+        // Edit the amount / description / payout cap of a recurring record that is still running.
+        function editAdminTransaction(txKey) {
+            const tx = adminTransactionsCache.find(t => t.key === txKey);
+            if (!tx) return;
+            const amtRaw = prompt('New amount per payout (' + (tx.currency || 'INR') + '):', tx.amount);
+            if (amtRaw === null) return;
+            const amt = Number(amtRaw);
+            if (isNaN(amt) || amt <= 0) return alert('Please enter a valid amount.');
+            const cap = Number((adminIncomeSettings || {}).maxAmountPerRecord) || 0;
+            if (cap > 0 && amt > cap) return alert('Amount exceeds the maximum allowed per income record (' + cap + ').');
+            const desc = prompt('Description / note shown to the user:', tx.description || '');
+            if (desc === null) return;
+            const maxRaw = prompt('Maximum number of payouts (0 = unlimited). Already paid: ' + (Number(tx.payoutCount) || 0), Number(tx.maxPayouts) || 0);
+            if (maxRaw === null) return;
+            const maxP = Math.max(0, Math.floor(Number(maxRaw) || 0));
+            db.ref('admin_transactions/' + txKey).update({ amount: amt, description: desc.trim(), maxPayouts: maxP });
         }
 
         function deleteAdminTransaction(txKey) {
@@ -10105,8 +10700,14 @@ function formatAdminMoney(value){
         // which already had one). This runs the same way: a periodic check, while any
         // admin has the panel open, that credits records whose schedule has come due.
         function checkDueAutomaticIncome() {
-            db.ref('admin_transactions').once('value').then(snap => {
+            Promise.all([
+                db.ref('admin_transactions').once('value'),
+                db.ref('control/incomeSettings').once('value')
+            ]).then(([snap, setSnap]) => {
                 if (!snap.exists()) return;
+                const cfg = setSnap.val() || {};
+                adminIncomeSettings = cfg;
+                if (cfg.autoPayoutsPaused) return; // admin has paused every recurring payout
                 const now = new Date();
                 const nowMs = now.getTime();
                 const isWeekend = (now.getDay() === 0 || now.getDay() === 6);
@@ -10115,8 +10716,16 @@ function formatAdminMoney(value){
                 snap.forEach(child => {
                     const tx = child.val();
                     const key = child.key;
-                    if (tx.mode !== 'automatic' || tx.status === 'paused') return;
+                    if (!tx || tx.mode !== 'automatic' || tx.status === 'paused' || tx.status === 'completed') return;
                     if (!tx.userAuthKey || !(Number(tx.amount) > 0)) return;
+
+                    // Stop conditions: end date passed or payout cap reached.
+                    const paid = Number(tx.payoutCount) || 0, cap = Number(tx.maxPayouts) || 0;
+                    if ((cap > 0 && paid >= cap) || (Number(tx.endAt) > 0 && nowMs > Number(tx.endAt))) {
+                        db.ref('admin_transactions/' + key).update({ status: 'completed', completedAt: nowMs });
+                        return;
+                    }
+                    if (Number(tx.startAt) > 0 && nowMs < Number(tx.startAt)) return; // not started yet
 
                     if (tx.weekendDay === 'skip_weekends' && isWeekend) return;
                     if (tx.weekendDay === 'weekends_only' && !isWeekend) return;
@@ -10128,14 +10737,21 @@ function formatAdminMoney(value){
                     const lastRef = tx.lastCreditedAt || tx.timestamp || 0;
                     if (nowMs - lastRef < periodMs) return; // not due yet
 
-                    const walletField = tx.currency === 'USDT' ? 'usdtBalance' : 'balance';
-                    db.ref('users/' + tx.userAuthKey + '/' + walletField).once('value').then(bSnap => {
-                        const curBal = Number(bSnap.val()) || 0;
-                        db.ref('users/' + tx.userAuthKey).update({ [walletField]: curBal + Number(tx.amount) });
-                        db.ref('admin_transactions/' + key).update({ lastCreditedAt: nowMs });
+                    // Claim this payout atomically so two open admin panels can never double-credit it.
+                    db.ref('admin_transactions/' + key + '/lastCreditedAt').transaction(cur => {
+                        if ((cur || 0) !== (tx.lastCreditedAt || 0)) return; // someone else already paid it
+                        return nowMs;
+                    }).then(res => {
+                        if (!res.committed) return;
+                        const currency = tx.currency || 'INR';
+                        adminCreditWallet(tx.userAuthKey, currency, Number(tx.amount)).then(() => adminRecordIncomeTurnover(tx.userAuthKey, tx.amount, currency, tx.incomeType));
+                        const newCount = paid + 1;
+                        const upd = { payoutCount: newCount };
+                        if (cap > 0 && newCount >= cap) { upd.status = 'completed'; upd.completedAt = nowMs; }
+                        db.ref('admin_transactions/' + key).update(upd);
                         db.ref('admin_transaction_credit_log').push({
                             txKey: key, userUid: tx.userUid, userAuthKey: tx.userAuthKey,
-                            incomeType: tx.incomeType, amount: tx.amount, currency: tx.currency || 'INR', timestamp: nowMs
+                            incomeType: tx.incomeType, amount: tx.amount, currency: currency, mode: 'automatic', timestamp: nowMs
                         });
                     });
                 });
@@ -10165,12 +10781,13 @@ function saveBonusRestrictions(){
     giftCodeBlockMessage:document.getElementById('bonusGiftBlockMessage').value.trim(),
     maxGiftAmountPerClaim:n('bonusMaxGiftAmount'),maxGiftClaimsPerDay:n('bonusMaxGiftClaimsDay'),maxGiftAmountPerDay:n('bonusMaxGiftAmountDay'),giftCooldownMinutes:n('bonusGiftCooldown'),
     requireDepositForGift:document.getElementById('bonusRequireDepositGift').checked,minimumDepositForGift:n('bonusMinimumDepositGift'),
-    giftTurnoverMultiplier:n('bonusGiftTurnover'),bonusTurnoverMultiplier:n('bonusTurnover'),giftBonusExpiryDays:n('bonusGiftExpiry'),bonusExpiryDays:n('bonusExpiry'),bonusWithdrawalLock:document.getElementById('bonusWithdrawalLock').checked,updatedAt:Date.now()
+    giftTurnoverMultiplier:n('bonusGiftTurnover'),bonusTurnoverMultiplier:n('bonusTurnover'),giftBonusExpiryDays:n('bonusGiftExpiry'),bonusExpiryDays:n('bonusExpiry'),bonusWithdrawalLock:document.getElementById('bonusWithdrawalLock').checked,
+    giftDefaultExpiryHours:n('bonusGiftDefaultExpiryHours'),giftDefaultMaxClaims:n('bonusGiftDefaultMaxClaims'),giftAllowUnlimited:document.getElementById('bonusGiftAllowUnlimited').checked,updatedAt:Date.now()
   };
   if(c.giftTurnoverMultiplier>1000||c.bonusTurnoverMultiplier>1000)return alert('Turnover multiplier cannot exceed 1000×.');
   db.ref('control/bonusRestrictions').set(c).then(()=>alert('Bonus / Gift Code restriction rules saved successfully.')).catch(e=>alert('Could not save bonus rules: '+e.message));
 }
-function loadBonusRestrictions(){db.ref('control/bonusRestrictions').once('value',snap=>{const d=snap.val()||{},set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v==null?'':v;},ck=(id,v)=>{const e=document.getElementById(id);if(e)e.checked=!!v;};ck('bonusGiftBlocked',d.giftCodesBlocked);set('bonusGiftBlockMessage',d.giftCodeBlockMessage||'Gift codes are temporarily unavailable. Please try again later.');set('bonusMaxGiftAmount',d.maxGiftAmountPerClaim||0);set('bonusMaxGiftClaimsDay',d.maxGiftClaimsPerDay||0);set('bonusMaxGiftAmountDay',d.maxGiftAmountPerDay||0);set('bonusGiftCooldown',d.giftCooldownMinutes||0);ck('bonusRequireDepositGift',d.requireDepositForGift);set('bonusMinimumDepositGift',d.minimumDepositForGift||0);set('bonusGiftTurnover',d.giftTurnoverMultiplier||0);set('bonusTurnover',d.bonusTurnoverMultiplier||0);set('bonusGiftExpiry',d.giftBonusExpiryDays||0);set('bonusExpiry',d.bonusExpiryDays||0);ck('bonusWithdrawalLock',d.bonusWithdrawalLock!==false);});}
+function loadBonusRestrictions(){db.ref('control/bonusRestrictions').once('value',snap=>{const d=snap.val()||{},set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v==null?'':v;},ck=(id,v)=>{const e=document.getElementById(id);if(e)e.checked=!!v;};ck('bonusGiftBlocked',d.giftCodesBlocked);set('bonusGiftBlockMessage',d.giftCodeBlockMessage||'Gift codes are temporarily unavailable. Please try again later.');set('bonusMaxGiftAmount',d.maxGiftAmountPerClaim||0);set('bonusMaxGiftClaimsDay',d.maxGiftClaimsPerDay||0);set('bonusMaxGiftAmountDay',d.maxGiftAmountPerDay||0);set('bonusGiftCooldown',d.giftCooldownMinutes||0);ck('bonusRequireDepositGift',d.requireDepositForGift);set('bonusMinimumDepositGift',d.minimumDepositForGift||0);set('bonusGiftTurnover',d.giftTurnoverMultiplier||0);set('bonusTurnover',d.bonusTurnoverMultiplier||0);set('bonusGiftExpiry',d.giftBonusExpiryDays||0);set('bonusExpiry',d.bonusExpiryDays||0);ck('bonusWithdrawalLock',d.bonusWithdrawalLock!==false);set('bonusGiftDefaultExpiryHours',d.giftDefaultExpiryHours||0);set('bonusGiftDefaultMaxClaims',d.giftDefaultMaxClaims||0);ck('bonusGiftAllowUnlimited',d.giftAllowUnlimited!==false);});}
 if(typeof db!=='undefined' && db) loadBonusRestrictions();
 </script>
 
@@ -11325,6 +11942,673 @@ function closeHomeSettingsAdminModal() {
     window.uidmScan(true);
   };
 })();
+</script>
+
+<script id="gv-admin-v3-features">
+/* ===== GAME VERSE ADMIN v3: Staff + Mines + Play History Digest upgrades ===== */
+(function(){
+'use strict';
+const esc=v=>escapeHtml(String(v==null?'':v));
+const inr=v=>'₹'+Number(v||0).toFixed(2);
+const usd=v=>'₮ '+Number(v||0).toFixed(4);
+const money=(v,c)=>c==='USDT'?usd(v):inr(v);
+const pnlHtml=(v,c)=>{const n=Number(v||0);const cls=n>0?'gvx-pos':n<0?'gvx-neg':'gvx-zero';return '<span class="'+cls+'">'+money(n,c)+'</span>';};
+const setText=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+const dayKey=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+function downloadCsv(name,rows){const csv=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
+const adminEmail=()=>{try{return (firebase.auth().currentUser||{}).email||'admin';}catch(e){return 'admin';}};
+
+/* ======================================================================
+   PLAY HISTORY DIGEST
+   ====================================================================== */
+let phdRows=[];            // every settled round, all games
+let phdFiltered=[];        // after filters
+let phdOpenUser=null;
+window.phdRangeChanged=function(){
+  const custom=document.getElementById('phdRange').value==='custom';
+  document.getElementById('phdFromWrap').classList.toggle('hidden',!custom);
+  document.getElementById('phdToWrap').classList.toggle('hidden',!custom);
+  applyPlayHistoryFilters();
+};
+window.loadPlayHistoryDigest=function(){
+  const c=document.getElementById('playHistoryDigestContainer'); if(c)c.innerHTML='Loading play history...';
+  return Promise.all([
+    db.ref('game_rounds').once('value'),
+    db.ref('mines_rounds').once('value'),
+    db.ref('colour_clash/entries').once('value')
+  ]).then(([a,b,w])=>{
+    const rows=[];
+    const add=(r,gameId,gameName,bet,win,result,ts)=>{
+      if(!r)return;
+      const cur=String(r.currency||'INR').trim().toUpperCase()==='USDT'?'USDT':'INR';
+      bet=Number(bet)||0; win=Number(win)||0;
+      rows.push({userId:r.userId||'unknown',customUid:String(r.customUid||'---'),gameId:gameId||'unknown',gameName:gameName||gameId||'Unknown',bet,win,currency:cur,result:result||(win>0?'win':'loss'),ts:Number(ts)||0});
+    };
+    if(a&&a.exists())a.forEach(ch=>{const r=ch.val()||{};add(r,r.gameId,r.gameName||r.gameId,r.betAmount,r.winAmount,r.result,r.timestamp);});
+    if(b&&b.exists())b.forEach(ch=>{const r=ch.val()||{};const st=String(r.status||'').toLowerCase();if(st==='cashed_out'||st==='busted')add(r,'mines','Mines',r.betAmount,r.payout,st==='cashed_out'?'win':'loss',r.timestamp);});
+    if(w&&w.exists())w.forEach(ch=>{const r=ch.val()||{};const st=String(r.status||'').toLowerCase();if(st==='pending'||st==='cancelled'||st==='refunded')return;const win=r.winAmount!=null?r.winAmount:r.payout;add(r,'colour_clash','WINGO',r.amount,win,null,r.timestamp);});
+    phdRows=rows;
+    const sel=document.getElementById('phdGame');
+    if(sel){const cur=sel.value;const games={};rows.forEach(r=>games[r.gameId]=r.gameName);sel.innerHTML='<option value="">All games</option>'+Object.keys(games).sort((x,y)=>games[x].localeCompare(games[y])).map(k=>'<option value="'+esc(k)+'">'+esc(games[k])+'</option>').join('');sel.value=games[cur]?cur:'';}
+    applyPlayHistoryFilters();
+  }).catch(err=>{if(c)c.innerHTML='<p style="color:#f87171;">⚠️ Could not load play history: '+esc(err.message)+'</p>';});
+};
+function phdRangeBounds(){
+  const v=(document.getElementById('phdRange')||{}).value||'all';
+  const now=new Date();const sod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();const DAY=86400000;
+  if(v==='today')return [sod,Infinity,'Today'];
+  if(v==='yesterday')return [sod-DAY,sod,'Yesterday'];
+  if(v==='7d')return [sod-6*DAY,Infinity,'Last 7 days'];
+  if(v==='30d')return [sod-29*DAY,Infinity,'Last 30 days'];
+  if(v==='custom'){
+    const f=document.getElementById('phdFrom').value,t=document.getElementById('phdTo').value;
+    const from=f?new Date(f+'T00:00:00').getTime():0;const to=t?new Date(t+'T00:00:00').getTime()+DAY:Infinity;
+    return [from,to,'Custom range'];
+  }
+  return [0,Infinity,'All time'];
+}
+window.applyPlayHistoryFilters=function(){
+  const [from,to,label]=phdRangeBounds();
+  const cur=(document.getElementById('phdCurrency')||{}).value||'';
+  const game=(document.getElementById('phdGame')||{}).value||'';
+  const q=String((document.getElementById('phdUserSearch')||{}).value||'').trim().toLowerCase();
+  phdFiltered=phdRows.filter(r=>{
+    if(from>0||to<Infinity){if(!r.ts||r.ts<from||r.ts>=to)return false;}
+    if(cur&&r.currency!==cur)return false;
+    if(game&&r.gameId!==game)return false;
+    if(q&&!r.customUid.toLowerCase().includes(q))return false;
+    return true;
+  });
+  const undated=phdRows.filter(r=>!r.ts).length;
+  setText('phdFilterNote','Showing <b>'+phdFiltered.length+'</b> of '+phdRows.length+' rounds · '+esc(label)+(undated&&(from>0||to<Infinity)?' · '+undated+' older round(s) without a timestamp are excluded from dated views':''));
+  computePlayHistoryDigest();
+};
+function computePlayHistoryDigest(){
+  const rows=phdFiltered;
+  const byUser={},byGame={};
+  rows.forEach(r=>{
+    const k=r.userId+'|'+r.customUid;
+    const u=byUser[k]||(byUser[k]={userId:r.userId,customUid:r.customUid,rounds:0,wins:0,totalWageredINR:0,totalWonINR:0,totalWageredUSDT:0,totalWonUSDT:0,last:0});
+    u.rounds++;if(r.result==='win')u.wins++;if(r.ts>u.last)u.last=r.ts;
+    if(r.currency==='USDT'){u.totalWageredUSDT+=r.bet;u.totalWonUSDT+=r.win;}else{u.totalWageredINR+=r.bet;u.totalWonINR+=r.win;}
+    const gk=r.gameId+'_'+r.currency;
+    const g=byGame[gk]||(byGame[gk]={gameId:r.gameId,gameName:r.gameName,currency:r.currency,wagered:0,won:0,rounds:0,wins:0});
+    g.wagered+=r.bet;g.won+=r.win;g.rounds++;if(r.result==='win')g.wins++;
+  });
+  window.playHistoryDigestData=playHistoryDigestData=Object.values(byUser).map(u=>({...u,netINR:u.totalWonINR-u.totalWageredINR,netUSDT:u.totalWonUSDT-u.totalWageredUSDT}));
+  window.playHistoryDigestGameBreakdown=playHistoryDigestGameBreakdown=Object.values(byGame).map(g=>({...g,profit:g.wagered-g.won})).sort((x,y)=>y.profit-x.profit);
+  const sum=(cur,f)=>rows.filter(r=>r.currency===cur).reduce((n,r)=>n+r[f],0);
+  const wi=sum('INR','bet'),pi=sum('INR','win'),wu=sum('USDT','bet'),pu=sum('USDT','win');
+  const cnt=cur=>rows.filter(r=>r.currency===cur).length;
+  const big=cur=>rows.filter(r=>r.currency===cur).reduce((m,r)=>Math.max(m,r.win),0);
+  const both=(a,b)=>inr(a)+' | '+usd(b);
+  setText('phdTotalRounds',rows.length);
+  setText('phdPlayers',playHistoryDigestData.length);
+  setText('phdTotalWagered',both(wi,wu));
+  setText('phdTotalPaidOut',both(pi,pu));
+  setText('phdNetProfit',pnlHtml(wi-pi,'INR')+' | '+pnlHtml(wu-pu,'USDT'));
+  setText('phdRtp',(wi?(pi/wi*100).toFixed(1)+'%':'—')+' | '+(wu?(pu/wu*100).toFixed(1)+'%':'—'));
+  setText('phdAvgBet',(cnt('INR')?inr(wi/cnt('INR')):'—')+' | '+(cnt('USDT')?usd(wu/cnt('USDT')):'—'));
+  setText('phdBiggestWin',inr(big('INR'))+' | '+usd(big('USDT')));
+  renderPlayHistoryGameBreakdown();renderPlayHistoryDaily();renderPlayHistoryTop();renderPlayHistoryDigest();
+}
+window.renderPlayHistoryGameBreakdown=function(){
+  const c=document.getElementById('playHistoryGameBreakdownContainer');if(!c)return;
+  const g=playHistoryDigestGameBreakdown;
+  if(!g.length){c.innerHTML='<p style="font-size:12px;color:var(--text-muted);">No data for these filters.</p>';return;}
+  c.innerHTML='<div class="gvx-wrap"><table class="gvx-table"><thead><tr><th>Game</th><th>Cur</th><th>Rounds</th><th>Player win %</th><th>Wagered</th><th>Paid out</th><th>House P&amp;L</th><th>RTP</th></tr></thead><tbody>'+g.map(x=>'<tr><td><b>'+esc(x.gameName)+'</b></td><td>'+x.currency+'</td><td>'+x.rounds+'</td><td>'+(x.rounds?(x.wins/x.rounds*100).toFixed(1):'0.0')+'%</td><td>'+money(x.wagered,x.currency)+'</td><td>'+money(x.won,x.currency)+'</td><td>'+pnlHtml(x.profit,x.currency)+'</td><td>'+(x.wagered?(x.won/x.wagered*100).toFixed(1)+'%':'—')+'</td></tr>').join('')+'</tbody></table></div>';
+};
+function renderPlayHistoryDaily(){
+  const c=document.getElementById('phdDailyContainer');if(!c)return;
+  const days={};
+  phdFiltered.forEach(r=>{if(!r.ts)return;const k=dayKey(r.ts);const d=days[k]||(days[k]={rounds:0,wi:0,pi:0,wu:0,pu:0,players:new Set()});d.rounds++;d.players.add(r.customUid);if(r.currency==='USDT'){d.wu+=r.bet;d.pu+=r.win;}else{d.wi+=r.bet;d.pi+=r.win;}});
+  const keys=Object.keys(days).sort().reverse().slice(0,31);
+  if(!keys.length){c.innerHTML='<p style="font-size:12px;color:var(--text-muted);">No dated rounds for these filters.</p>';return;}
+  const maxAbs=Math.max(1,...keys.map(k=>Math.abs(days[k].wi-days[k].pi)));
+  c.innerHTML='<div class="gvx-wrap"><table class="gvx-table"><thead><tr><th>Date</th><th>Rounds</th><th>Players</th><th>INR wagered</th><th>INR house P&amp;L</th><th></th><th>USDT wagered</th><th>USDT house P&amp;L</th></tr></thead><tbody>'+keys.map(k=>{const d=days[k];const p=d.wi-d.pi;const w=Math.round(Math.abs(p)/maxAbs*100);return '<tr><td><b>'+k+'</b></td><td>'+d.rounds+'</td><td>'+d.players.size+'</td><td>'+inr(d.wi)+'</td><td>'+pnlHtml(p,'INR')+'</td><td><div class="gvx-bar"><i style="width:'+w+'%;background:'+(p>=0?'#34d399':'#f87171')+'"></i></div></td><td>'+usd(d.wu)+'</td><td>'+pnlHtml(d.wu-d.pu,'USDT')+'</td></tr>';}).join('')+'</tbody></table></div><div style="font-size:9px;color:var(--text-muted);">Latest 31 days in range. House P&amp;L = wagered − paid out.</div>';
+}
+function renderPlayHistoryTop(){
+  const c=document.getElementById('phdTopContainer');if(!c)return;
+  const users=playHistoryDigestData;
+  if(!users.length){c.innerHTML='<p style="font-size:12px;color:var(--text-muted);">No players for these filters.</p>';return;}
+  const block=(cur)=>{
+    const key=cur==='USDT'?'netUSDT':'netINR';
+    const active=users.filter(u=>(cur==='USDT'?u.totalWageredUSDT:u.totalWageredINR)>0);
+    if(!active.length)return '';
+    const winners=[...active].sort((a,b)=>b[key]-a[key]).filter(u=>u[key]>0).slice(0,5);
+    const losers=[...active].sort((a,b)=>a[key]-b[key]).filter(u=>u[key]<0).slice(0,5);
+    const li=(u,sign)=>'<tr><td><span class="uid-badge">'+esc(u.customUid)+'</span></td><td>'+u.rounds+'</td><td>'+pnlHtml(sign*u[key],cur)+'</td></tr>';
+    return '<div class="gvx-two" style="margin-bottom:8px;"><div><b style="font-size:11px;color:#34d399;">Top winners (players ahead) — '+cur+'</b><div class="gvx-wrap"><table class="gvx-table" style="min-width:0"><thead><tr><th>UID</th><th>Rounds</th><th>Player profit</th></tr></thead><tbody>'+(winners.map(u=>li(u,1)).join('')||'<tr><td colspan="3">None</td></tr>')+'</tbody></table></div></div><div><b style="font-size:11px;color:#f87171;">Biggest losers (house gain) — '+cur+'</b><div class="gvx-wrap"><table class="gvx-table" style="min-width:0"><thead><tr><th>UID</th><th>Rounds</th><th>Player loss</th></tr></thead><tbody>'+(losers.map(u=>li(u,-1)).join('')||'<tr><td colspan="3">None</td></tr>')+'</tbody></table></div></div></div>';
+  };
+  c.innerHTML=(block('INR')+block('USDT'))||'<p style="font-size:12px;color:var(--text-muted);">No data.</p>';
+}
+window.renderPlayHistoryDigest=function(sortKey){
+  const c=document.getElementById('playHistoryDigestContainer');if(!c)return;
+  window.playHistoryDigestSortKey=playHistoryDigestSortKey=sortKey||playHistoryDigestSortKey||'wagered';
+  const sk=playHistoryDigestSortKey;
+  const sorted=[...(playHistoryDigestData||[])].sort((a,b)=>{
+    if(sk==='won')return (b.totalWonINR+b.totalWonUSDT)-(a.totalWonINR+a.totalWonUSDT);
+    if(sk==='net')return (b.netINR+b.netUSDT)-(a.netINR+a.netUSDT);
+    if(sk==='rounds')return b.rounds-a.rounds;
+    if(sk==='recent')return b.last-a.last;
+    return (b.totalWageredINR+b.totalWageredUSDT)-(a.totalWageredINR+a.totalWageredUSDT);
+  });
+  if(!sorted.length){c.innerHTML='<p>No game rounds match these filters.</p>';return;}
+  c.innerHTML=sorted.slice(0,300).map(u=>{
+    const inrPnl=u.totalWageredINR-u.totalWonINR,usdtPnl=u.totalWageredUSDT-u.totalWonUSDT;
+    const rate=u.rounds?((u.wins/u.rounds)*100).toFixed(1):'0.0';
+    const key=u.userId+'|'+u.customUid;const open=phdOpenUser===key;
+    return '<div class="user-item phd-digest-card">'
+      +'<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;"><div><b class="phd-label">UID:</b> <span class="phd-value uid-badge">'+esc(u.customUid)+'</span></div><div style="font-size:10px;color:var(--text-muted);">Last played: '+(u.last?new Date(u.last).toLocaleString():'—')+'</div></div>'
+      +'<div><b class="phd-label">INR:</b> <span class="phd-value">Wagered '+inr(u.totalWageredINR)+' &nbsp; Won '+inr(u.totalWonINR)+' &nbsp; House P&amp;L '+pnlHtml(inrPnl,'INR')+'</span></div>'
+      +'<div><b class="phd-label">USDT:</b> <span class="phd-value">Wagered '+usd(u.totalWageredUSDT)+' &nbsp; Won '+usd(u.totalWonUSDT)+' &nbsp; House P&amp;L '+pnlHtml(usdtPnl,'USDT')+'</span></div>'
+      +'<div><b class="phd-label">Rounds:</b> <span class="phd-value">'+u.rounds+'</span> &nbsp;&nbsp; <b class="phd-label">Win Rate:</b> <span class="phd-value">'+rate+'%</span> &nbsp;&nbsp; <button class="btn-gray" style="width:auto;margin:0;padding:3px 9px;font-size:10px;" data-k="'+esc(key)+'" onclick="togglePlayHistoryUser(this.dataset.k)">'+(open?'Hide rounds':'View rounds')+'</button></div>'
+      +(open?playHistoryUserRounds(u):'')+'</div>';
+  }).join('')+(sorted.length>300?'<p style="font-size:10px;color:var(--text-muted);">Showing top 300 of '+sorted.length+' players — narrow with the filters or export CSV for the full list.</p>':'');
+};
+function playHistoryUserRounds(u){
+  const list=phdFiltered.filter(r=>r.userId===u.userId&&r.customUid===u.customUid).sort((a,b)=>b.ts-a.ts).slice(0,25);
+  return '<div class="gvx-wrap"><table class="gvx-table" style="min-width:0"><thead><tr><th>Time</th><th>Game</th><th>Bet</th><th>Won</th><th>Result</th></tr></thead><tbody>'+list.map(r=>'<tr><td>'+(r.ts?new Date(r.ts).toLocaleString():'—')+'</td><td>'+esc(r.gameName)+'</td><td>'+money(r.bet,r.currency)+'</td><td>'+money(r.win,r.currency)+'</td><td>'+(r.result==='win'?'<span class="gvx-pos">WIN</span>':'<span class="gvx-neg">LOSS</span>')+'</td></tr>').join('')+'</tbody></table></div><div style="font-size:9px;color:var(--text-muted);">Latest 25 rounds in the current filter.</div>';
+}
+window.togglePlayHistoryUser=function(key){phdOpenUser=phdOpenUser===key?null:key;renderPlayHistoryDigest();};
+window.exportPlayHistoryDigestCSV=function(kind){
+  if(!phdFiltered.length)return alert('No data to export for the current filters.');
+  if(kind==='rounds'){
+    downloadCsv('game-verse-rounds-'+dayKey(Date.now())+'.csv',[['Time','UID','Game','Currency','Bet','Won','Result'],...phdFiltered.slice().sort((a,b)=>b.ts-a.ts).map(r=>[r.ts?new Date(r.ts).toISOString():'',r.customUid,r.gameName,r.currency,r.bet,r.win,r.result])]);
+  }else{
+    downloadCsv('game-verse-players-'+dayKey(Date.now())+'.csv',[['UID','Rounds','Wins','Win rate %','INR wagered','INR won','INR house P&L','USDT wagered','USDT won','USDT house P&L','Last played'],...playHistoryDigestData.map(u=>[u.customUid,u.rounds,u.wins,u.rounds?(u.wins/u.rounds*100).toFixed(1):0,u.totalWageredINR.toFixed(2),u.totalWonINR.toFixed(2),(u.totalWageredINR-u.totalWonINR).toFixed(2),u.totalWageredUSDT.toFixed(4),u.totalWonUSDT.toFixed(4),(u.totalWageredUSDT-u.totalWonUSDT).toFixed(4),u.last?new Date(u.last).toISOString():''])]);
+  }
+};
+
+/* ======================================================================
+   MINES CONTROL
+   ====================================================================== */
+let minesRoundsCache=[];
+let minesRoundsRef=null;
+const MINES_DEFAULTS={enabled:true,minBet:10,maxBet:5000,minBetUsdt:0.1,maxBetUsdt:5000,minMines:1,maxMines:10,rtpPercent:95,defaultMines:3,maxMultiplier:0,maxPayout:0,maxPayoutUsdt:0,cooldownSeconds:0,dailyRoundLimit:0,offMessage:''};
+const $v=id=>document.getElementById(id);
+window.saveMinesConfig=function(){
+  const n=id=>Number($v(id).value);
+  const enabled=$v('minesEnabledSelect').value==='true';
+  const minBet=n('minesMinBetInput'),maxBet=n('minesMaxBetInput'),minBetUsdt=n('minesMinBetUsdtInput'),maxBetUsdt=n('minesMaxBetUsdtInput');
+  const minMines=n('minesMinCountInput'),maxMines=n('minesMaxCountInput'),rtp=n('minesRtpInput');
+  const defMines=n('minesDefaultCountInput')||3,maxMult=n('minesMaxMultInput')||0,maxPay=n('minesMaxPayoutInrInput')||0,maxPayU=n('minesMaxPayoutUsdtInput')||0;
+  const cool=n('minesCooldownInput')||0,daily=n('minesDailyLimitInput')||0;
+  const offMessage=String($v('minesOffMessageInput').value||'').trim().slice(0,140);
+  if(isNaN(minBet)||minBet<=0)return alert('Please enter a valid minimum bet amount.');
+  if(isNaN(maxBet)||maxBet<minBet)return alert('Maximum INR bet must be greater than or equal to minimum INR bet.');
+  if(isNaN(minBetUsdt)||minBetUsdt<=0)return alert('Please enter a valid minimum USDT bet amount.');
+  if(isNaN(maxBetUsdt)||maxBetUsdt<minBetUsdt)return alert('Maximum USDT bet must be greater than or equal to minimum USDT bet.');
+  if(isNaN(minMines)||minMines<1||minMines>24)return alert('Minimum mines must be between 1 and 24.');
+  if(isNaN(maxMines)||maxMines<minMines||maxMines>24)return alert('Maximum mines must be between the minimum value and 24.');
+  if(isNaN(rtp)||rtp<=0||rtp>100)return alert('Please enter a valid RTP percentage (1-100).');
+  if(defMines<minMines||defMines>maxMines)return alert('Default mine count must be between the minimum and maximum mine count.');
+  if(maxMult!==0&&maxMult<1.01)return alert('Maximum multiplier must be 0 (no cap) or at least 1.01.');
+  if(maxPay<0||maxPayU<0)return alert('Maximum payout cannot be negative (use 0 for no cap).');
+  if(cool<0||cool>3600)return alert('Cool-down must be between 0 and 3600 seconds.');
+  if(daily<0||Math.floor(daily)!==daily)return alert('Daily round limit must be a whole number (0 = unlimited).');
+  db.ref('control/minesConfig').update({enabled,minBet,maxBet,minBetUsdt,maxBetUsdt,minMines,maxMines,rtpPercent:rtp,defaultMines:Math.round(defMines),maxMultiplier:maxMult,maxPayout:maxPay,maxPayoutUsdt:maxPayU,cooldownSeconds:Math.round(cool),dailyRoundLimit:daily,offMessage,updatedAt:Date.now(),updatedBy:adminEmail()})
+    .then(()=>alert('Mines settings updated successfully!')).catch(err=>alert('Error updating settings: '+err.message));
+};
+let minesCfgBound=false;
+window.loadMinesConfigSetting=function(){
+  if(minesCfgBound)return;minesCfgBound=true;
+  db.ref('control/minesConfig').on('value',snap=>{
+    const d=Object.assign({},MINES_DEFAULTS,snap.val()||{});
+    $v('minesEnabledSelect').value=d.enabled===false?'false':'true';
+    $v('minesOffMessageInput').value=d.offMessage||'';
+    $v('minesMinBetInput').value=d.minBet||10;$v('minesMaxBetInput').value=d.maxBet||5000;
+    $v('minesMinBetUsdtInput').value=d.minBetUsdt||0.1;$v('minesMaxBetUsdtInput').value=d.maxBetUsdt||5000;
+    $v('minesMinCountInput').value=d.minMines||1;$v('minesMaxCountInput').value=d.maxMines||10;
+    $v('minesDefaultCountInput').value=d.defaultMines||3;
+    $v('minesRtpInput').value=d.rtpPercent||95;
+    $v('minesMaxMultInput').value=d.maxMultiplier||0;
+    $v('minesMaxPayoutInrInput').value=d.maxPayout||0;$v('minesMaxPayoutUsdtInput').value=d.maxPayoutUsdt||0;
+    $v('minesCooldownInput').value=d.cooldownSeconds||0;$v('minesDailyLimitInput').value=d.dailyRoundLimit||0;
+    renderMinesPreview();
+  });
+};
+window.renderMinesPreview=function(){
+  const sel=$v('minesPreviewMines'),box=$v('minesPreviewBox');if(!sel||!box)return;
+  const lo=Math.max(1,Number($v('minesMinCountInput').value)||1),hi=Math.min(24,Number($v('minesMaxCountInput').value)||10);
+  const prev=sel.value;let opts='';for(let i=lo;i<=hi;i++)opts+='<option value="'+i+'">'+i+'</option>';
+  if(sel.dataset.range!==lo+'-'+hi){sel.innerHTML=opts;sel.dataset.range=lo+'-'+hi;if(prev&&Number(prev)>=lo&&Number(prev)<=hi)sel.value=prev;}
+  const m=Number(sel.value)||lo,rtp=(Number($v('minesRtpInput').value)||95)/100,cap=Number($v('minesMaxMultInput').value)||0;
+  const out=[];let mult=1;const safe=25-m;
+  for(let i=0;i<safe;i++){const left=25-i;mult*=left/(left-m);let act=mult*rtp;let capped=false;if(cap>0&&act>cap){act=cap;capped=true;}out.push('<span>'+(i+1)+' → <b>'+act.toFixed(2)+'x</b>'+(capped?' 🔒':'')+'</span>');if(capped)break;}
+  box.innerHTML=out.join('');
+};
+window.loadMinesRoundsForAdmin=function(){
+  const container=$v('minesRoundsContainer');if(!container)return;
+  const limit=Number(($v('minesFLimit')||{}).value)||300;
+  if(minesRoundsRef){try{minesRoundsRef.off('value');}catch(e){}}
+  minesRoundsRef=db.ref('mines_rounds').limitToLast(limit);
+  minesRoundsRef.on('value',snap=>{
+    const list=[];if(snap.exists())snap.forEach(ch=>{list.push({key:ch.key,...(ch.val()||{})});});
+    list.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    minesRoundsCache=list;renderMinesStats();renderMinesRoundsList();
+  },err=>{container.innerHTML='<p style="color:#f87171;">⚠️ Could not load mines rounds: '+esc(err.message)+'</p>';});
+};
+const curOf=r=>String(r.currency||'INR').trim().toUpperCase()==='USDT'?'USDT':'INR';
+function renderMinesStats(){
+  const g=$v('minesStatsGrid');if(!g)return;
+  const L=minesRoundsCache;
+  const settled=L.filter(r=>r.status==='cashed_out'||r.status==='busted');
+  const cashed=settled.filter(r=>r.status==='cashed_out'),busted=settled.filter(r=>r.status==='busted');
+  const active=L.filter(r=>r.status==='active');
+  const f=(cur,fn)=>settled.filter(r=>curOf(r)===cur).reduce((n,r)=>n+fn(r),0);
+  const wI=f('INR',r=>Number(r.betAmount)||0),pI=f('INR',r=>Number(r.payout)||0),wU=f('USDT',r=>Number(r.betAmount)||0),pU=f('USDT',r=>Number(r.payout)||0);
+  const bust=settled.length?(busted.length/settled.length*100).toFixed(1)+'%':'—';
+  const avgM=settled.length?(settled.reduce((n,r)=>n+(Number(r.minesCount)||0),0)/settled.length).toFixed(1):'—';
+  const avgT=settled.length?(settled.reduce((n,r)=>n+(Number(r.revealedCount)||0),0)/settled.length).toFixed(1):'—';
+  const bigI=cashed.filter(r=>curOf(r)==='INR').reduce((m,r)=>Math.max(m,Number(r.payout)||0),0),bigU=cashed.filter(r=>curOf(r)==='USDT').reduce((m,r)=>Math.max(m,Number(r.payout)||0),0);
+  const bigX=cashed.reduce((m,r)=>Math.max(m,Number(r.multiplier)||0),0);
+  const players=new Set(L.map(r=>r.customUid||r.userId)).size;
+  const card=(l,v)=>'<div class="stat-card"><span>'+l+'</span><b style="font-size:13px;">'+v+'</b></div>';
+  g.innerHTML=card('Rounds loaded',L.length)+card('Players',players)+card('Active now',active.length)+card('Cashed out',cashed.length)+card('Busted',busted.length)+card('Bust rate',bust)
+    +card('Wagered',inr(wI)+'<br>'+usd(wU))+card('Paid out',inr(pI)+'<br>'+usd(pU))+card('House P&amp;L',pnlHtml(wI-pI,'INR')+'<br>'+pnlHtml(wU-pU,'USDT'))
+    +card('Observed RTP',(wI?(pI/wI*100).toFixed(1)+'%':'—')+' / '+(wU?(pU/wU*100).toFixed(1)+'%':'—'))
+    +card('Avg mines / tiles opened',avgM+' / '+avgT)+card('Biggest win',inr(bigI)+'<br>'+usd(bigU)+'<br>'+bigX.toFixed(2)+'x');
+  setText('minesStatsNote','Based on the last '+L.length+' loaded round(s). Raise “Load last” below to include more history. Active/abandoned rounds are excluded from money totals.');
+}
+window.renderMinesRoundsList=function(){
+  const c=$v('minesRoundsContainer');if(!c)return;
+  const st=$v('minesFStatus').value,cu=$v('minesFCurrency').value,q=String($v('minesFUid').value||'').trim().toLowerCase();
+  const rows=minesRoundsCache.filter(r=>(!st||(r.status||'active')===st)&&(!cu||curOf(r)===cu)&&(!q||String(r.customUid||'').toLowerCase().includes(q)));
+  const stuck=minesRoundsCache.filter(isStuckRound).length;
+  setText('minesStuckCount',stuck+' stuck round(s) at this age');
+  if(!minesRoundsCache.length){c.innerHTML='<p>No mines rounds played yet.</p>';return;}
+  if(!rows.length){c.innerHTML='<p>No rounds match these filters.</p>';return;}
+  const colors={cashed_out:'#34d399',busted:'#f87171',abandoned:'#fbbf24',refunded:'#93c5fd'};
+  c.innerHTML='<p style="font-size:11px;color:var(--text-muted);margin:0 0 8px;">Showing '+Math.min(rows.length,200)+' of '+rows.length+' matching round(s)</p>'+rows.slice(0,200).map(r=>{
+    const cur=curOf(r),sc=colors[r.status]||'var(--accent-cyan)';
+    const pay=r.status==='cashed_out'?' | <b>Payout:</b> <span style="color:#34d399;font-weight:bold;">'+money(r.payout,cur)+'</span> ('+(Number(r.multiplier)||0).toFixed(2)+'x)':'';
+    return '<div class="user-item"><b>UID:</b> <span class="uid-badge">'+esc(r.customUid||'---')+'</span><br><b>Bet:</b> <span style="color:var(--accent-gold);font-weight:bold;">'+money(r.betAmount,cur)+'</span> <span class="uid-badge">'+cur+'</span> | <b>Mines:</b> '+(r.minesCount||0)+(r.revealedCount!=null?' | <b>Tiles opened:</b> '+r.revealedCount:'')+'<br><b>Status:</b> <span style="color:'+sc+';font-weight:bold;">'+String(r.status||'active').toUpperCase()+'</span>'+pay+'<br><b>Time:</b> '+(r.timestamp?new Date(r.timestamp).toLocaleString():'—')+'</div>';
+  }).join('');
+};
+window.exportMinesRoundsCSV=function(){
+  if(!minesRoundsCache.length)return alert('No rounds to export.');
+  downloadCsv('game-verse-mines-'+dayKey(Date.now())+'.csv',[['Time','UID','Currency','Bet','Mines','Tiles opened','Status','Multiplier','Payout','Round ID'],...minesRoundsCache.map(r=>[r.timestamp?new Date(r.timestamp).toISOString():'',r.customUid||'',curOf(r),r.betAmount||0,r.minesCount||0,r.revealedCount==null?'':r.revealedCount,r.status||'active',r.multiplier||'',r.payout||'',r.key])]);
+};
+function stuckCutoff(){const m=Math.max(10,Number(($v('minesStuckMinutes')||{}).value)||30);return Date.now()-m*60000;}
+function isStuckRound(r){return (r.status||'active')==='active'&&r.timestamp&&r.timestamp<stuckCutoff();}
+window.settleStuckMinesRounds=async function(mode){
+  const list=minesRoundsCache.filter(isStuckRound);
+  if(!list.length)return alert('No stuck rounds found at this age.');
+  const refund=mode==='refund';
+  if(!confirm((refund?'Refund the bet of ':'Close as lost ')+list.length+' stuck round(s)?'+(refund?'\nEach bet is credited back to the player wallet in its own currency.':'\nThe house keeps the bets.')+'\n\nOnly use this for rounds that are clearly abandoned.'))return;
+  let ok=0,fail=0;
+  for(const r of list){
+    try{
+      if(refund){
+        if(!r.userId)throw new Error('missing userId');
+        const field=curOf(r)==='USDT'?'usdtBalance':'balance';
+        const dec=curOf(r)==='USDT'?10000:100;
+        await db.ref('users/'+r.userId+'/'+field).transaction(b=>Math.round(((Number(b)||0)+(Number(r.betAmount)||0))*dec)/dec);
+      }
+      await db.ref('mines_rounds/'+r.key).update({status:refund?'refunded':'abandoned',settledAt:Date.now(),settledBy:adminEmail()});
+      ok++;
+    }catch(e){fail++;console.warn('[Mines cleanup]',r.key,e);}
+  }
+  alert('Done. '+ok+' round(s) settled'+(fail?', '+fail+' failed (see console).':'.'));
+};
+window.openMinesAdminModal=function(){
+  document.getElementById('mainAdminMenu').classList.add('hidden');
+  document.getElementById('minesSection').classList.remove('hidden');
+  loadMinesConfigSetting();loadMinesRoundsForAdmin();
+};
+
+/* ======================================================================
+   STAFF MANAGEMENT
+   ====================================================================== */
+let staffStatsCache={};
+let staffEditingId=null;
+let staffPayoutCache={};
+window.logStaffEvent=async function(id,action,detail){
+  try{await db.ref('staff_logs/'+id).push({action,detail:detail||'',at:Date.now(),by:adminEmail()});}catch(e){console.warn('[staff log]',e);}
+};
+window.loadStaffManagement=async function(){
+  try{
+    await ensureDefaultStaffRoles();
+    const [rs,ss,us,dep,earn,pay]=await Promise.all([
+      db.ref('staff_roles').once('value'),db.ref('staff').once('value'),db.ref('users').once('value'),
+      db.ref('deposits').orderByChild('status').equalTo('approved').once('value').catch(()=>null),
+      db.ref('referral_earnings').once('value').catch(()=>null),
+      db.ref('staff_payouts').once('value').catch(()=>null)
+    ]);
+    staffRolesCache=rs.val()||{};staffRecordsCache=ss.val()||{};allUsersDataCache={};
+    us.forEach(ch=>{allUsersDataCache[ch.key]={...ch.val(),key:ch.key};});
+    staffPayoutCache=(pay&&pay.val())||{};
+    const depBy={};if(dep&&dep.exists())dep.forEach(ch=>{const v=ch.val()||{};const u=String(v.customUid||'').trim();const cur=String(v.currency||'INR').toUpperCase();if(u&&cur!=='USDT')depBy[u]=(depBy[u]||0)+(Number(v.amount)||0);});
+    const earnBy={};if(earn&&earn.exists())earn.forEach(ch=>{const v=ch.val()||{};const u=String(v.referrerCustomUid||'').trim();if(u)earnBy[u]=(earnBy[u]||0)+(Number(v.amount)||0);});
+    staffStatsCache={};
+    Object.entries(staffRecordsCache).forEach(([id,r])=>{
+      const uid=String(r.staffUid||'').trim();
+      const down=Object.values(allUsersDataCache).filter(u=>String(u.referredBy||'').trim()===uid&&u.status!=='deleted'&&u.status!=='blocked');
+      const deposited=down.reduce((n,u)=>n+(depBy[u.customUid]||0),0);
+      const depositors=down.filter(u=>(depBy[u.customUid]||0)>0).length;
+      const pays=Object.values(staffPayoutCache[id]||{});
+      staffStatsCache[id]={refs:down.length,deposited,depositors,earned:earnBy[uid]||0,paid:pays.reduce((n,p)=>n+(Number(p.amount)||0),0),payCount:pays.length};
+    });
+    renderStaffRoleSelects();renderStaffRoleList();renderStaffDirectoryFilters();renderStaffDirectory();updateStaffKpis();
+  }catch(e){const c=document.getElementById('staffDirectoryContainer');if(c)c.innerHTML='<p style="color:#f87171;padding:10px;">Could not load STAFF: '+esc(e.message)+'</p>';}
+};
+window.updateStaffKpis=function(){
+  const rows=Object.entries(staffRecordsCache||{});
+  const active=rows.filter(([id,r])=>r&&r.status!=='disabled').length;
+  const custom=Object.values(staffRolesCache||{}).filter(r=>r&&r.type==='custom').length;
+  const st=Object.values(staffStatsCache||{});
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set('staffTotalCount',rows.length);set('staffActiveCount',active);set('staffCustomRoleCount',custom);set('staffDisabledCount',rows.length-active);
+  set('staffRefTotal',st.reduce((n,s)=>n+s.refs,0));set('staffDepTotal',inr(st.reduce((n,s)=>n+s.deposited,0)));set('staffPaidTotal',inr(st.reduce((n,s)=>n+s.paid,0)));
+};
+window.renderStaffDirectory=function(){
+  const c=document.getElementById('staffDirectoryContainer');if(!c)return;
+  const q=String(document.getElementById('staffSearchInput')?.value||'').toLowerCase().trim();
+  const status=String(document.getElementById('staffStatusFilter')?.value||'');
+  const role=String(document.getElementById('staffRoleFilter')?.value||'');
+  const sort=String(document.getElementById('staffSortMode')?.value||'name');
+  const S=id=>staffStatsCache[id]||{refs:0,deposited:0,depositors:0,earned:0,paid:0,payCount:0};
+  let rows=Object.entries(staffRecordsCache||{}).filter(([id,r])=>{
+    const hay=[id,r.name,r.staffUid,staffRoleLabel(r.role),r.contact,r.notes].join(' ').toLowerCase();
+    return (!q||hay.includes(q))&&(!status||(r.status||'active')===status)&&(!role||r.role===role);
+  });
+  rows.sort(([ia,a],[ib,b])=>{
+    if(sort==='referrals')return S(ib).refs-S(ia).refs;
+    if(sort==='deposited')return S(ib).deposited-S(ia).deposited;
+    if(sort==='earned')return S(ib).earned-S(ia).earned;
+    if(sort==='paid')return S(ib).paid-S(ia).paid;
+    if(sort==='newest')return (Number(b.createdAt)||0)-(Number(a.createdAt)||0);
+    return String(a.name||'').localeCompare(String(b.name||''));
+  });
+  const summary=document.getElementById('staffDirectorySummary');
+  if(summary)summary.textContent='Showing '+rows.length+' of '+Object.keys(staffRecordsCache||{}).length+' staff members';
+  if(!rows.length){c.innerHTML='<p style="padding:12px;color:var(--text-muted);">No staff records match the current filters.</p>';return;}
+  c.innerHTML='<table class="staff-table" style="min-width:1100px;"><thead><tr><th>Staff</th><th>Role</th><th>Staff UID</th><th>Status</th><th>Referrals</th><th>Downline Deposits</th><th>Referral Earned</th><th>Salary / Paid</th><th>Action</th></tr></thead><tbody>'+rows.map(([id,r])=>{
+    const s=S(id),isOpen=openStaffDownlineId===id,e=staffEscape(id);
+    const joined=r.joinDate?'Joined '+esc(r.joinDate):'';
+    return '<tr><td><b>'+staffEscape(r.name||'—')+'</b><br><span style="font-size:8px;color:var(--text-muted);">'+staffEscape(r.contact||'No contact')+(joined?' · '+joined:'')+'</span></td>'
+      +'<td><span class="staff-role-pill">'+staffEscape(staffRoleLabel(r.role))+'</span>'+(r.commissionPct?'<br><span style="font-size:8px;color:var(--text-muted);">'+esc(r.commissionPct)+'% commission</span>':'')+'</td>'
+      +'<td style="color:#facc15;font-weight:800;">'+staffEscape(r.staffUid||'—')+'</td>'
+      +'<td><span class="staff-status-pill '+(r.status==='disabled'?'off':'on')+'">'+(r.status==='disabled'?'Disabled':'Active')+'</span></td>'
+      +'<td>'+s.refs+'<br><span style="font-size:8px;color:var(--text-muted);">'+s.depositors+' depositor(s)</span></td>'
+      +'<td>'+inr(s.deposited)+'</td><td>'+inr(s.earned)+'</td>'
+      +'<td>'+(r.salary?inr(r.salary)+'/mo':'—')+'<br><span style="font-size:8px;color:var(--text-muted);">Paid '+inr(s.paid)+' ('+s.payCount+')</span></td>'
+      +'<td><div class="staff-actions"><button class="btn-gray" onclick="editStaffRecord(\''+e+'\')">✏️ Edit</button><button class="btn-gray" onclick="toggleStaffReferralDownline(\''+e+'\')">'+(isOpen?'Hide Downline':'View Downline')+'</button><button class="btn-gray" onclick="recordStaffPayout(\''+e+'\')">💵 Pay</button><button class="btn-gray" onclick="viewStaffHistory(\''+e+'\')">📋 History</button><button class="btn-gray" onclick="toggleStaffStatus(\''+e+'\')">'+(r.status==='disabled'?'Enable':'Disable')+'</button><button class="staff-fire-btn" onclick="fireStaffMember(\''+e+'\')" title="Remove this staff member from work">🔥 FIRE</button></div></td></tr>';
+  }).join('')+'</tbody></table>';
+};
+window.editStaffRecord=function(id){
+  const r=staffRecordsCache[id];if(!r)return;
+  staffEditingId=id;
+  const set=(i,v)=>{const e=document.getElementById(i);if(e)e.value=v==null?'':v;};
+  set('staffNameInput',r.name);set('staffUidInput',r.staffUid);set('staffRoleInput',r.role);set('staffContactInput',r.contact);set('staffNoteInput',r.notes);
+  set('staffSalaryInput',r.salary||'');set('staffCommissionInput',r.commissionPct||'');set('staffJoinDateInput',r.joinDate||'');
+  const uid=document.getElementById('staffUidInput');if(uid)uid.readOnly=true;
+  document.getElementById('staffEditBanner')?.classList.remove('hidden');
+  document.getElementById('staffCancelEditBtn')?.classList.remove('hidden');
+  const b=document.getElementById('staffSaveBtn');if(b)b.textContent='💾 Update Staff Record';
+  renderStaffRoleHint();
+  document.getElementById('staffNameInput')?.scrollIntoView({behavior:'smooth',block:'center'});
+};
+window.clearStaffForm=function(){
+  ['staffNameInput','staffUidInput','staffContactInput','staffNoteInput','staffSalaryInput','staffCommissionInput','staffJoinDateInput'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const r=document.getElementById('staffRoleInput');if(r)r.value='';
+  const h=document.getElementById('staffRoleHint');if(h)h.textContent='Select a role.';
+  staffEditingId=null;
+  const uid=document.getElementById('staffUidInput');if(uid)uid.readOnly=false;
+  document.getElementById('staffEditBanner')?.classList.add('hidden');
+  document.getElementById('staffCancelEditBtn')?.classList.add('hidden');
+  const b=document.getElementById('staffSaveBtn');if(b)b.textContent='💾 Save Staff Record';
+};
+window.saveStaffRecord=async function(){
+  const val=id=>String(document.getElementById(id)?.value||'').trim();
+  const name=val('staffNameInput'),uid=val('staffUidInput'),role=val('staffRoleInput');
+  if(!name||!uid||!role)return alert('Enter staff name, UID and role.');
+  const salary=Number(val('staffSalaryInput'))||0,commissionPct=Number(val('staffCommissionInput'))||0;
+  if(salary<0)return alert('Salary cannot be negative.');
+  if(commissionPct<0||commissionPct>100)return alert('Commission % must be between 0 and 100.');
+  const id='staff_'+uid.replace(/[^a-zA-Z0-9_-]/g,'_');
+  const old=staffRecordsCache[id]||{};
+  if(!staffEditingId&&old.name&&!confirm('A staff record for UID '+uid+' already exists ('+old.name+'). Overwrite it?'))return;
+  const userSnap=await db.ref('users').orderByChild('customUid').equalTo(uid).once('value');
+  if(!userSnap.exists())return alert('No User App account was found with UID '+uid+'. Please enter the exact Game Verse UID.');
+  const record={id,staffUid:uid,name,role,contact:val('staffContactInput'),notes:val('staffNoteInput'),salary,commissionPct,joinDate:val('staffJoinDateInput'),status:old.status||'active',createdAt:old.createdAt||Date.now(),updatedAt:Date.now()};
+  if(old.lastPayoutAt)record.lastPayoutAt=old.lastPayoutAt;
+  await db.ref('staff/'+id).set(record);
+  const updates={};userSnap.forEach(ch=>{updates[ch.key+'/staffAssignment']={staffId:id,staffUid:uid,staffName:name,role,roleName:staffRoleLabel(role),assignedAt:(ch.val().staffAssignment||{}).assignedAt||Date.now()};});
+  await db.ref('users').update(updates);
+  const changes=[];if(old.role&&old.role!==role)changes.push('role '+staffRoleLabel(old.role)+' → '+staffRoleLabel(role));if(old.name&&old.name!==name)changes.push('name changed');if((old.salary||0)!==salary)changes.push('salary '+inr(old.salary||0)+' → '+inr(salary));
+  await logStaffEvent(id,old.name?'updated':'created',old.name?(changes.join('; ')||'details edited'):'Role: '+staffRoleLabel(role));
+  const wasEdit=!!staffEditingId;clearStaffForm();await loadStaffManagement();
+  alert(wasEdit?'Staff record updated.':'Staff record saved and role assigned to UID '+uid+'.');
+};
+window.recordStaffPayout=async function(id){
+  const r=staffRecordsCache[id];if(!r)return;
+  const def=r.salary?String(r.salary):'';
+  const raw=prompt('Log a salary / bonus payment for '+(r.name||r.staffUid)+' (₹).\nThis is a bookkeeping record only — it does not move wallet money.',def);
+  if(raw===null)return;
+  const amount=Number(raw);if(!(amount>0))return alert('Enter a valid amount greater than 0.');
+  const note=prompt('Note (e.g. "October salary", "bonus"):','')||'';
+  try{
+    await db.ref('staff_payouts/'+id).push({amount,note:note.trim().slice(0,120),at:Date.now(),by:adminEmail()});
+    await db.ref('staff/'+id).update({lastPayoutAt:Date.now()});
+    await logStaffEvent(id,'payout',inr(amount)+(note?' — '+note:''));
+    await loadStaffManagement();alert('Payment of '+inr(amount)+' logged.');
+  }catch(e){alert('Could not log payment: '+e.message);}
+};
+window.viewStaffHistory=async function(id){
+  const r=staffRecordsCache[id],card=document.getElementById('staffDetailCard');if(!r||!card)return;
+  card.classList.remove('hidden');card.innerHTML='<div class="staff-user-box"><b>⏳ Loading history…</b></div>';
+  try{
+    const [ps,ls]=await Promise.all([db.ref('staff_payouts/'+id).once('value'),db.ref('staff_logs/'+id).limitToLast(60).once('value')]);
+    const pays=[];ps.forEach(ch=>pays.push({key:ch.key,...(ch.val()||{})}));pays.sort((a,b)=>b.at-a.at);
+    const logs=[];ls.forEach(ch=>logs.push(ch.val()||{}));logs.sort((a,b)=>b.at-a.at);
+    const total=pays.reduce((n,p)=>n+(Number(p.amount)||0),0);
+    card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;"><h4 style="margin:0;color:#facc15;">📋 History — '+staffEscape(r.name||'Staff')+'</h4><button class="btn-gray" style="width:auto;margin:0;padding:5px 10px;font-size:10px;" onclick="document.getElementById(\'staffDetailCard\').classList.add(\'hidden\')">Close</button></div>'
+      +'<div style="font-size:10px;color:var(--text-muted);margin:6px 0;">Total logged pay: <b style="color:#34d399;">'+inr(total)+'</b> · '+pays.length+' payment(s)</div>'
+      +'<b style="font-size:11px;color:#facc15;">PAYMENTS</b>'
+      +(pays.length?'<div class="gvx-wrap"><table class="gvx-table" style="min-width:0"><thead><tr><th>Date</th><th>Amount</th><th>Note</th><th>By</th><th></th></tr></thead><tbody>'+pays.map(p=>'<tr><td>'+new Date(p.at).toLocaleString()+'</td><td class="gvx-pos">'+inr(p.amount)+'</td><td>'+esc(p.note||'—')+'</td><td>'+esc(p.by||'')+'</td><td><button class="btn-gray" style="width:auto;margin:0;padding:3px 8px;font-size:9px;" onclick="deleteStaffPayout(\''+staffEscape(id)+'\',\''+esc(p.key)+'\')">Delete</button></td></tr>').join('')+'</tbody></table></div>':'<div style="font-size:10px;color:var(--text-muted);padding:6px 0;">No payments logged yet.</div>')
+      +'<b style="font-size:11px;color:#facc15;display:block;margin-top:10px;">ACTIVITY LOG</b>'
+      +(logs.length?'<div class="gvx-wrap"><table class="gvx-table" style="min-width:0"><thead><tr><th>When</th><th>Action</th><th>Detail</th><th>By</th></tr></thead><tbody>'+logs.map(l=>'<tr><td>'+new Date(l.at).toLocaleString()+'</td><td><span class="gvx-chip">'+esc(l.action)+'</span></td><td>'+esc(l.detail||'')+'</td><td>'+esc(l.by||'')+'</td></tr>').join('')+'</tbody></table></div>':'<div style="font-size:10px;color:var(--text-muted);padding:6px 0;">No activity recorded yet. Changes made from now on are logged here.</div>');
+    card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(e){card.innerHTML='<div class="staff-user-box"><b style="color:#f87171;">⚠️ Could not load history</b><small>'+staffEscape(e.message)+'</small></div>';}
+};
+window.deleteStaffPayout=async function(id,key){
+  if(!confirm('Delete this payment record?'))return;
+  try{await db.ref('staff_payouts/'+id+'/'+key).remove();await logStaffEvent(id,'payout removed','A payment record was deleted');await loadStaffManagement();await viewStaffHistory(id);}catch(e){alert('Could not delete: '+e.message);}
+};
+const _toggleOrig=window.toggleStaffStatus;
+window.toggleStaffStatus=async function(id){
+  const r=staffRecordsCache[id];if(!r)return;const willDisable=r.status!=='disabled';
+  await db.ref('staff/'+id).update({status:willDisable?'disabled':'active',updatedAt:Date.now()});
+  await logStaffEvent(id,willDisable?'disabled':'enabled','');
+  await loadStaffManagement();alert(willDisable?'Staff disabled.':'Staff enabled.');
+};
+const _fireOrig=window.fireStaffMember;
+window.fireStaffMember=async function(id){
+  const label=(staffRecordsCache[id]||{}).name||id;
+  await _fireOrig(id);
+  if(!staffRecordsCache[id]){await logStaffEvent(id,'fired',label);}
+};
+window.exportStaffDirectoryCSV=function(){
+  const rows=Object.entries(staffRecordsCache||{}).map(([id,r])=>{const s=staffStatsCache[id]||{};return [id,r.name||'',staffRoleLabel(r.role),r.staffUid||'',r.status||'active',s.refs||0,s.depositors||0,(s.deposited||0).toFixed(2),(s.earned||0).toFixed(2),r.salary||0,r.commissionPct||0,(s.paid||0).toFixed(2),r.joinDate||'',r.contact||'',r.notes||'',r.createdAt?new Date(r.createdAt).toISOString():''];});
+  if(!rows.length)return alert('No staff records to export.');
+  downloadCsv('game-verse-staff-'+dayKey(Date.now())+'.csv',[['Staff ID','Name','Role','Staff UID','Status','Referrals','Depositors','Downline Deposits INR','Referral Earned INR','Monthly Salary','Commission %','Pay Logged INR','Join Date','Contact','Notes','Created At'],...rows]);
+};
+})();
+
+</script>
+
+<script id="gv-dashboard20-v3">
+/* ===== DASHBOARD 2.0 — extra control features (v3) ===== */
+(function(){
+'use strict';
+const esc=v=>escapeHtml(String(v==null?'':v));
+const inr=v=>'₹'+Number(v||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const usd=v=>'₮ '+Number(v||0).toFixed(4);
+const $=id=>document.getElementById(id);
+const setHtml=(id,v)=>{const e=$(id);if(e)e.innerHTML=v;};
+const ref=()=>db.ref('control/dashboard20');
+const who=()=>{try{return (firebase.auth().currentUser||{}).email||'admin';}catch(e){return 'admin';}};
+const SVC={deposits:'💳 Deposits',withdrawals:'💸 Withdrawals',registration:'📝 New Registrations'};
+let cfg={};let lastOverdue=0;let tickTimer=null;
+const tsOf=o=>{const v=o&&(o.timestamp??o.createdAt??o.created_at??o.time);const n=Number(v);return n>0?n:(typeof v==='string'&&Date.parse(v)?Date.parse(v):0);};
+const curOf=o=>String(o&&o.currency||'INR').trim().toUpperCase()==='USDT'?'USDT':'INR';
+const money=(v,c)=>c==='USDT'?usd(v):inr(v);
+const ageText=t=>{const m=Math.max(0,Math.floor((Date.now()-t)/60000));return m<60?m+' min':Math.floor(m/60)+'h '+(m%60)+'m';};
+function audit(action,detail){db.ref('admin_audit/dashboard20').push({action,detail:detail||'',at:Date.now(),by:who()}).catch(()=>{});}
+function downloadCsv(name,rows){const csv=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
+function visible(){const s=$('dashboard20Section');return s&&!s.classList.contains('hidden');}
+
+/* ---------- main loader (runs after the original loadDashboard20) ---------- */
+async function load(){
+  const todayStart=new Date();todayStart.setHours(0,0,0,0);const t0=todayStart.getTime();
+  const read=(q)=>q.once('value').catch(()=>null);
+  const [cs,dep,wd,gr,mr,cc,us]=await Promise.all([
+    read(ref()),read(db.ref('deposits')),read(db.ref('withdrawals')),
+    read(db.ref('game_rounds').orderByChild('timestamp').startAt(t0)),
+    read(db.ref('mines_rounds').orderByChild('timestamp').startAt(t0)),
+    read(db.ref('colour_clash/entries').orderByChild('timestamp').startAt(t0)),
+    read(db.ref('users'))
+  ]);
+  cfg=(cs&&cs.val())||{};
+  renderControls();
+  /* queues + today's cash flow */
+  const pend={deposits:[],withdrawals:[]};let dAppr={INR:0,USDT:0},wAppr={INR:0,USDT:0},dReq=0,wReq=0;
+  const scan=(snap,key,appr,counter)=>{if(!snap||!snap.exists())return 0;let n=0;snap.forEach(ch=>{const o=ch.val()||{};const st=String(o.status||'pending').toLowerCase();const t=tsOf(o);
+    if(st==='pending')pend[key].push({id:ch.key,uid:o.customUid||'—',amount:Number(o.amount)||0,cur:curOf(o),ts:t});
+    if(t>=t0){n++;if(st==='approved')appr[curOf(o)]+=Number(o.amount)||0;}});return n;};
+  dReq=scan(dep,'deposits',dAppr);wReq=scan(wd,'withdrawals',wAppr);
+  /* new users today */
+  let newToday=0;if(us&&us.exists())us.forEach(ch=>{const u=ch.val()||{};if(String(u.status||'').toLowerCase()==='deleted')return;const c=Number(u.createdAt||u.registeredAt||u.timestamp||u.joinedAt||0);if(c>=t0)newToday++;});
+  /* game result today */
+  const g={INR:{b:0,w:0},USDT:{b:0,w:0}};let rounds=0;
+  const addG=(cur,b,w)=>{g[cur].b+=Number(b)||0;g[cur].w+=Number(w)||0;rounds++;};
+  if(gr&&gr.exists())gr.forEach(ch=>{const o=ch.val()||{};if(tsOf(o)>=t0)addG(curOf(o),o.betAmount,o.winAmount);});
+  if(mr&&mr.exists())mr.forEach(ch=>{const o=ch.val()||{};const st=String(o.status||'');if((st==='cashed_out'||st==='busted')&&tsOf(o)>=t0)addG(curOf(o),o.betAmount,o.payout);});
+  if(cc&&cc.exists())cc.forEach(ch=>{const o=ch.val()||{};const st=String(o.status||'').toLowerCase();if(st==='pending'||st==='cancelled'||st==='refunded')return;if(tsOf(o)>=t0)addG(curOf(o),o.amount,o.winAmount!=null?o.winAmount:o.payout);});
+  const mini=(l,v,h)=>'<div class="dash2-mini"><div class="m-label">'+l+'</div><div class="m-value" style="font-size:13px;">'+v+'</div><div class="m-help">'+h+'</div></div>';
+  const pn=(n,c)=>'<span style="color:'+(n>=0?'#34d399':'#f87171')+'">'+money(n,c)+'</span>';
+  setHtml('d20GlanceGrid',
+    mini('Deposits approved',inr(dAppr.INR)+'<br>'+usd(dAppr.USDT),dReq+' request(s) made today')+
+    mini('Withdrawals approved',inr(wAppr.INR)+'<br>'+usd(wAppr.USDT),wReq+' request(s) made today')+
+    mini('Net cash flow',pn(dAppr.INR-wAppr.INR,'INR')+'<br>'+pn(dAppr.USDT-wAppr.USDT,'USDT'),'Deposits − withdrawals')+
+    mini('New users',newToday,'Registered today')+
+    mini('Game rounds',rounds,'Settled today, all games')+
+    mini('Game house result',pn(g.INR.b-g.INR.w,'INR')+'<br>'+pn(g.USDT.b-g.USDT.w,'USDT'),'Wagered − paid out today'));
+  renderQueues(pend);
+  loadAudit();
+}
+/* ---------- service controls: timed pauses + messages + extra switches ---------- */
+function renderControls(){
+  Object.keys(SVC).forEach(k=>{
+    const until=Number(cfg[k+'PausedUntil'])||0,on=cfg[k+'Enabled']!==false;
+    let txt,col;
+    if(until>Date.now()){txt='⏸ Paused for '+Math.ceil((until-Date.now())/60000)+' more min (until '+new Date(until).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+')';col='#fbbf24';}
+    else if(!on){txt='⛔ OFF — manual switch';col='#f87171';}
+    else{txt='🟢 ON';col='#34d399';}
+    const el=$('d20PauseState_'+k);if(el){el.textContent=txt;el.style.color=col;}
+    const m=$('d20SvcMsg_'+k);if(m&&document.activeElement!==m)m.value=cfg[k+'Message']||'';
+  });
+  const s=$('d20SupportEnabled');if(s)s.checked=cfg.supportEnabled!==false;
+  const r=$('d20RewardsEnabled');if(r)r.checked=cfg.rewardsEnabled!==false;
+  const q=$('d20QueueAlertMin');if(q&&document.activeElement!==q)q.value=cfg.queueAlertMinutes||30;
+  const l=$('d20LargeAmount');if(l&&document.activeElement!==l)l.value=cfg.largeAmountFlag||10000;
+  const so=$('d20AlertSound');if(so)so.checked=cfg.alertSound===true;
+  const ps=$('d20PanicState');
+  if(ps){if(cfg.panicActive===true){const sn=cfg.panicSnapshot||{};ps.innerHTML='<b style="color:#f87171;">🚨 EMERGENCY STOP ACTIVE</b> since '+(sn.at?new Date(sn.at).toLocaleString():'—')+(sn.by?' by '+esc(sn.by):'');}else ps.innerHTML='<span style="color:#34d399;">Normal operation</span> — no emergency stop active.';}
+}
+window.d20PauseService=function(k){
+  const mins=Number($('d20PauseDur_'+k).value)||15;const until=Date.now()+mins*60000;
+  if(!confirm('Pause '+SVC[k]+' for '+mins+' minutes? It resumes automatically.'))return;
+  ref().update({[k+'PausedUntil']:until,updatedAt:Date.now()}).then(()=>{audit('timed pause',SVC[k]+' for '+mins+' min');load();}).catch(e=>alert('Could not pause: '+e.message));
+};
+window.d20ResumeService=function(k){
+  ref().update({[k+'PausedUntil']:0,[k+'Enabled']:true,updatedAt:Date.now()}).then(()=>{audit('resume',SVC[k]+' switched ON');load();}).catch(e=>alert('Could not resume: '+e.message));
+};
+window.d20SaveSvcMessage=function(k){
+  const v=String($('d20SvcMsg_'+k).value||'').trim().slice(0,160);
+  ref().update({[k+'Message']:v,updatedAt:Date.now()}).then(()=>{audit('message',SVC[k]+': '+(v||'(cleared)'));alert(v?'Message saved. Players see it when this service is unavailable.':'Custom message cleared — default text will be used.');}).catch(e=>alert('Could not save: '+e.message));
+};
+window.d20SaveExtra=function(key,val){
+  const label={supportEnabled:'Support tickets',rewardsEnabled:'Daily rewards & check-in'}[key]||key;
+  ref().update({[key]:!!val,updatedAt:Date.now()}).then(()=>audit('switch',label+' '+(val?'enabled':'disabled'))).catch(e=>{alert('Could not save: '+e.message);load();});
+};
+window.d20SaveQueueSettings=function(){
+  const mins=Math.max(1,Math.round(Number($('d20QueueAlertMin').value)||30)),big=Math.max(0,Number($('d20LargeAmount').value)||0),snd=$('d20AlertSound').checked;
+  ref().update({queueAlertMinutes:mins,largeAmountFlag:big,alertSound:snd,updatedAt:Date.now()}).then(()=>{audit('queue alerts','overdue '+mins+' min, large ≥ '+big);alert('Queue alert settings saved.');load();}).catch(e=>alert('Could not save: '+e.message));
+};
+/* ---------- emergency controls ---------- */
+window.d20Panic=async function(){
+  if(cfg.panicActive===true)return alert('Emergency stop is already active. Use Restore to bring services back.');
+  if(!confirm('🚨 EMERGENCY STOP\n\nThis will immediately:\n• pause ALL games\n• turn OFF deposits\n• turn OFF withdrawals\n• turn OFF new registrations\n\nYour current switch states are saved so you can restore them with one click. Continue?'))return;
+  try{
+    const gs=await db.ref('control/globalGamesStatus').once('value');
+    const snapshot={depositsEnabled:cfg.depositsEnabled!==false,withdrawalsEnabled:cfg.withdrawalsEnabled!==false,registrationEnabled:cfg.registrationEnabled!==false,gamesStatus:gs.val()==='paused'?'paused':'active',at:Date.now(),by:who()};
+    await ref().update({panicActive:true,panicSnapshot:snapshot,depositsEnabled:false,withdrawalsEnabled:false,registrationEnabled:false,updatedAt:Date.now()});
+    await db.ref('control/globalGamesStatus').set('paused');
+    window.__globalGamesState='paused';window.__globalGamesPending=null;try{updateGlobalGamesButton(false);}catch(e){}
+    audit('EMERGENCY STOP','Games paused; deposits, withdrawals, registrations OFF');
+    alert('Emergency stop is ACTIVE.');load();try{loadDashboard20();}catch(e){}
+  }catch(e){alert('Emergency stop failed part-way: '+e.message+'\nCheck the switches below.');load();}
+};
+window.d20Restore=async function(){
+  if(cfg.panicActive!==true)return alert('No emergency stop is active.');
+  const sn=cfg.panicSnapshot||{};
+  if(!confirm('Restore the switch states from before the emergency stop?\n\nDeposits: '+(sn.depositsEnabled===false?'OFF':'ON')+'\nWithdrawals: '+(sn.withdrawalsEnabled===false?'OFF':'ON')+'\nRegistrations: '+(sn.registrationEnabled===false?'OFF':'ON')+'\nGames: '+(sn.gamesStatus==='paused'?'PAUSED':'ACTIVE')))return;
+  try{
+    await ref().update({panicActive:false,depositsEnabled:sn.depositsEnabled!==false,withdrawalsEnabled:sn.withdrawalsEnabled!==false,registrationEnabled:sn.registrationEnabled!==false,updatedAt:Date.now()});
+    await db.ref('control/globalGamesStatus').set(sn.gamesStatus==='paused'?'paused':'active');
+    window.__globalGamesState=sn.gamesStatus==='paused'?'paused':'active';window.__globalGamesPending=null;try{updateGlobalGamesButton(window.__globalGamesState!=='paused');}catch(e){}
+    audit('RESTORE','Switches restored to pre-emergency state');
+    alert('Services restored.');load();try{loadDashboard20();}catch(e){}
+  }catch(e){alert('Restore failed: '+e.message);load();}
+};
+/* ---------- priority queue watch ---------- */
+function renderQueues(pend){
+  const overdueMin=Number(cfg.queueAlertMinutes)||30,big=Number(cfg.largeAmountFlag)||0;
+  const tbl=(key)=>{
+    const rows=pend[key].sort((a,b)=>(a.ts||Infinity)-(b.ts||Infinity));
+    const total=rows.length;
+    if(!total)return '<div style="font-size:10px;color:var(--text-muted);padding:8px 2px;">✅ No pending '+key+'.</div>';
+    return '<div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">'+total+' pending · showing oldest '+Math.min(8,total)+'</div><div class="dash2-table-wrap"><table class="dash2-table" style="min-width:0"><thead><tr><th>UID</th><th>Amount</th><th>Waiting</th><th>Flags</th></tr></thead><tbody>'+rows.slice(0,8).map(r=>{
+      const late=r.ts&&(Date.now()-r.ts)>overdueMin*60000,large=big>0&&r.cur==='INR'&&r.amount>=big;
+      return '<tr><td><b>'+esc(r.uid)+'</b></td><td>'+money(r.amount,r.cur)+'</td><td>'+(r.ts?ageText(r.ts):'—')+'</td><td>'+(late?'<span class="dash2-pill off">⏰ OVERDUE</span> ':'')+(large?'<span class="dash2-pill" style="color:#fbbf24;border:1px solid rgba(251,191,36,.3)">💰 LARGE</span>':'')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+  };
+  setHtml('d20QueueDeposits',tbl('deposits'));setHtml('d20QueueWithdrawals',tbl('withdrawals'));
+  // count overdue across ALL pending, not only the 8 shown
+  const allOver=['deposits','withdrawals'].reduce((n,k)=>n+pend[k].filter(r=>r.ts&&(Date.now()-r.ts)>overdueMin*60000).length,0);
+  setHtml('d20QueueAlertLabel',allOver?'<b style="color:#f87171;">'+allOver+' request(s) waiting longer than '+overdueMin+' min</b>':'<span style="color:#34d399;">No overdue requests</span>');
+  const base=document.title.replace(/^\(\d+\)\s*/,'');document.title=allOver?'('+allOver+') '+base:base;
+  if(allOver>lastOverdue&&cfg.alertSound===true&&visible()){try{const ac=new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=880;g.gain.value=.08;o.start();setTimeout(()=>{o.stop();ac.close();},350);}catch(e){}}
+  lastOverdue=allOver;
+}
+/* ---------- audit log ---------- */
+let auditRows=[];
+async function loadAudit(){
+  try{
+    const s=await db.ref('admin_audit/dashboard20').limitToLast(40).once('value');
+    auditRows=[];s.forEach(ch=>auditRows.push(ch.val()||{}));auditRows.sort((a,b)=>b.at-a.at);
+    const c=$('d20AuditList');if(!c)return;
+    c.innerHTML=auditRows.length?'<div class="dash2-table-wrap"><table class="dash2-table" style="min-width:0"><thead><tr><th>When</th><th>Action</th><th>Detail</th><th>By</th></tr></thead><tbody>'+auditRows.map(r=>'<tr><td>'+new Date(r.at).toLocaleString()+'</td><td><span class="dash2-pill on">'+esc(r.action)+'</span></td><td>'+esc(r.detail||'')+'</td><td>'+esc(r.by||'')+'</td></tr>').join('')+'</tbody></table></div>':'<div style="font-size:10px;color:var(--text-muted);padding:8px 2px;">No control changes recorded yet. Changes made from now on appear here.</div>';
+  }catch(e){const c=$('d20AuditList');if(c)c.innerHTML='<div style="color:#f87171;font-size:10px;">Could not load audit log: '+esc(e.message)+'</div>';}
+}
+window.d20ExportAudit=function(){if(!auditRows.length)return alert('No audit entries to export.');downloadCsv('dashboard20-audit-'+new Date().toISOString().slice(0,10)+'.csv',[['When','Action','Detail','By'],...auditRows.map(r=>[new Date(r.at).toISOString(),r.action,r.detail||'',r.by||''])]);};
+window.d20RefreshExtras=load;
+/* ---------- hooks into the existing Dashboard 2.0 ---------- */
+const _load=window.loadDashboard20;
+window.loadDashboard20=function(){try{if(_load)_load.apply(this,arguments);}finally{load().catch(e=>console.warn('[Dashboard 2.0 extras]',e));}};
+const _svc=window.saveDashboard20Control;
+window.saveDashboard20Control=function(key,value){
+  const label={depositsEnabled:'Deposits',withdrawalsEnabled:'Withdrawals',registrationEnabled:'New registrations'}[key];
+  if(label)audit('service switch',label+' '+(value?'enabled':'disabled'));
+  return _svc.apply(this,arguments);
+};
+if(!tickTimer)tickTimer=setInterval(()=>{if(visible()){renderControls();}},30000);
+setInterval(()=>{if(visible())load().catch(()=>{});},60000);
+})();
+
 </script>
 
 </body></html>
