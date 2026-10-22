@@ -2585,8 +2585,22 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
 
             <div class="admin-section-card">
                 <label style="font-weight:800;">💲 Agency commission payouts</label>
+                <p class="hint-text">Every commission paid to an upline user is stored as a record. Deleting a record removes it from this list and from the user's Commission detail. <b>It does not take money back from the user's wallet.</b></p>
                 <div id="agcStats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin:8px 0;">Loading...</div>
-                <div id="agcRecent" style="max-height:320px; overflow-y:auto;">Loading...</div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                    <input id="agpSearch" type="text" placeholder="Search UID (earner or depositor)" style="margin:0;flex:2;min-width:150px;" oninput="agpSet('q',this.value)">
+                    <select id="agpLevel" style="margin:0;flex:1;min-width:100px;" onchange="agpSet('level',this.value)">
+                        <option value="all">All levels</option><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option><option value="4">Level 4</option><option value="5">Level 5</option><option value="6">Level 6</option>
+                    </select>
+                    <input id="agpDate" type="date" style="margin:0;flex:1;min-width:130px;" onchange="agpSet('date',this.value)">
+                    <button type="button" class="btn-gray" style="margin:0;width:auto;padding:0 12px;" onclick="document.getElementById('agpDate').value='';agpSet('date','')">All dates</button>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                    <button type="button" class="btn-gray" style="margin:0;width:auto;padding:8px 12px;" onclick="agpExport()">⬇️ Export CSV</button>
+                    <button type="button" class="btn-gray" style="margin:0;width:auto;padding:8px 12px;" onclick="agpDeleteSelected()">🗑 Delete selected (<span id="agpSelN">0</span>)</button>
+                    <button type="button" class="btn-red" style="margin:0;width:auto;padding:8px 12px;" onclick="agpDeleteShown()">🗑 Delete all shown</button>
+                </div>
+                <div id="agcRecent" style="max-height:420px; overflow-y:auto;">Loading...</div>
             </div>
 
             <div class="admin-section-card">
@@ -4706,7 +4720,7 @@ function formatAdminMoney(value){
                     next.forEach(n => subs.push(n)); frontier = next;
                 }
                 const ls = await db.ref('commission_logs').orderByChild('toCustomUid').equalTo(uid).once('value');
-                const logs = []; ls.forEach(ch => { logs.push(ch.val() || {}); });
+                const logs = []; ls.forEach(ch => { logs.push(Object.assign({ id: ch.key }, ch.val() || {})); });
                 logs.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
                 subs.sort((a, b) => b.joinedAt - a.joinedAt);
                 Object.assign(agvS, { uid: uid, user: Object.assign({ __key: key }, user), subs: subs, logs: logs, level: 'all', date: '', tab: 'subs', limit: 50 });
@@ -4714,6 +4728,19 @@ function formatAdminMoney(value){
             } catch (e) { body.innerHTML = '<p class="hint-text">Could not load: ' + rfaEsc(e.message) + '</p>'; }
         }
         function agvSet(k, v) { agvS[k] = v; agvS.limit = 50; agvRender(); }
+        function agvExport() {
+            if (!agvS.user) return;
+            const r = agvRange(agvS.date);
+            if (agvS.tab === 'subs') {
+                const rows = agvS.subs.filter(s => agvLv(s.level, agvS.level) && agvIn(s.joinedAt, r));
+                if (!rows.length) return alert('No rows to export for this filter.');
+                agpDownload('agency-team-' + agvS.uid + '.csv', [['Subordinate UID', 'Level', 'Joined', 'Via', 'Blocked']].concat(rows.map(s => [s.customUid, s.level, s.joinedAt ? new Date(s.joinedAt).toISOString() : '', s.parent, s.blocked ? 'yes' : 'no'])));
+            } else {
+                const rows = agvS.logs.filter(l => agvLv(l.level, agvS.level) && agvIn(l.timestamp, r));
+                if (!rows.length) return alert('No rows to export for this filter.');
+                agpDownload('agency-commission-' + agvS.uid + '.csv', agpRows(rows));
+            }
+        }
         function agvRender() {
             const u = agvS.user, top = document.getElementById('agvTop'), body = document.getElementById('agvBody');
             if (!u) return;
@@ -4729,7 +4756,7 @@ function formatAdminMoney(value){
                 ' &nbsp; <b>Referred by:</b> ' + (upline && upline.toUpperCase() !== 'ADMIN' ? '<a href="#" style="color:var(--accent-cyan);" onclick="agvLoad(\'' + rfaEsc(upline) + '\');return false;">' + rfaEsc(upline) + '</a>' : rfaEsc(upline || '—')) +
                 ' &nbsp; <b>Wallet:</b> ' + rfaMoney(u.balance) + '</div>' +
                 '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;">' +
-                card('Direct', direct) + card('Team (L2+)', team) + card('Commission earned', rfaMoney(earned), '#34d399') +
+                card('Direct', direct) + card('Team (L2+)', team) + card('Commission records', rfaMoney(earned), '#34d399') + card('Lifetime credited', rfaMoney(Math.max(Number(u.agencyCommissionTotal) || 0, earned)), '#34d399') +
                 card('Team deposits', rfaMoney(agvS.logs.reduce((s, l) => s + (Number(l.depositAmount) || 0), 0)), '#f4a73b') + '</div>';
 
             // filtered summary
@@ -4758,9 +4785,16 @@ function formatAdminMoney(value){
                 list = rows.length ? rows.slice(0, agvS.limit).map(l =>
                     '<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;">' +
                     '<span>' + rfaDate(l.timestamp) + ' · from <span class="uid-badge">' + rfaEsc(l.fromCustomUid) + '</span> · L' + rfaEsc(l.level) + (l.isFirst ? ' · 1st deposit' : '') +
-                    '<br><span style="color:var(--text-muted);">' + rfaMoney(l.depositAmount) + ' @ ' + rfaEsc(l.rate) + '%</span></span><b style="color:#34d399;">+' + rfaMoney(l.amount) + '</b></div>').join('') : '<p class="hint-text">No commission records for this filter.</p>';
+                    '<br><span style="color:var(--text-muted);">' + rfaMoney(l.depositAmount) + ' @ ' + rfaEsc(l.rate) + '%</span></span><span style="display:flex;align-items:center;gap:8px;"><b style="color:#34d399;">+' + rfaMoney(l.amount) + '</b>' +
+                    '<button type="button" class="btn-red" title="Delete this record" style="margin:0;width:auto;padding:4px 9px;font-size:12px;min-height:0;" data-key="' + rfaEsc(l.id) + '" onclick="agpDeleteKeys([this.dataset.key])">🗑</button></span></div>').join('') : '<p class="hint-text">No commission records for this filter.</p>';
                 if (rows.length > agvS.limit) list += '<button type="button" class="btn-gray" onclick="agvS.limit+=50;agvRender()">Show more (' + (rows.length - agvS.limit) + ' left)</button>';
             }
+            const lvRows = [1, 2, 3, 4, 5, 6].map(i => {
+                const m = agvS.subs.filter(x => x.level === i).length, ll = agvS.logs.filter(x => Number(x.level) === i && agvIn(x.timestamp, r));
+                const c = ll.reduce((a, x) => a + (Number(x.amount) || 0), 0), d = ll.reduce((a, x) => a + (Number(x.depositAmount) || 0), 0);
+                return (m || c) ? '<tr><td>L' + i + '</td><td>' + m + '</td><td>' + agvN(d) + '</td><td style="color:#34d399;">' + agvN(c) + '</td></tr>' : '';
+            }).join('');
+            const lvlTable = lvRows ? '<table style="width:100%;font-size:12px;text-align:center;margin-bottom:10px;border-collapse:collapse;"><thead><tr style="color:var(--text-muted);"><th>Level</th><th>Members</th><th>Deposits</th><th>Commission</th></tr></thead><tbody>' + lvRows + '</tbody></table>' : '';
             body.innerHTML =
                 '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
                 '<select style="margin:0;flex:1;min-width:110px;" onchange="agvSet(\'level\',this.value)">' + lvOpts + '</select>' +
@@ -4769,7 +4803,9 @@ function formatAdminMoney(value){
                 '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px;">' +
                 card('Registered', sm.reg) + card('Deposit no.', sm.depN) + card('Deposit amt', rfaMoney(sm.dep), '#f4a73b') +
                 card('1st deposits', sm.firstN) + card('1st dep amt', rfaMoney(sm.first), '#f4a73b') + card('Commission', rfaMoney(sm.comm), '#34d399') + '</div>' +
-                '<div style="display:flex;gap:8px;margin-bottom:6px;">' + tabBtn('subs', '👥 Subordinates') + tabBtn('comm', '💲 Commission detail') + '</div>' +
+                lvlTable +
+                '<div style="display:flex;gap:8px;margin-bottom:6px;">' + tabBtn('subs', '👥 Subordinates') + tabBtn('comm', '💲 Commission detail') +
+                '<button type="button" class="btn-gray" style="margin:0;width:auto;padding:0 12px;" title="Export current list as CSV" onclick="agvExport()">⬇️ CSV</button></div>' +
                 '<div style="max-height:420px;overflow-y:auto;">' + list + '</div>';
         }
 
@@ -4799,28 +4835,101 @@ function formatAdminMoney(value){
             db.ref('control/agencyConfig').set(cfg).then(() => alert('Agency commission settings saved.')).catch(e => alert('Could not save settings: ' + e.message));
         }
 
+        /* ===== Agency commission payouts list (admin): filter, export, delete ===== */
+        const agpS = { logs: [], q: '', level: 'all', date: '', limit: 40, sel: {} };
+        function agpCell(v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+        function agpDownload(name, rows) {
+            const blob = new Blob(['﻿' + rows.map(r => r.map(agpCell).join(',')).join('\n')], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+            document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+        }
+        function agpRows(list) {
+            return [['Record ID', 'Date', 'Earner UID', 'Depositor UID', 'Level', 'Deposit amount', 'Rate %', 'Commission', 'First deposit']].concat(
+                list.map(l => [l.id || '', l.timestamp ? new Date(l.timestamp).toISOString() : '', l.toCustomUid || '', l.fromCustomUid || '', l.level || '', l.depositAmount || 0, l.rate || 0, l.amount || 0, l.isFirst ? 'yes' : 'no']));
+        }
+        function agpFiltered() {
+            const r = agvRange(agpS.date), q = agpS.q.trim().toLowerCase();
+            return agpS.logs.filter(l => agvLv(l.level, agpS.level) && agvIn(l.timestamp, r) &&
+                (!q || String(l.toCustomUid || '').toLowerCase().indexOf(q) >= 0 || String(l.fromCustomUid || '').toLowerCase().indexOf(q) >= 0));
+        }
+        function agpSet(k, v) { agpS[k] = v; agpS.limit = 40; agpRender(); }
+        function agpToggle(key, on) { if (on) agpS.sel[key] = 1; else delete agpS.sel[key]; const n = document.getElementById('agpSelN'); if (n) n.textContent = Object.keys(agpS.sel).length; }
+        function agpExport() {
+            const rows = agpFiltered();
+            if (!rows.length) return alert('No records to export for this filter.');
+            agpDownload('agency-commission-payouts-' + agvDay(Date.now()) + '.csv', agpRows(rows));
+        }
+        function agpFind(key) { return agpS.logs.find(l => l.id === key) || (agvS.logs || []).find(l => l.id === key) || null; }
+
+        /* Deletes commission records only. Wallets and the user's lifetime commission total are NOT changed. */
+        async function agpDeleteKeys(keys) {
+            keys = Array.from(new Set((keys || []).filter(Boolean)));
+            if (!keys.length) return alert('Nothing selected.');
+            let total = 0; keys.forEach(k => { const l = agpFind(k); if (l) total += Number(l.amount) || 0; });
+            const msg = 'Delete ' + keys.length + ' commission record' + (keys.length > 1 ? 's' : '') + ' (' + rfaMoney(total) + ' in commission)?\n\n' +
+                'They will disappear from the admin list and from each user\'s Commission detail.\nWallet balances are NOT changed.\nThis cannot be undone — export a CSV first if you need a copy.';
+            if (!confirm(msg)) return;
+            if (keys.length > 1) { const t = prompt('Type DELETE to confirm deleting ' + keys.length + ' records:'); if (String(t || '').trim() !== 'DELETE') return alert('Cancelled — nothing was deleted.'); }
+            let done = 0;
+            try {
+                for (let i = 0; i < keys.length; i += 400) {
+                    const upd = {}; keys.slice(i, i + 400).forEach(k => { upd['commission_logs/' + k] = null; });
+                    await db.ref().update(upd); done += Math.min(400, keys.length - i);
+                }
+            } catch (e) {
+                alert('Deleted ' + done + ' of ' + keys.length + ' records, then it failed: ' + e.message);
+                loadAgencyAdminReport(); if (agvS.uid) agvLoad(agvS.uid); return;
+            }
+            const gone = {}; keys.forEach(k => { gone[k] = 1; delete agpS.sel[k]; });
+            agpS.logs = agpS.logs.filter(l => !gone[l.id]);
+            if (agvS.logs) agvS.logs = agvS.logs.filter(l => !gone[l.id]);
+            agpRender(); if (agvS.user) agvRender();
+            alert(done + ' commission record' + (done > 1 ? 's' : '') + ' deleted.');
+        }
+        function agpDeleteSelected() { agpDeleteKeys(Object.keys(agpS.sel)); }
+        function agpDeleteShown() {
+            const rows = agpFiltered();
+            if (!rows.length) return alert('No records match the current filter.');
+            agpDeleteKeys(rows.map(l => l.id));
+        }
+        function agpRender() {
+            const stEl = document.getElementById('agcStats'), listEl = document.getElementById('agcRecent');
+            if (!stEl || !listEl) return;
+            const logs = agpS.logs;
+            const t0 = new Date(); t0.setHours(0, 0, 0, 0); const today = t0.getTime(), yest = today - 86400000;
+            let all = 0, td = 0, yd = 0, n = 0;
+            logs.forEach(l => { const a = Number(l.amount) || 0, ts = Number(l.timestamp) || 0; all += a; if (a > 0) n++; if (ts >= today) td += a; else if (ts >= yest) yd += a; });
+            const rows = agpFiltered();
+            const shownSum = rows.reduce((x, l) => x + (Number(l.amount) || 0), 0);
+            const card = (label, val, color) => '<div style="background:rgba(10,10,10,.7);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;padding:12px;text-align:center;">' +
+                '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700;">' + label + '</div>' +
+                '<div style="font-size:20px;font-weight:800;margin-top:4px;color:' + (color || '#fff') + ';">' + val + '</div></div>';
+            stEl.innerHTML = card('Paid today', rfaMoney(td), '#34d399') + card('Paid yesterday', rfaMoney(yd), '#34d399') + card('Paid in total', rfaMoney(all), '#34d399') + card('Payouts', n) +
+                card('Shown (filter)', rows.length + ' · ' + rfaMoney(shownSum), '#f4a73b');
+            const sn = document.getElementById('agpSelN'); if (sn) sn.textContent = Object.keys(agpS.sel).length;
+            const earnMap = {}; logs.forEach(l => { const k = l.toCustomUid; if (!k) return; earnMap[k] = (earnMap[k] || 0) + (Number(l.amount) || 0); });
+            const topE = Object.entries(earnMap).sort((x, y) => y[1] - x[1]).slice(0, 10);
+            const topHtml = topE.length ? '<div style="margin:6px 0 10px;"><b style="font-size:12px;">🏅 Top earners</b>' + topE.map((t, i) =>
+                '<div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;"><span>#' + (i + 1) + ' <a href="#" style="color:var(--accent-cyan);" onclick="document.getElementById(\'agvUid\').scrollIntoView({block:\'center\'});agvLoad(\'' + rfaEsc(t[0]) + '\');return false;"><span class="uid-badge">' + rfaEsc(t[0]) + '</span></a></span><b style="color:#34d399;">' + rfaMoney(t[1]) + '</b></div>').join('') + '</div>' : '';
+            const shown = rows.slice(0, agpS.limit);
+            listEl.innerHTML = topHtml + (shown.length ? shown.map(l =>
+                '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;">' +
+                '<input type="checkbox" style="margin:0;width:auto;flex:0 0 auto;" data-key="' + rfaEsc(l.id) + '"' + (agpS.sel[l.id] ? ' checked' : '') + ' onchange="agpToggle(this.dataset.key,this.checked)">' +
+                '<span style="flex:1;min-width:0;">' + rfaDate(l.timestamp) + ' · <span class="uid-badge">' + rfaEsc(l.toCustomUid) + '</span> ← <span class="uid-badge">' + rfaEsc(l.fromCustomUid) + '</span> · L' + rfaEsc(l.level) +
+                (l.isFirst ? ' · 1st deposit' : '') + '<br><span style="color:var(--text-muted);">' + rfaMoney(l.depositAmount) + ' @ ' + rfaEsc(l.rate) + '%</span></span>' +
+                '<b style="color:#34d399;">' + rfaMoney(l.amount) + '</b>' +
+                '<button type="button" class="btn-red" title="Delete this record" style="margin:0;width:auto;padding:4px 9px;font-size:12px;min-height:0;" data-key="' + rfaEsc(l.id) + '" onclick="agpDeleteKeys([this.dataset.key])">🗑</button></div>'
+            ).join('') + (rows.length > shown.length ? '<button type="button" class="btn-gray" onclick="agpS.limit+=40;agpRender()">Show more (' + (rows.length - shown.length) + ' left)</button>' : '')
+                : '<p class="hint-text">' + (logs.length ? 'No payouts match this filter.' : 'No commission payouts yet.') + '</p>');
+        }
         function loadAgencyAdminReport() {
             const stEl = document.getElementById('agcStats'), listEl = document.getElementById('agcRecent');
             if (!stEl || !listEl) return;
             db.ref('commission_logs').once('value').then(s => {
-                const logs = []; s.forEach(ch => { logs.push(ch.val() || {}); });
-                const today = new Date(); today.setHours(0, 0, 0, 0); const t0 = today.getTime();
-                let all = 0, td = 0, n = 0;
-                logs.forEach(l => { const a = Number(l.amount) || 0; all += a; if (a > 0) n++; if ((Number(l.timestamp) || 0) >= t0) td += a; });
-                const card = (label, val, color) => '<div style="background:rgba(10,10,10,.7);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;padding:12px;text-align:center;">' +
-                    '<div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700;">' + label + '</div>' +
-                    '<div style="font-size:20px;font-weight:800;margin-top:4px;color:' + (color || '#fff') + ';">' + val + '</div></div>';
-                stEl.innerHTML = card('Paid today', rfaMoney(td), '#34d399') + card('Paid in total', rfaMoney(all), '#34d399') + card('Payouts', n);
-                const earnMap = {}; logs.forEach(l => { const k = l.toCustomUid; if (!k) return; earnMap[k] = (earnMap[k] || 0) + (Number(l.amount) || 0); });
-                const topE = Object.entries(earnMap).sort((x, y) => y[1] - x[1]).slice(0, 10);
-                const topHtml = topE.length ? '<div style="margin:6px 0 10px;"><b style="font-size:12px;">🏅 Top earners</b>' + topE.map((t, i) =>
-                    '<div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;"><span>#' + (i + 1) + ' <a href="#" style="color:var(--accent-cyan);" onclick="document.getElementById(\'agvUid\').scrollIntoView({block:\'center\'});agvLoad(\'' + rfaEsc(t[0]) + '\');return false;"><span class="uid-badge">' + rfaEsc(t[0]) + '</span></a></span><b style="color:#34d399;">' + rfaMoney(t[1]) + '</b></div>').join('') + '</div>' : '';
+                const logs = []; s.forEach(ch => { logs.push(Object.assign({ id: ch.key }, ch.val() || {})); });
                 logs.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
-                listEl.innerHTML = topHtml + (logs.length ? logs.slice(0, 40).map(l =>
-                    '<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;">' +
-                    '<span>' + rfaDate(l.timestamp) + ' · <span class="uid-badge">' + rfaEsc(l.toCustomUid) + '</span> ← <span class="uid-badge">' + rfaEsc(l.fromCustomUid) + '</span> · L' + rfaEsc(l.level) +
-                    ' · ' + rfaMoney(l.depositAmount) + ' @ ' + rfaEsc(l.rate) + '%</span><b style="color:#34d399;">' + rfaMoney(l.amount) + '</b></div>'
-                ).join('') : '<p class="hint-text">No commission payouts yet.</p>');
+                agpS.logs = logs; agpS.sel = {}; agpS.limit = 40;
+                agpRender();
             }).catch(e => { stEl.innerHTML = '<p class="hint-text">Could not load commission report: ' + rfaEsc(e.message) + '</p>'; listEl.innerHTML = ''; });
         }
 
