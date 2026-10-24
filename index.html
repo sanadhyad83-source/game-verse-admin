@@ -937,6 +937,9 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     <div class="topbar-icon-btn" id="topbarRefreshBtn" onclick="refreshAllAdminSystems()" title="Refresh all dashboard data &amp; systems">
                         🔄
                     </div>
+                    <div class="topbar-icon-btn" id="topbarResetBtn" onclick="openGlobalResetModal()" title="Global reset — clear records everywhere" style="border-color:rgba(248,113,113,.45);">
+                        🗑️
+                    </div>
                     <div class="topbar-admin-pill">
                         <div class="topbar-admin-avatar">🧑‍💼</div>
                         <div>
@@ -1025,6 +1028,13 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                         <td style="color:#34d399">₮ 0.0000</td>
                     </tr><tr>
                         <td>🎯 Number Master</td>
+                        <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td style="color:#34d399">₹0.00</td>
+                        <td style="color:#34d399">₮ 0.0000</td>
+                    </tr><tr>
+                        <td>🎰 Mini Roulette</td>
                         <td><span class="cc-status-pill cc-status-active">● ACTIVE</span></td>
                         <td>0</td>
                         <td>0</td>
@@ -1243,6 +1253,54 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     <div class="dash2-control"><div class="dash2-control-head"><div><div class="dash2-control-title">🎁 Daily Rewards &amp; Check-in</div><div class="dash2-control-desc">Allow users to claim daily check-in and daily rewards.</div></div><label class="dash2-switch"><input type="checkbox" id="d20RewardsEnabled" checked onchange="d20SaveExtra('rewardsEnabled',this.checked)"> Enabled</label></div></div>
                 </div>
             </div>
+            <div class="dash-panel" id="mtPanel" style="border-color:rgba(250,204,21,.35);">
+                <div class="dash-panel-head"><h4>🛠 Scheduled Maintenance</h4><span id="mtStatus" style="font-size:10px;font-weight:800;">—</span></div>
+                <div class="dash2-control-desc" style="margin-bottom:8px;">Plan a maintenance window. Players see a countdown banner before it starts, then a full-screen "Under maintenance" screen until it ends. Admin app is never affected.</div>
+                <div class="gvz-filters">
+                    <div><label>Starts at</label><input id="mtStart" type="datetime-local"></div>
+                    <div><label>Ends at (blank = until cancelled)</label><input id="mtEnd" type="datetime-local"></div>
+                    <div><label>Warn players before</label><select id="mtWarn"><option value="0">No warning</option><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="180">3 hours</option><option value="1440">24 hours</option></select></div>
+                </div>
+                <input id="mtMsg" type="text" maxlength="200" placeholder="Message for players (e.g. We are upgrading the servers. Back soon!)">
+                <div class="gvz-row">
+                    <button class="btn-green" onclick="mtSave()">📅 Schedule</button>
+                    <button class="btn-red" onclick="mtStartNow()">⚡ Start Now</button>
+                    <button class="btn-gray" onclick="mtCancel()">✖ Cancel / End</button>
+                </div>
+            </div>
+
+            <div class="dash-panel" id="pgPanel">
+                <div class="dash-panel-head"><h4>💹 Profit Guard — Today's House P&amp;L</h4><span class="view-all-link" onclick="pgCompute()">Refresh →</span></div>
+                <div id="pgChips" class="gvz-chips">Loading…</div>
+                <div id="pgGames" class="gvz-list" style="max-height:140px;">—</div>
+                <div class="gvz-filters">
+                    <div><label>Max house loss today (₹) · 0 = off</label><input id="pgMaxLoss" type="number" min="0" step="1" placeholder="0"></div>
+                    <div><label>Alert if RTP ≥ (%) · 0 = off</label><input id="pgRtp" type="number" min="0" max="500" step="0.5" placeholder="0"></div>
+                    <div><label>When breached</label><label class="dash2-switch" style="margin-top:6px;"><input type="checkbox" id="pgAutoPause"> Auto-pause all games</label></div>
+                </div>
+                <div class="gvz-row" style="margin-top:0;"><button class="btn-green" onclick="pgSave()">💾 Save Guard Settings</button></div>
+                <div style="font-size:9px;color:var(--text-muted);margin-top:6px;">INR only · uses the latest 3,000 rounds per source · auto-pause runs while this dashboard is open (checked every minute).</div>
+            </div>
+
+            <div class="dash-panel" id="rrPanel">
+                <div class="dash-panel-head"><h4>🕵 Risk Radar — Suspicious Players Today</h4><span style="font-size:9px;color:var(--text-muted);">Flags only — you decide the action</span></div>
+                <div class="gvz-filters">
+                    <div><label>Net win ≥ (₹)</label><input id="rrNet" type="number" min="0" value="5000"></div>
+                    <div><label>Win rate ≥ (%)</label><input id="rrRate" type="number" min="1" max="100" value="80"></div>
+                    <div><label>…over at least (rounds)</label><input id="rrMin" type="number" min="1" value="20"></div>
+                    <div><label>Heavy volume ≥ (rounds)</label><input id="rrVol" type="number" min="1" value="300"></div>
+                </div>
+                <div class="gvz-row" style="margin-top:0;"><button class="btn-gray" onclick="rrScan()">🔍 Scan Now</button></div>
+                <div id="rrList" class="gvz-list">Press “Scan Now”.</div>
+            </div>
+
+            <div class="dash-panel" id="lbPanel">
+                <div class="dash-panel-head"><h4>💼 Liability Snapshot</h4><span style="font-size:9px;color:var(--text-muted);">Reads every wallet — press when needed</span></div>
+                <div class="gvz-row" style="margin-top:0;"><button class="btn-gray" onclick="lbScan()">📸 Take Snapshot</button></div>
+                <div id="lbChips" class="gvz-chips" style="margin-top:8px;">No snapshot yet.</div>
+                <div id="lbTop" class="gvz-list" style="max-height:150px;display:none;"></div>
+            </div>
+
             <div class="dash-panel">
                 <div class="dash-panel-head"><h4>📥 Priority Queue Watch</h4><span id="d20QueueAlertLabel" style="font-size:10px;"></span></div>
                 <div class="gvx-filters">
@@ -1357,6 +1415,47 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <button id="globalGamesToggleBtn" onclick="toggleAllGamesStatus()" class="btn-red">⏸ Pause All Games</button>
             </div>
 
+            <div class="gvz-card" id="ggsCard">
+                <div class="gvz-head"><div><b>🌐 Global Game Settings</b><span>Rules that apply to EVERY game (Rocket Jump, Dragon vs Tiger, Wheel, Coin Flip, Number Master, Mini Roulette, Mines, WINGO, K3). Enforced in the User App before a bet is placed. Set 0 / leave blank to turn a rule off.</span></div><div class="gvz-chip" id="ggsSummaryChip">LOADING…</div></div>
+                <div class="gvz-sub">⏰ Play Window (India time, IST)</div>
+                <label class="restriction-toggle"><input id="ggsWindowOn" type="checkbox"> Only allow games during a daily time window</label>
+                <div class="two-cols">
+                    <div><label>Opens at (hour 0–23)</label><input id="ggsWindowStart" type="number" min="0" max="23" step="1" placeholder="0"></div>
+                    <div><label>Closes at (hour 1–24)</label><input id="ggsWindowEnd" type="number" min="1" max="24" step="1" placeholder="24"></div>
+                </div>
+                <label>Message shown outside the window</label>
+                <input id="ggsWindowMsg" type="text" maxlength="160" placeholder="Games are closed right now. Please come back during play hours.">
+                <div class="gvz-sub">💰 Global Bet Caps (all games, both wallets)</div>
+                <div class="two-cols">
+                    <div><label>Minimum Bet — INR</label><input id="ggsMinINR" type="number" min="0" step="0.01" placeholder="0 = off"></div>
+                    <div><label>Maximum Bet — INR</label><input id="ggsMaxINR" type="number" min="0" step="0.01" placeholder="0 = off"></div>
+                    <div><label>Minimum Bet — USDT</label><input id="ggsMinUSDT" type="number" min="0" step="0.0001" placeholder="0 = off"></div>
+                    <div><label>Maximum Bet — USDT</label><input id="ggsMaxUSDT" type="number" min="0" step="0.0001" placeholder="0 = off"></div>
+                    <div><label>Max Bet as % of Wallet</label><input id="ggsMaxPct" type="number" min="0" max="100" step="1" placeholder="0 = off"></div>
+                    <div><label>Cooldown Between Bets (sec)</label><input id="ggsCooldown" type="number" min="0" max="3600" step="1" placeholder="0 = off"></div>
+                </div>
+                <div class="gvz-sub">🛠 Pause Message</div>
+                <label>Shown to players when "Pause All Games" is active</label>
+                <input id="ggsMaintMsg" type="text" maxlength="160" placeholder="Games are temporarily paused by the administrator. Please try again later.">
+                <div class="gvz-row">
+                    <button class="btn-green" onclick="ggsSave()">💾 Save Global Settings</button>
+                    <button class="btn-gray" onclick="ggsResetDefaults()">↺ Reset to Defaults</button>
+                    <button class="btn-gray" onclick="ggsExport()">⬇ Export Games Config</button>
+                </div>
+            </div>
+
+            <div class="gvz-card" id="ggsOverviewCard">
+                <div class="gvz-head"><div><b>📋 Games Overview &amp; Bulk Actions</b><span>Live status of every game with quick ON / OFF switches.</span></div></div>
+                <div class="gvz-row" style="margin-top:0;">
+                    <button class="btn-green" onclick="ggsSetAll('active')">▶ Turn All ON</button>
+                    <button class="btn-red" onclick="ggsSetAll('ended')">⏹ Turn All OFF</button>
+                    <button class="btn-gray" onclick="ggsRenderOverview()">↻ Refresh</button>
+                </div>
+                <div id="ggsOverviewList" class="gvz-list">Loading games…</div>
+                <div class="gvz-sub">🧾 Recent Setting Changes</div>
+                <div id="ggsAuditList" class="gvz-list" style="max-height:150px;">No changes logged yet.</div>
+            </div>
+
             <div class="admin-section-card control-group" style="border-top:none; margin-top:0; padding-top:12px;">
                 <label>Select Game</label>
                 <select id="gameSelect" onchange="loadSelectedGameData()">
@@ -1365,6 +1464,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     <option value="spin_wheel">🎡 Fortune Wheel</option>
                     <option value="coin_flip">🪙 Coin Flip</option>
                     <option value="number_guess">🎯 Number Master</option>
+                    <option value="mini_roulette">🎰 Mini Roulette</option>
                 </select>
                 <div class="two-cols" style="margin-top:8px;">
                     <div>
@@ -1442,6 +1542,26 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                         <div><label>Win Payout Multiplier</label><input id="numberPayoutMultiplier" type="number" min="1" max="20" step="0.1" placeholder="2"></div>
                     </div>
                     <p class="hint-text" style="margin:8px 0 0;">Number range is fixed by the game (system default). Only attempts and payout are adjustable here.</p>
+                </div>
+                <div id="miniRouletteControls" class="gv-gm-card hidden" style="margin-top:10px;">
+                    <div class="gv-gm-card-title">🎰 Mini Roulette Controls</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                        <button type="button" class="btn-gray" style="flex:1;min-width:90px;margin:0;padding:8px;font-size:11px;" onclick="mrApplyPreset('balanced')">⚖️ Balanced</button>
+                        <button type="button" class="btn-yellow" style="flex:1;min-width:90px;margin:0;padding:8px;font-size:11px;" onclick="mrApplyPreset('hard')">🔒 Hard</button>
+                        <button type="button" class="btn-red" style="flex:1;min-width:90px;margin:0;padding:8px;font-size:11px;" onclick="mrApplyPreset('brutal')">🔥 Very Hard</button>
+                    </div>
+                    <div class="two-cols">
+                        <div><label>House Pockets on Wheel</label><select id="mrZeroPockets" onchange="mrUpdateEdge()"><option value="0">None — 12 numbers only</option><option value="1">1 — "0"</option><option value="2">2 — "0" and "00"</option><option value="3">3 — "0", "00", "000"</option></select></div>
+                        <div><label>Single Number Payout (×)</label><input id="mrNumberMultiplier" type="number" min="1" max="100" step="0.1" placeholder="10" oninput="mrUpdateEdge()"></div>
+                        <div><label>House Pocket Bet Payout (×)</label><input id="mrZeroMultiplier" type="number" min="1" max="100" step="0.1" placeholder="10" oninput="mrUpdateEdge()"></div>
+                        <div><label>Group Bets Payout (×)</label><input id="mrGroupMultiplier" type="number" min="1" max="50" step="0.05" placeholder="1.8" oninput="mrUpdateEdge()"></div>
+                        <div><label>Max Different Numbers / Spin (0 = no limit)</label><input id="mrMaxStraight" type="number" min="0" max="12" step="1" placeholder="4"></div>
+                        <div><label>Spin Animation (ms)</label><input id="mrSpinMs" type="number" min="1500" max="10000" step="100" placeholder="4200"></div>
+                        <div><label>Max Payout / Spin — INR (0 = no cap)</label><input id="mrMaxPayoutINR" type="number" min="0" step="1" placeholder="0"></div>
+                        <div><label>Max Payout / Spin — USDT (0 = no cap)</label><input id="mrMaxPayoutUSDT" type="number" min="0" step="0.01" placeholder="0"></div>
+                    </div>
+                    <div id="mrEdgeBox" style="margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid rgba(250,204,21,.25);background:rgba(250,204,21,.06);font-size:11.5px;line-height:1.6;"></div>
+                    <p class="hint-text" style="margin:8px 0 0;">The wheel has the 12 numbers plus the house pockets you choose. Every spin is a random pocket, picked <b>before</b> the player's chips go down (the player app shows a verifiable SHA-256 commit), so difficulty is set through the table itself: <b>house pockets</b> make every Red/Black, Odd/Even, 1-6 and 7-12 chip lose, and the <b>payouts</b> stay below the fair odds. Fair odds are ×(12 + house pockets) for a number and half that × 6 for a group. Min / Max Bet above apply to the <b>total of all chips</b> in one spin. Changes apply the next time a player opens the game. Win-chance and bet-scaling do not apply to this game.</p>
                 </div>
                 <div id="gamePrizeWrapper" class="hidden" style="margin-top:10px;">
                     <label>Win Chance (%) — 0 always lose · 100 always win · Win pays 2× bet</label>
@@ -1524,6 +1644,22 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
         <div id="restrictionsAdminSection" class="hidden">
             <h3 style="color:var(--accent-cyan); margin-top:0; font-size:16px;">🛡️ Withdrawal Restrictions &amp; Rules</h3>
             <p class="hint-text">All rules below are stored in Firebase and are read by the User App before a withdrawal is accepted. Users receive a warning popup explaining the exact rule they have not met.</p>
+
+            <div class="gvz-card" id="rulesOverviewCard">
+                <div class="gvz-head"><div><b>📊 Rules Overview</b><span>Live count of switched-on rules, read from the saved settings.</span></div><button class="btn-gray" style="width:auto;margin:0;padding:6px 10px;font-size:10px;" onclick="rulesRefreshOverview()">↻ Refresh</button></div>
+                <div id="rulesOverviewChips" class="gvz-chips">Loading…</div>
+            </div>
+            <div class="gvz-nav" id="rulesNav">
+                <button type="button" onclick="rulesJump('Withdrawal Amount')">💸 Withdrawal</button>
+                <button type="button" onclick="rulesJump('Betting Requirement')">🎯 Turnover</button>
+                <button type="button" onclick="rulesJump('Account &')">👤 Account</button>
+                <button type="button" onclick="rulesJump('Bonus / Gift')">🎁 Bonus</button>
+                <button type="button" onclick="rulesJump('Safety')">💰 Safety</button>
+                <button type="button" onclick="rulesJump('Advanced')">⚙️ Advanced</button>
+                <button type="button" onclick="rulesJump('Manual User')">🚨 Users</button>
+                <button type="button" onclick="rulesJump('Security')">🔐 Block</button>
+            </div>
+            <div class="gvz-unsaved hidden" id="rulesUnsavedBar"><span>● You have unsaved changes</span><button class="btn-green" style="width:auto;margin:0;padding:7px 12px;font-size:11px;" onclick="rulesSaveAll()">💾 Save All Rules</button></div>
 
             <div class="restriction-admin-card">
                 <h4>💸 Withdrawal Amount Rules</h4>
@@ -1634,6 +1770,26 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
             </div>
 
             <div class="restriction-admin-card">
+                <h4>⚙️ Advanced Rules (Schedule &amp; Spending)</h4>
+                <p class="hint-text">Extra protections enforced by the User App. Set 0 to turn a limit off. Times use India time (IST).</p>
+                <label class="restriction-toggle"><input id="arWdWindowOn" type="checkbox"> Only accept withdrawal requests on selected days / hours</label>
+                <div class="gvz-days" id="arWdDays">
+                    <label><input type="checkbox" value="1" checked> Mon</label><label><input type="checkbox" value="2" checked> Tue</label><label><input type="checkbox" value="3" checked> Wed</label><label><input type="checkbox" value="4" checked> Thu</label><label><input type="checkbox" value="5" checked> Fri</label><label><input type="checkbox" value="6" checked> Sat</label><label><input type="checkbox" value="0" checked> Sun</label>
+                </div>
+                <div class="two-cols">
+                    <div><label>Withdrawals open at (hour 0–23)</label><input id="arWdStart" type="number" min="0" max="23" step="1" placeholder="0"></div>
+                    <div><label>Withdrawals close at (hour 1–24)</label><input id="arWdEnd" type="number" min="1" max="24" step="1" placeholder="24"></div>
+                </div>
+                <label>Message shown when withdrawals are closed</label>
+                <input id="arWdMsg" type="text" maxlength="160" placeholder="Withdrawals are only processed during the scheduled days and hours.">
+                <div class="two-cols">
+                    <div><label>Max Withdrawal as % of Wallet · 0 = off</label><input id="arWdPct" type="number" min="0" max="100" step="1" placeholder="0"></div>
+                    <div><label>Max Amount Wagered Per Day (₹) · 0 = off</label><input id="arMaxWageredDay" type="number" min="0" step="0.01" placeholder="0"></div>
+                </div>
+                <button onclick="saveAdvancedRules()" class="btn-green" style="margin-top:8px;">💾 Save Advanced Rules</button>
+            </div>
+
+            <div class="restriction-admin-card">
                 <h4>👤 Manual User Controls</h4>
                 <p class="hint-text">Use the Manage User window to apply a manual restriction to one user. Restricted users are listed below automatically.</p>
                 <div class="manual-restricted-list">
@@ -1657,6 +1813,24 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <label class="restriction-toggle"><input id="restrictionBlocked" type="checkbox"> Temporarily block all withdrawals</label>
                 <label>Block message shown to users</label>
                 <textarea id="restrictionBlockMessage" rows="3" placeholder="Withdrawals are temporarily unavailable. Please try again later."></textarea>
+            </div>
+
+            <div class="restriction-admin-card">
+                <h4>🧰 Rule Tools — Presets, Backup &amp; History</h4>
+                <p class="hint-text">Presets only fill the form fields — nothing is applied until you press a Save button.</p>
+                <div class="gvz-row" style="margin-top:0;">
+                    <button type="button" class="btn-gray" onclick="rulesPreset('relaxed')">🟢 Relaxed</button>
+                    <button type="button" class="btn-gray" onclick="rulesPreset('balanced')">🟡 Balanced</button>
+                    <button type="button" class="btn-gray" onclick="rulesPreset('strict')">🔴 Strict</button>
+                    <button type="button" class="btn-red" onclick="rulesAllOff()">⏻ Turn All Rules OFF</button>
+                </div>
+                <div class="gvz-row">
+                    <button type="button" class="btn-gray" onclick="rulesExport()">⬇ Export Rules (JSON)</button>
+                    <button type="button" class="btn-gray" onclick="document.getElementById('rulesImportFile').click()">⬆ Import Rules</button>
+                    <input id="rulesImportFile" type="file" accept="application/json,.json" style="display:none" onchange="rulesImport(this)">
+                </div>
+                <div class="gvz-sub">🧾 Recent Rule Changes</div>
+                <div id="rulesAuditList" class="gvz-list" style="max-height:170px;">No changes logged yet.</div>
             </div>
 
             <div class="restriction-admin-card">
@@ -2036,7 +2210,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                     <button onclick="clearPlayHistoryDigest()" class="btn-red">🗑️ Clear Records</button>
                 </div>
             </div>
-            <p style="color:var(--text-muted); font-size:12px; margin-top:4px;">Wagered, paid out and house result across Mines, Rocket Jump, Fortune Wheel, Coin Flip, Number Master and WINGO. Pending WINGO entries are left out until they settle. Use the filters to narrow by date, currency, game or player.</p>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:4px;">Wagered, paid out and house result across Mines, Rocket Jump, Fortune Wheel, Coin Flip, Number Master, Mini Roulette and WINGO. Pending WINGO entries are left out until they settle. Use the filters to narrow by date, currency, game or player.</p>
 
             <div class="gvx-filters">
                 <div><label>Period</label>
@@ -3009,6 +3183,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <label class="restriction-toggle"><input id="hsGameSpinWheel" type="checkbox"> Fortune Wheel card</label>
                 <label class="restriction-toggle"><input id="hsGameCoinFlip" type="checkbox"> Lucky Coin Flip card</label>
                 <label class="restriction-toggle"><input id="hsGameNumberGuess" type="checkbox"> Number Master card</label>
+                <label class="restriction-toggle"><input id="hsGameMiniRoulette" type="checkbox"> Mini Roulette card</label>
                 <label class="restriction-toggle"><input id="hsGameAll" type="checkbox"> "All Games" card</label>
                 <p class="hint-text">Cards show LIVE / LOCKED automatically from the game's own admin settings and the global games switch.</p>
             </div>
@@ -3054,7 +3229,7 @@ button:hover{background:linear-gradient(135deg,#ffedb0,#fbbf24 55%,#bd7b10)!impo
                 <div class="kpi-card kpi-green"><div class="kpi-label">📅 CHECK-INS TODAY</div><div class="kpi-value" id="rsKpiCheckins" style="font-size:18px;">0</div></div>
                 <div class="kpi-card kpi-purple"><div class="kpi-label">🎡 SPINS TODAY</div><div class="kpi-value" id="rsKpiSpins" style="font-size:18px;">0</div></div>
                 <div class="kpi-card kpi-yellow"><div class="kpi-label">💸 PAID TODAY</div><div class="kpi-value" id="rsKpiPaidToday" style="font-size:18px;">₹0</div></div>
-                <div class="kpi-card kpi-blue"><div class="kpi-label">🏆 PAID ALL-TIME</div><div class="kpi-value" id="rsKpiPaidAll" style="font-size:18px;">₹0</div><div class="kpi-sub" id="rsKpiPaidSplit"></div></div>
+                <div class="kpi-card kpi-blue"><div class="kpi-label">🏆 PAID ALL-TIME</div><div class="kpi-value" id="rsKpiPaidAll" style="font-size:18px;">₹0</div><div class="kpi-sub" id="rsKpiPaidSplit"></div><button type="button" class="btn-red" style="width:auto;margin:6px 0 0;padding:4px 9px;font-size:10px;min-height:0;" onclick="rsResetPaidAllTime()" title="Reset PAID ALL-TIME to ₹0">↺ Reset to ₹0</button></div>
             </div>
 
             <div class="dash-panel">
@@ -3491,9 +3666,43 @@ function formatAdminMoney(value){
                     loadInvestmentConfigSetting();
                     loadAppStatusSetting();
                     loadBroadcastHistory();
-                    try { ensureAdminRocketEngine(); } catch (e) {}
+                    try { ensureAdminRocketEngine(); } catch (e) {} try { ensureMiniRouletteGame(); } catch (e) {}
                 });
             }).catch(err => alert(err.message));
+        }
+
+        // Mini Roulette: live return-to-player / house-edge calculator + difficulty presets.
+        function mrUpdateEdge() {
+            var box = document.getElementById('mrEdgeBox'); if (!box) return;
+            var g = function (id, d) { var v = Number((document.getElementById(id) || {}).value); return isFinite(v) && v > 0 ? v : d; };
+            var zp = Math.max(0, Math.min(3, Number((document.getElementById('mrZeroPockets') || {}).value) || 0));
+            var N = 12 + zp, num = g('mrNumberMultiplier', 10), zero = g('mrZeroMultiplier', num), grp = g('mrGroupMultiplier', 1.8);
+            var rN = num / N * 100, rZ = zero / N * 100, rG = 6 * grp / N * 100;
+            var edge = function (r) { var e = 100 - r; return '<b style="color:' + (e >= 0 ? '#34d399' : '#f87171') + '">' + (e >= 0 ? '+' : '') + e.toFixed(1) + '% house</b>'; };
+            var win = Math.round(6 / N * 100);
+            var html = '<div><b>📊 Live odds (' + N + ' pockets)</b></div>' +
+                '<div>Single number: player wins 1 in ' + N + ' · returns ' + rN.toFixed(1) + '% → ' + edge(rN) + '</div>' +
+                (zp ? '<div>House-pocket bet: returns ' + rZ.toFixed(1) + '% → ' + edge(rZ) + '</div>' : '') +
+                '<div>Red / Black / Odd / Even / 1-6 / 7-12: wins ' + win + '% of spins · returns ' + rG.toFixed(1) + '% → ' + edge(rG) + '</div>';
+            if (rN >= 100 || rG >= 100 || rZ >= 100) html += '<div style="color:#f87171;margin-top:4px;">⚠️ A payout is at or above the fair odds — players would have the edge on that bet. Lower it.</div>';
+            box.innerHTML = html;
+        }
+        function mrApplyPreset(name) {
+            var P = { balanced: { zp: 1, num: 11, zero: 11, grp: 1.9, straight: 6 }, hard: { zp: 2, num: 10, zero: 10, grp: 1.8, straight: 4 }, brutal: { zp: 3, num: 9, zero: 9, grp: 1.7, straight: 3 } }[name];
+            if (!P) return;
+            var set = function (id, v) { var e = document.getElementById(id); if (e) e.value = v; };
+            set('mrZeroPockets', P.zp); set('mrNumberMultiplier', P.num); set('mrZeroMultiplier', P.zero); set('mrGroupMultiplier', P.grp); set('mrMaxStraight', P.straight);
+            mrUpdateEdge();
+        }
+
+        // Mini Roulette: make sure its games/mini_roulette node exists (status ON) so the dashboards and the user app list it.
+        function ensureMiniRouletteGame() {
+            try {
+                db.ref('games/mini_roulette').once('value').then(function (s) {
+                    if (s.exists()) return;
+                    return db.ref('games/mini_roulette').set({ name: 'Mini Roulette', entryFee: 10, usdtEntryFee: 0.1, status: 'active', allowUserAmount: true, numberMultiplier: 10, groupMultiplier: 1.8, zeroMultiplier: 10, zeroPockets: 2, maxStraightBets: 4, maxPayoutINR: 0, maxPayoutUSDT: 0, spinMs: 4200, minBetINR: 1, maxBetINR: 0, minBetUSDT: 0, maxBetUSDT: 0 });
+                }).catch(function () {});
+            } catch (e) {}
         }
 
         function logoutAdmin() {
@@ -3511,7 +3720,7 @@ function formatAdminMoney(value){
             db.ref('users/'+user.uid).once('value').then(function(snap){
                 const data=snap.val();
                 if(data && (data.role==='admin' || user.email==='sanadhyad83@gmail.com')){
-                    try{ ensureAdminRocketEngine(); }catch(e){}
+                    try{ ensureAdminRocketEngine(); }catch(e){} try{ ensureMiniRouletteGame(); }catch(e){}
                 }
             }).catch(function(){});
         });
@@ -3525,6 +3734,7 @@ function formatAdminMoney(value){
             {id:'spin_wheel',name:'🎡 Fortune Wheel'},
             {id:'coin_flip',name:'🪙 Coin Flip'},
             {id:'number_guess',name:'🎯 Number Master'},
+            {id:'mini_roulette',name:'🎰 Mini Roulette'},
             {id:'mines',name:'💣 Mines'},
             {id:'colour_clash',name:'🎨 WINGO'},
             {id:'k3',name:'🎲 K3'}
@@ -4223,6 +4433,7 @@ function formatAdminMoney(value){
             { id: 'spin_wheel', name: '🎡 Fortune Wheel' },
             { id: 'coin_flip', name: '🪙 Coin Flip' },
             { id: 'number_guess', name: '🎯 Number Master' },
+            { id: 'mini_roulette', name: '🎰 Mini Roulette' },
             { id: 'mines', name: '💣 Mines' },
             { id: 'colour_clash', name: '🎨 WINGO' },
             { id: 'k3', name: '🎲 K3' }
@@ -4437,6 +4648,7 @@ function formatAdminMoney(value){
                         'coin flip':'coin_flip',
                         'lucky coin flip':'coin_flip',
                         'number master':'number_guess',
+                        'mini roulette':'mini_roulette',
                         'mines':'mines',
                         'wingo':'colour_clash',
                         'k3':'k3'
@@ -5417,12 +5629,14 @@ function formatAdminMoney(value){
             if (rocketAdvanced) rocketAdvanced.classList.toggle('hidden', gameId !== 'rocket_jump');
             if (gameId === 'rocket_jump') startRocketMonitor(); else stopRocketMonitor();
             if (numberAdvanced) numberAdvanced.classList.toggle('hidden', gameId !== 'number_guess');
+            const rouletteAdvanced = document.getElementById('miniRouletteControls');
+            if (rouletteAdvanced) rouletteAdvanced.classList.toggle('hidden', gameId !== 'mini_roulette');
             if (gameId === 'rocket_jump') {
                 crashRangeInput.classList.remove('hidden');
                 prizeWrapper.classList.add('hidden');
             } else {
                 crashRangeInput.classList.add('hidden');
-                prizeWrapper.classList.remove('hidden');
+                prizeWrapper.classList.toggle('hidden', gameId === 'mini_roulette');
             }
             if (highCardControls) highCardControls.classList.toggle('hidden', gameId !== 'high_card');
             if (gameId === 'high_card') {
@@ -5459,7 +5673,8 @@ function formatAdminMoney(value){
                     setVal('rocketAutoRun',data.autoRun===false?'off':'on');
                 }
                 if(gameId==='number_guess'){ setVal('numberAttempts',data.attempts ?? 3); setVal('numberPayoutMultiplier',data.payoutMultiplier ?? 2); }
-                const winChanceInfo = gameId === 'rocket_jump' ? '' : ` | Win Chance: ${(data.winChancePercent !== undefined && data.winChancePercent !== null) ? data.winChancePercent : 50}% | Bet Scaling: -${data.betScalingPercent || 0}% per ₹100`;
+                if(gameId==='mini_roulette'){ setVal('mrNumberMultiplier',data.numberMultiplier ?? 10); setVal('mrGroupMultiplier',data.groupMultiplier ?? 1.8); setVal('mrZeroMultiplier',data.zeroMultiplier ?? data.numberMultiplier ?? 10); setVal('mrZeroPockets',data.zeroPockets ?? 2); setVal('mrMaxStraight',data.maxStraightBets ?? 4); setVal('mrMaxPayoutINR',data.maxPayoutINR ?? 0); setVal('mrMaxPayoutUSDT',data.maxPayoutUSDT ?? 0); setVal('mrSpinMs',data.spinMs ?? 4200); mrUpdateEdge(); }
+                const winChanceInfo = gameId === 'rocket_jump' ? '' : gameId === 'mini_roulette' ? ` | Number ×${data.numberMultiplier ?? 10} | Groups ×${data.groupMultiplier ?? 1.8} | House pockets: ${data.zeroPockets ?? 2} | Spin: ${data.spinMs ?? 4200}ms` : ` | Win Chance: ${(data.winChancePercent !== undefined && data.winChancePercent !== null) ? data.winChancePercent : 50}% | Bet Scaling: -${data.betScalingPercent || 0}% per ₹100`;
                 document.getElementById('liveGameStatus').innerText = `Status: ${(data.status||'active').toUpperCase()} | Mode: ${data.allowUserAmount ? 'Allow User Own Amount' : 'Fixed Fee'} | INR: ₹${data.entryFee || 0} | USDT: ${Number(data.usdtEntryFee || data.entryFee || 0).toFixed(4)}${winChanceInfo}`;
             });
         }
@@ -5517,6 +5732,19 @@ function formatAdminMoney(value){
                 let betScaling = Number(document.getElementById('gameBetScaling').value);
                 if (isNaN(betScaling) || betScaling < 0) betScaling = 0;
                 updatePayload.betScalingPercent = betScaling;
+            } else if (gameId === 'mini_roulette') {
+                updatePayload.name = 'Mini Roulette';
+                const mrNum = (id, def, lo, hi) => { const raw = document.getElementById(id)?.value; const n = (raw === '' || raw === undefined || raw === null) ? def : Number(raw); return Math.min(hi, Math.max(lo, isFinite(n) ? n : def)); };
+                updatePayload.numberMultiplier = Number(mrNum('mrNumberMultiplier', 10, 1, 100).toFixed(2));
+                updatePayload.groupMultiplier = Number(mrNum('mrGroupMultiplier', 1.8, 1, 50).toFixed(2));
+                updatePayload.zeroMultiplier = Number(mrNum('mrZeroMultiplier', updatePayload.numberMultiplier, 1, 100).toFixed(2));
+                updatePayload.zeroPockets = Math.round(mrNum('mrZeroPockets', 2, 0, 3));
+                updatePayload.maxStraightBets = Math.round(mrNum('mrMaxStraight', 4, 0, 12));
+                updatePayload.maxPayoutINR = Math.max(0, Number(mrNum('mrMaxPayoutINR', 0, 0, 1e9).toFixed(2)));
+                updatePayload.maxPayoutUSDT = Math.max(0, Number(mrNum('mrMaxPayoutUSDT', 0, 0, 1e9).toFixed(4)));
+                updatePayload.spinMs = Math.round(mrNum('mrSpinMs', 4200, 1500, 10000));
+                if (updatePayload.maxBetINR > 0 && updatePayload.minBetINR > updatePayload.maxBetINR) return alert('Minimum INR bet cannot be higher than the maximum.');
+                if (updatePayload.maxBetUSDT > 0 && updatePayload.minBetUSDT > updatePayload.maxBetUSDT) return alert('Minimum USDT bet cannot be higher than the maximum.');
             } else if(gameId==='number_guess') {
                 // minNumber / maxNumber are system-fixed — not editable in admin
                 updatePayload.attempts=Math.min(10,Math.max(1,Math.floor(Number(document.getElementById('numberAttempts')?.value)||3)));
@@ -11656,7 +11884,7 @@ function hsDefaults() {
         notice: { enabled: true, text: 'Welcome to Titan Game Verse — play smart, play royal!', buttonLabel: 'Detail', title: '', body: '' },
         wallet: { tagline: 'Your Winning Journey Begins!', hideToggle: true, quickActions: true },
         menu: { title: 'Royal Menu', columns: 3, tiles: HS_TILES.map(function (t) { return { id: t.id, enabled: true, label: t.label, badge: '' }; }) },
-        games: { enabled: true, title: 'Featured Games', wingo: true, k3: true, mines: true, rocket_jump: true, high_card: true, spin_wheel: true, coin_flip: true, number_guess: true, all: true },
+        games: { enabled: true, title: 'Featured Games', wingo: true, k3: true, mines: true, rocket_jump: true, high_card: true, spin_wheel: true, coin_flip: true, number_guess: true, mini_roulette: true, all: true },
         daily: { enabled: true, title: 'Daily Royal Reward', sub: 'Check in & spin the wheel every day' },
         refer: { enabled: true, title: 'Invite Friends, Earn Rewards', sub: 'Share your link and get rewarded' },
         footer: { enabled: true, text: 'Need help? Our royal support team is here for you.' }
@@ -11671,7 +11899,7 @@ function hsNormalize(raw) {
         notice: { enabled: pick(r.notice, 'enabled', true) !== false, text: String(pick(r.notice, 'text', d.notice.text)), buttonLabel: String(pick(r.notice, 'buttonLabel', 'Detail')), title: String(pick(r.notice, 'title', '')), body: String(pick(r.notice, 'body', '')) },
         wallet: { tagline: String(pick(r.wallet, 'tagline', d.wallet.tagline)), hideToggle: pick(r.wallet, 'hideToggle', true) !== false, quickActions: pick(r.wallet, 'quickActions', true) !== false },
         menu: { title: String(pick(r.menu, 'title', d.menu.title)), columns: Number(pick(r.menu, 'columns', 3)) === 4 ? 4 : 3, tiles: [] },
-        games: { enabled: pick(r.games, 'enabled', true) !== false, title: String(pick(r.games, 'title', d.games.title)), wingo: pick(r.games, 'wingo', true) !== false, k3: pick(r.games, 'k3', true) !== false, mines: pick(r.games, 'mines', true) !== false, rocket_jump: pick(r.games, 'rocket_jump', true) !== false, high_card: pick(r.games, 'high_card', true) !== false, spin_wheel: pick(r.games, 'spin_wheel', true) !== false, coin_flip: pick(r.games, 'coin_flip', true) !== false, number_guess: pick(r.games, 'number_guess', true) !== false, all: pick(r.games, 'all', true) !== false },
+        games: { enabled: pick(r.games, 'enabled', true) !== false, title: String(pick(r.games, 'title', d.games.title)), wingo: pick(r.games, 'wingo', true) !== false, k3: pick(r.games, 'k3', true) !== false, mines: pick(r.games, 'mines', true) !== false, rocket_jump: pick(r.games, 'rocket_jump', true) !== false, high_card: pick(r.games, 'high_card', true) !== false, spin_wheel: pick(r.games, 'spin_wheel', true) !== false, coin_flip: pick(r.games, 'coin_flip', true) !== false, number_guess: pick(r.games, 'number_guess', true) !== false, mini_roulette: pick(r.games, 'mini_roulette', true) !== false, all: pick(r.games, 'all', true) !== false },
         daily: { enabled: pick(r.daily, 'enabled', true) !== false, title: String(pick(r.daily, 'title', d.daily.title)), sub: String(pick(r.daily, 'sub', d.daily.sub)) },
         refer: { enabled: pick(r.refer, 'enabled', true) !== false, title: String(pick(r.refer, 'title', d.refer.title)), sub: String(pick(r.refer, 'sub', d.refer.sub)) },
         footer: { enabled: pick(r.footer, 'enabled', true) !== false, text: String(pick(r.footer, 'text', d.footer.text)) }
@@ -11697,7 +11925,7 @@ function hsFill(cfg) {
     hsSet('hsWalletTagline', cfg.wallet.tagline); hsChk('hsWalletHide', cfg.wallet.hideToggle); hsChk('hsWalletActions', cfg.wallet.quickActions);
     hsSet('hsMenuTitle', cfg.menu.title); hsSet('hsMenuCols', String(cfg.menu.columns));
     hsTilesState = cfg.menu.tiles.map(function (t) { return Object.assign({}, t); }); hsRenderTiles();
-    hsChk('hsGamesOn', cfg.games.enabled); hsSet('hsGamesTitle', cfg.games.title); hsChk('hsGameWingo', cfg.games.wingo); hsChk('hsGameK3', cfg.games.k3); hsChk('hsGameMines', cfg.games.mines); hsChk('hsGameRocketJump', cfg.games.rocket_jump); hsChk('hsGameHighCard', cfg.games.high_card); hsChk('hsGameSpinWheel', cfg.games.spin_wheel); hsChk('hsGameCoinFlip', cfg.games.coin_flip); hsChk('hsGameNumberGuess', cfg.games.number_guess); hsChk('hsGameAll', cfg.games.all);
+    hsChk('hsGamesOn', cfg.games.enabled); hsSet('hsGamesTitle', cfg.games.title); hsChk('hsGameWingo', cfg.games.wingo); hsChk('hsGameK3', cfg.games.k3); hsChk('hsGameMines', cfg.games.mines); hsChk('hsGameRocketJump', cfg.games.rocket_jump); hsChk('hsGameHighCard', cfg.games.high_card); hsChk('hsGameSpinWheel', cfg.games.spin_wheel); hsChk('hsGameCoinFlip', cfg.games.coin_flip); hsChk('hsGameNumberGuess', cfg.games.number_guess); hsChk('hsGameMiniRoulette', cfg.games.mini_roulette); hsChk('hsGameAll', cfg.games.all);
     hsChk('hsDailyOn', cfg.daily.enabled); hsSet('hsDailyTitle', cfg.daily.title); hsSet('hsDailySub', cfg.daily.sub);
     hsChk('hsReferOn', cfg.refer.enabled); hsSet('hsReferTitle', cfg.refer.title); hsSet('hsReferSub', cfg.refer.sub);
     hsChk('hsFooterOn', cfg.footer.enabled); hsSet('hsFooterText', cfg.footer.text);
@@ -11738,7 +11966,7 @@ function hsRead() {
         notice: { enabled: c('hsNoticeOn'), text: v('hsNoticeText').slice(0, 200), buttonLabel: (v('hsNoticeBtn') || 'Detail').slice(0, 14), title: v('hsNoticeTitle').slice(0, 60), body: v('hsNoticeBody').slice(0, 1200) },
         wallet: { tagline: v('hsWalletTagline').slice(0, 60), hideToggle: c('hsWalletHide'), quickActions: c('hsWalletActions') },
         menu: { title: v('hsMenuTitle').slice(0, 30), columns: Number(v('hsMenuCols')) === 4 ? 4 : 3, tiles: hsTilesState.map(function (t) { return { id: t.id, enabled: !!t.enabled, label: String(t.label || '').trim().slice(0, 18) || (HS_TILES.filter(function (x) { return x.id === t.id; })[0] || {}).label, badge: t.badge || '' }; }) },
-        games: { enabled: c('hsGamesOn'), title: v('hsGamesTitle').slice(0, 30), wingo: c('hsGameWingo'), k3: c('hsGameK3'), mines: c('hsGameMines'), rocket_jump: c('hsGameRocketJump'), high_card: c('hsGameHighCard'), spin_wheel: c('hsGameSpinWheel'), coin_flip: c('hsGameCoinFlip'), number_guess: c('hsGameNumberGuess'), all: c('hsGameAll') },
+        games: { enabled: c('hsGamesOn'), title: v('hsGamesTitle').slice(0, 30), wingo: c('hsGameWingo'), k3: c('hsGameK3'), mines: c('hsGameMines'), rocket_jump: c('hsGameRocketJump'), high_card: c('hsGameHighCard'), spin_wheel: c('hsGameSpinWheel'), coin_flip: c('hsGameCoinFlip'), number_guess: c('hsGameNumberGuess'), mini_roulette: c('hsGameMiniRoulette'), all: c('hsGameAll') },
         daily: { enabled: c('hsDailyOn'), title: v('hsDailyTitle').slice(0, 40), sub: v('hsDailySub').slice(0, 80) },
         refer: { enabled: c('hsReferOn'), title: v('hsReferTitle').slice(0, 40), sub: v('hsReferSub').slice(0, 80) },
         footer: { enabled: c('hsFooterOn'), text: v('hsFooterText').slice(0, 80) },
@@ -12609,6 +12837,432 @@ if(!tickTimer)tickTimer=setInterval(()=>{if(visible()){renderControls();}},30000
 setInterval(()=>{if(visible())load().catch(()=>{});},60000);
 })();
 
+</script>
+
+<style id="gvz-style">
+.gvz-card{margin-top:12px;padding:13px;border:1px solid rgba(250,204,21,.22);border-radius:13px;background:linear-gradient(145deg,rgba(30,58,138,.12),rgba(127,29,29,.08))}
+.gvz-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}.gvz-head b{display:block;font-size:13px;color:#facc15}.gvz-head span{display:block;font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.4}
+.gvz-chip{font-size:9px;font-weight:900;padding:4px 8px;border-radius:999px;border:1px solid rgba(52,211,153,.35);background:rgba(52,211,153,.1);color:#34d399;white-space:nowrap}
+.gvz-sub{margin:12px 0 4px;font-size:11px;font-weight:900;color:#9ed7ff}
+.gvz-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.gvz-row button{width:auto;margin:0;padding:9px 12px;font-size:11px;min-height:34px}
+.gvz-list{max-height:260px;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px;background:rgba(0,0,0,.22);font-size:11px;margin-top:8px}
+.gvz-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.06)}.gvz-item:last-child{border-bottom:none}
+.gvz-item small{display:block;color:var(--text-muted);font-size:9px;margin-top:2px}
+.gvz-pill{font-size:9px;font-weight:900;padding:3px 8px;border-radius:999px}.gvz-on{background:rgba(52,211,153,.14);color:#34d399}.gvz-off{background:rgba(248,113,113,.14);color:#f87171}
+.gvz-item button{width:auto;margin:0;padding:5px 9px;font-size:10px;min-height:0}
+.gvz-chips{display:flex;flex-wrap:wrap;gap:6px}.gvz-chips .c{padding:6px 9px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);font-size:10px;color:#fff}.gvz-chips .c b{color:#facc15}.gvz-chips .c.warn{border-color:rgba(248,113,113,.45);background:rgba(248,113,113,.1)}.gvz-chips .c.ok b{color:#34d399}
+.gvz-nav{position:sticky;top:0;z-index:20;display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin-top:8px;background:rgba(2,8,23,.92);backdrop-filter:blur(6px)}.gvz-nav button{width:auto;margin:0;flex:0 0 auto;padding:6px 10px;font-size:10px;min-height:0;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff}
+.gvz-unsaved{position:sticky;top:44px;z-index:19;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;border:1px solid rgba(250,204,21,.4);background:rgba(250,204,21,.12);color:#facc15;font-size:11px;font-weight:800;margin-top:4px}
+.gvz-days{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.gvz-days label{display:flex;align-items:center;gap:4px;font-size:11px;padding:4px 8px;border:1px solid rgba(255,255,255,.12);border-radius:999px;margin:0}.gvz-days input{width:auto;margin:0}
+.gvz-overlay{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:14px}.gvz-overlay.hidden{display:none}
+.gvz-modal{width:100%;max-width:480px;max-height:92vh;overflow:auto;padding:16px;border-radius:16px;border:1px solid rgba(248,113,113,.4);background:linear-gradient(145deg,#0b1626,#07101c)}
+.gvz-resetlist label{display:flex;gap:8px;align-items:flex-start;padding:7px 8px;margin:4px 0;border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:12px;color:#fff}.gvz-resetlist input{width:auto;margin:2px 0 0}.gvz-resetlist small{display:block;color:var(--text-muted);font-size:9px;margin-top:2px}
+</style>
+
+<div id="gresetOverlay" class="gvz-overlay hidden">
+  <div class="gvz-modal">
+    <h3 style="margin:0 0 4px;color:#f87171;">🗑️ Global Reset</h3>
+    <p class="hint-text" style="margin:0 0 8px;">Tick the records to wipe everywhere (every place that has a delete-record button). Wallet balances are <b>never</b> changed and pending withdrawals are <b>not</b> refunded. This cannot be undone.</p>
+    <div class="gvz-row" style="margin:0 0 6px;"><button type="button" class="btn-gray" style="padding:6px 10px;font-size:10px;" onclick="gresetTick(true)">Select all</button><button type="button" class="btn-gray" style="padding:6px 10px;font-size:10px;" onclick="gresetTick(false)">Clear selection</button></div>
+    <div id="gresetList" class="gvz-resetlist"></div>
+    <p class="hint-text" style="margin:8px 0 4px;">Not included (they move money or are not history): users, investments &amp; refunds, memberships, missions, events, gift codes themselves, income schedules.</p>
+    <label>Type <b>RESET</b> to confirm</label>
+    <input id="gresetConfirm" type="text" autocomplete="off" placeholder="RESET">
+    <div id="gresetLog" class="gvz-list" style="max-height:110px;margin-top:6px;display:none;"></div>
+    <div class="gvz-row">
+      <button type="button" class="btn-red" id="gresetRunBtn" onclick="gresetRun()">🗑️ Reset Selected</button>
+      <button type="button" class="btn-gray" onclick="closeGlobalResetModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+<script>
+/* ===== GVX: Global Game Settings, Global Reset, Reward PAID reset, Restrictions upgrades ===== */
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
+var adminEmail=function(){try{return firebase.auth().currentUser.email||'';}catch(e){return '';}};
+var audit=function(path,obj){try{db.ref(path).push(Object.assign({ts:Date.now(),admin:adminEmail()},obj));}catch(e){}};
+var num=function(id,d){var e=$(id);var v=e?Number(e.value):NaN;return isFinite(v)?v:(d||0);};
+var setv=function(id,v){var e=$(id);if(e)e.value=(v==null?'':v);};
+var fmtTime=function(ts){try{return new Date(ts).toLocaleString();}catch(e){return '';}};
+var pad=function(n){return String(n).padStart(2,'0');};
+
+/* ---------- GLOBAL GAME SETTINGS (control/globalGameSettings) ---------- */
+var GGS_PATH='control/globalGameSettings';
+window.ggsLoad=function(){
+  db.ref(GGS_PATH).once('value').then(function(s){
+    var d=s.val()||{};
+    $('ggsWindowOn').checked=d.windowEnabled===true;
+    setv('ggsWindowStart',d.windowStartHour!=null?d.windowStartHour:0);
+    setv('ggsWindowEnd',d.windowEndHour!=null?d.windowEndHour:24);
+    setv('ggsWindowMsg',d.windowMessage||'');
+    setv('ggsMinINR',d.minBetINR||0);setv('ggsMaxINR',d.maxBetINR||0);
+    setv('ggsMinUSDT',d.minBetUSDT||0);setv('ggsMaxUSDT',d.maxBetUSDT||0);
+    setv('ggsMaxPct',d.maxWalletPercent||0);setv('ggsCooldown',d.betCooldownSeconds||0);
+    setv('ggsMaintMsg',d.maintenanceMessage||'');
+    ggsSummary(d);
+  }).catch(function(){});
+  ggsLoadAudit();
+};
+function ggsSummary(d){
+  var on=[];
+  if(d.windowEnabled)on.push('Hours '+pad(d.windowStartHour||0)+'–'+pad(d.windowEndHour==null?24:d.windowEndHour));
+  if(d.minBetINR>0||d.maxBetINR>0||d.minBetUSDT>0||d.maxBetUSDT>0)on.push('Bet caps');
+  if(d.maxWalletPercent>0)on.push(d.maxWalletPercent+'% wallet');
+  if(d.betCooldownSeconds>0)on.push(d.betCooldownSeconds+'s cooldown');
+  var c=$('ggsSummaryChip');if(c){c.textContent=on.length?on.join(' · '):'NO GLOBAL RULES';c.style.color=on.length?'#34d399':'#9ca3af';}
+}
+window.ggsSave=function(){
+  var s=num('ggsWindowStart',0),e=num('ggsWindowEnd',24);
+  var on=$('ggsWindowOn').checked;
+  if(on&&(s<0||s>23||e<1||e>24||s===e))return alert('Play window: opening hour must be 0–23, closing hour 1–24, and they cannot be equal.');
+  var d={windowEnabled:on,windowStartHour:Math.floor(s),windowEndHour:Math.floor(e),windowMessage:($('ggsWindowMsg').value||'').trim().slice(0,160),
+    minBetINR:Math.max(0,num('ggsMinINR')),maxBetINR:Math.max(0,num('ggsMaxINR')),minBetUSDT:Math.max(0,num('ggsMinUSDT')),maxBetUSDT:Math.max(0,num('ggsMaxUSDT')),
+    maxWalletPercent:Math.min(100,Math.max(0,num('ggsMaxPct'))),betCooldownSeconds:Math.min(3600,Math.max(0,Math.floor(num('ggsCooldown')))),
+    maintenanceMessage:($('ggsMaintMsg').value||'').trim().slice(0,160),updatedAt:Date.now()};
+  if(d.maxBetINR>0&&d.minBetINR>d.maxBetINR)return alert('Global INR minimum bet cannot be higher than the maximum.');
+  if(d.maxBetUSDT>0&&d.minBetUSDT>d.maxBetUSDT)return alert('Global USDT minimum bet cannot be higher than the maximum.');
+  db.ref(GGS_PATH).set(d).then(function(){audit('control/gameSettingsAudit',{action:'Saved global game settings'});ggsSummary(d);ggsLoadAudit();alert('Global game settings saved. Players are affected immediately.');}).catch(function(e){alert('Could not save: '+e.message);});
+};
+window.ggsResetDefaults=function(){
+  if(!confirm('Turn OFF every global game rule (play window, bet caps, wallet %, cooldown, pause message)?'))return;
+  db.ref(GGS_PATH).set({windowEnabled:false,windowStartHour:0,windowEndHour:24,windowMessage:'',minBetINR:0,maxBetINR:0,minBetUSDT:0,maxBetUSDT:0,maxWalletPercent:0,betCooldownSeconds:0,maintenanceMessage:'',updatedAt:Date.now()})
+   .then(function(){audit('control/gameSettingsAudit',{action:'Reset global game settings to defaults'});ggsLoad();}).catch(function(e){alert('Failed: '+e.message);});
+};
+window.ggsRenderOverview=function(){
+  var box=$('ggsOverviewList');if(!box)return;
+  db.ref('games').once('value').then(function(s){
+    var rows=[];s.forEach(function(c){var v=c.val()||{};rows.push({k:c.key,v:v});});
+    if(!rows.length){box.innerHTML='No games configured yet.';return;}
+    box.innerHTML=rows.map(function(r){
+      var on=(r.v.status||'active')==='active';
+      var lim=(r.v.minBetINR||r.v.minBet||0)||(r.v.maxBetINR||r.v.maxBet||0)?('Bet ₹'+(r.v.minBetINR||r.v.minBet||0)+' – '+((r.v.maxBetINR||r.v.maxBet)?('₹'+(r.v.maxBetINR||r.v.maxBet)):'no max')):'No bet limits';
+      return '<div class="gvz-item"><div><b>'+esc(r.v.name||r.k)+'</b><small>'+esc(r.k)+' · '+(r.v.allowUserAmount?'User amount':'Fixed ₹'+(r.v.entryFee||0))+' · '+esc(lim)+'</small></div>'+
+        '<div style="display:flex;gap:6px;align-items:center;"><span class="gvz-pill '+(on?'gvz-on':'gvz-off')+'">'+(on?'ON':'OFF')+'</span><button class="'+(on?'btn-red':'btn-green')+'" onclick="ggsToggle(\''+esc(r.k)+'\',\''+(on?'ended':'active')+'\')">'+(on?'Turn OFF':'Turn ON')+'</button></div></div>';
+    }).join('');
+  }).catch(function(e){box.innerHTML='Could not load games: '+esc(e.message);});
+};
+window.ggsToggle=function(k,st){db.ref('games/'+k+'/status').set(st).then(function(){audit('control/gameSettingsAudit',{action:'Game '+k+' turned '+(st==='active'?'ON':'OFF')});ggsRenderOverview();ggsLoadAudit();try{loadSelectedGameData();}catch(e){}}).catch(function(e){alert('Failed: '+e.message);});};
+window.ggsSetAll=function(st){
+  if(!confirm('Turn '+(st==='active'?'ON':'OFF')+' every game listed below?'))return;
+  db.ref('games').once('value').then(function(s){var up={};s.forEach(function(c){up[c.key+'/status']=st;});return db.ref('games').update(up);})
+   .then(function(){audit('control/gameSettingsAudit',{action:'All games turned '+(st==='active'?'ON':'OFF')});ggsRenderOverview();ggsLoadAudit();try{loadSelectedGameData();}catch(e){}}).catch(function(e){alert('Failed: '+e.message);});
+};
+window.ggsExport=function(){
+  Promise.all([db.ref('games').once('value'),db.ref(GGS_PATH).once('value'),db.ref('control/highCardConfig').once('value')]).then(function(r){
+    var blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),games:r[0].val()||{},globalGameSettings:r[1].val()||{},highCardConfig:r[2].val()||{}},null,2)],{type:'application/json'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='games-config-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();},500);
+  }).catch(function(e){alert('Export failed: '+e.message);});
+};
+function ggsLoadAudit(){
+  var box=$('ggsAuditList');if(!box)return;
+  db.ref('control/gameSettingsAudit').limitToLast(8).once('value').then(function(s){
+    var a=[];s.forEach(function(c){a.unshift(c.val()||{});});
+    box.innerHTML=a.length?a.map(function(x){return '<div class="gvz-item"><div>'+esc(x.action||'')+'<small>'+esc(x.admin||'admin')+' · '+esc(fmtTime(x.ts))+'</small></div></div>';}).join(''):'No changes logged yet.';
+  }).catch(function(){});
+}
+var _og=window.openGamesManagementAdminModal;
+window.openGamesManagementAdminModal=function(){if(_og)_og.apply(this,arguments);try{ggsLoad();ggsRenderOverview();}catch(e){console.warn(e);}};
+
+/* ---------- REWARD: reset PAID ALL-TIME ---------- */
+var RS_TYPES=['checkin_reward','spin_reward','daily_reward'];
+function rsZeroPaid(){
+  return db.ref('reward_stats').once('value').then(function(s){
+    var up={};RS_TYPES.forEach(function(t){up[t+'/paid']=0;});
+    s.forEach(function(c){if(c.val()&&typeof c.val()==='object')up[c.key+'/paid']=0;});
+    return db.ref('reward_stats').update(up);
+  }).then(function(){return db.ref('control/lastDataClear/rewardPaidAllTime').set(Date.now());});
+}
+window.rsResetPaidAllTime=function(){
+  if(!confirm('Reset PAID ALL-TIME to ₹0?\n\nOnly the paid-amount counter is zeroed. Wallet balances, reward history and "Paid Today" are not changed. This cannot be undone.'))return;
+  rsZeroPaid().then(function(){audit('control/globalResetLog',{categories:['Reward PAID ALL-TIME']});alert('PAID ALL-TIME has been reset to ₹0.');}).catch(function(e){alert('Could not reset: '+e.message);});
+};
+
+/* ---------- GLOBAL RESET ---------- */
+function setStamp(k){return db.ref('control/lastDataClear/'+k).set(Date.now());}
+function removeAll(paths){return Promise.all(paths.map(function(p){return db.ref(p).remove();}));}
+var GR_CATS=[
+ {id:'deposits',label:'💰 Deposit records',desc:'All deposit requests / history',run:function(){return removeAll(['deposits']).then(function(){return setStamp('deposits');});}},
+ {id:'withdrawals',label:'💸 Withdrawal / payout records',desc:'All withdrawal requests. Pending ones are NOT refunded.',run:function(){return removeAll(['withdrawals']).then(function(){return setStamp('withdrawals');});}},
+ {id:'gameplay',label:'🎮 Game play history',desc:'Game rounds, Mines rounds and WINGO entries (Profit & Rounds Played)',run:function(){return removeAll(['game_rounds','mines_rounds','colour_clash/entries']).then(function(){return setStamp('gameRounds');});}},
+ {id:'ccrounds',label:'🎨 WINGO round results',desc:'WINGO result history (entries are in Game play history)',run:function(){return removeAll(['colour_clash/rounds']);}},
+ {id:'k3entries',label:'🎲 K3 entries',desc:'All K3 bets',run:function(){return removeAll(['k3/entries']);}},
+ {id:'k3rounds',label:'🎲 K3 past rounds',desc:'Past rounds only — current round and rounds with pending bets are kept',run:function(){
+    var cur=String(typeof k3AdminRoundState==='function'?k3AdminRoundState().roundId:'0');
+    return db.ref('k3/entries').limitToLast(2000).once('value').then(function(es){
+      var pend={};es.forEach(function(c){var e=c.val()||{},st=String(e.status||'pending').toLowerCase();if(st!=='win'&&st!=='loss'&&st!=='settled')pend[String(e.roundId)]=1;});
+      return db.ref('k3/rounds').once('value').then(function(sn){var jobs=[];sn.forEach(function(c){var v=c.val()||{},rid=String(v.roundId!=null?v.roundId:c.key);if(!(Number(rid)>=Number(cur)||pend[rid]))jobs.push(c.ref.remove());});return Promise.all(jobs);});
+    }).then(function(){return db.ref('control/k3Config').update({historyFloor:Number(cur)||0});});}},
+ {id:'rocket',label:'🚀 Rocket Jump bets',desc:'rocket_live/bets (no wallet refund)',run:function(){return removeAll(['rocket_live/bets']);}},
+ {id:'referral',label:'🤝 Referral & commission records',desc:'Referral payouts and agency commission logs',run:function(){return removeAll(['referral_earnings','commission_logs']);}},
+ {id:'rewardact',label:'🧾 Reward activity',desc:'Recent Reward Activity + every user\'s Rewards history',run:function(){return removeAll(['reward_activity','user_reward_log']);}},
+ {id:'rewardpaid',label:'🏆 Reward PAID ALL-TIME total',desc:'Reset the paid counter to ₹0',run:function(){return rsZeroPaid();}},
+ {id:'gift',label:'🎟️ Gift code claim history',desc:'Gift code log + every user\'s claim history (codes stay active)',run:function(){return removeAll(['gift_codes_history','user_gift_claims']);}},
+ {id:'support',label:'🎧 Support tickets',desc:'All support requests',run:function(){return removeAll(['support_requests']);}},
+ {id:'broadcasts',label:'📢 Broadcast history',desc:'Sent broadcasts shown in users\' bell icon',run:function(){return removeAll(['broadcasts']);}}
+];
+window.openGlobalResetModal=function(){
+  $('gresetList').innerHTML=GR_CATS.map(function(c){return '<label><input type="checkbox" data-gr="'+c.id+'"><span><b>'+c.label+'</b><small>'+esc(c.desc)+'</small></span></label>';}).join('');
+  $('gresetConfirm').value='';var lg=$('gresetLog');lg.style.display='none';lg.innerHTML='';
+  $('gresetRunBtn').disabled=false;$('gresetOverlay').classList.remove('hidden');
+};
+window.closeGlobalResetModal=function(){$('gresetOverlay').classList.add('hidden');};
+window.gresetTick=function(v){document.querySelectorAll('#gresetList input[data-gr]').forEach(function(c){c.checked=v;});};
+window.gresetRun=function(){
+  var sel=GR_CATS.filter(function(c){var e=document.querySelector('#gresetList input[data-gr="'+c.id+'"]');return e&&e.checked;});
+  if(!sel.length)return alert('Select at least one record type.');
+  if(($('gresetConfirm').value||'').trim()!=='RESET')return alert('Type RESET (capital letters) to confirm.');
+  if(!confirm('Permanently delete '+sel.length+' record type(s)?\n\n'+sel.map(function(c){return '• '+c.label.replace(/^\S+\s/,'');}).join('\n')))return;
+  var lg=$('gresetLog');lg.style.display='block';lg.innerHTML='';$('gresetRunBtn').disabled=true;
+  var done=[],failed=[];
+  var log=function(t,ok){lg.innerHTML+='<div class="gvz-item"><div>'+(ok?'✅ ':'❌ ')+esc(t)+'</div></div>';lg.scrollTop=lg.scrollHeight;};
+  sel.reduce(function(p,c){return p.then(function(){return c.run().then(function(){done.push(c.id);log(c.label.replace(/^\S+\s/,''),true);}).catch(function(e){failed.push(c.id);log(c.label.replace(/^\S+\s/,'')+' — '+(e&&e.message||e),false);});});},Promise.resolve())
+  .then(function(){
+    audit('control/globalResetLog',{categories:done,failed:failed});
+    $('gresetRunBtn').disabled=false;
+    try{if(typeof loadDashboardHome==='function')loadDashboardHome();}catch(e){}
+    try{refreshAllAdminSystems();}catch(e){}
+    alert('Global reset finished.\nCleared: '+done.length+(failed.length?'\nFailed: '+failed.length+' (see log)':''));
+  });
+};
+
+/* ---------- RESTRICTIONS & RULES upgrades ---------- */
+var AR_PATH='control/advancedRules';
+window.saveAdvancedRules=function(silent){
+  var s=num('arWdStart',0),e=num('arWdEnd',24),on=$('arWdWindowOn').checked;
+  var days=[];document.querySelectorAll('#arWdDays input:checked').forEach(function(c){days.push(Number(c.value));});
+  if(on&&(s<0||s>23||e<1||e>24||s===e)){alert('Withdrawal hours: open 0–23, close 1–24, not equal.');return;}
+  if(on&&!days.length){alert('Select at least one withdrawal day.');return;}
+  var d={withdrawWindowEnabled:on,withdrawDays:days,withdrawStartHour:Math.floor(s),withdrawEndHour:Math.floor(e),withdrawClosedMessage:($('arWdMsg').value||'').trim().slice(0,160),
+    maxWithdrawWalletPercent:Math.min(100,Math.max(0,num('arWdPct'))),maxWageredPerDay:Math.max(0,num('arMaxWageredDay')),updatedAt:Date.now()};
+  return db.ref(AR_PATH).set(d).then(function(){if(silent!==true)alert('Advanced rules saved successfully.');rulesRefreshOverview();});
+};
+window.loadAdvancedRules=function(){
+  db.ref(AR_PATH).once('value').then(function(s){
+    var d=s.val()||{};$('arWdWindowOn').checked=d.withdrawWindowEnabled===true;
+    var days=Array.isArray(d.withdrawDays)?d.withdrawDays.map(Number):[0,1,2,3,4,5,6];
+    document.querySelectorAll('#arWdDays input').forEach(function(c){c.checked=days.indexOf(Number(c.value))>-1;});
+    setv('arWdStart',d.withdrawStartHour!=null?d.withdrawStartHour:0);setv('arWdEnd',d.withdrawEndHour!=null?d.withdrawEndHour:24);
+    setv('arWdMsg',d.withdrawClosedMessage||'');setv('arWdPct',d.maxWithdrawWalletPercent||0);setv('arMaxWageredDay',d.maxWageredPerDay||0);
+  });
+};
+function markDirty(v){var b=$('rulesUnsavedBar');if(b)b.classList.toggle('hidden',!v);}
+window.rulesJump=function(key){
+  var hs=document.querySelectorAll('#restrictionsAdminSection .restriction-admin-card h4');
+  for(var i=0;i<hs.length;i++){if(hs[i].textContent.indexOf(key)>-1){hs[i].closest('.restriction-admin-card').scrollIntoView({behavior:'smooth',block:'start'});return;}}
+};
+window.rulesRefreshOverview=function(){
+  var box=$('rulesOverviewChips');if(!box)return;
+  Promise.all(['withdrawRestrictions','bonusRestrictions','safetyRestrictions','advancedRules'].map(function(n){return db.ref('control/'+n).once('value');})).then(function(r){
+    var count=function(o){var n=0;Object.keys(o||{}).forEach(function(k){if(/message|updatedAt|allowUnlimited|^withdrawDays$|StartHour|EndHour/i.test(k))return;var v=o[k];if(v===true||(typeof v==='number'&&v>0))n++;});return n;};
+    var w=r[0].val()||{},b=r[1].val()||{},s=r[2].val()||{},a=r[3].val()||{};
+    var rc=(document.getElementById('manualRestrictedUserCount')||{}).textContent||'0';
+    var chips=[['💸 Withdrawal rules',count(w)],['🎁 Bonus rules',count(b)],['💰 Safety rules',count(s)],['⚙️ Advanced rules',count(a)]].map(function(x){return '<div class="c '+(x[1]?'ok':'')+'">'+x[0]+': <b>'+x[1]+' active</b></div>';});
+    chips.push('<div class="c '+(w.withdrawalBlocked?'warn':'ok')+'">🔐 Withdrawals: <b>'+(w.withdrawalBlocked?'BLOCKED':'open')+'</b></div>');
+    chips.push('<div class="c '+(b.giftBlocked||b.giftCodesBlocked?'warn':'ok')+'">🎟️ Gift codes: <b>'+(b.giftBlocked||b.giftCodesBlocked?'BLOCKED':'open')+'</b></div>');
+    chips.push('<div class="c">🚨 Restricted users: <b>'+esc(rc)+'</b></div>');
+    box.innerHTML=chips.join('');
+  }).catch(function(e){box.innerHTML='Could not load: '+esc(e.message);});
+  rulesLoadAudit();
+};
+function rulesLoadAudit(){
+  var box=$('rulesAuditList');if(!box)return;
+  db.ref('control/rulesAudit').limitToLast(10).once('value').then(function(s){var a=[];s.forEach(function(c){a.unshift(c.val()||{});});
+    box.innerHTML=a.length?a.map(function(x){return '<div class="gvz-item"><div>'+esc(x.action||'')+'<small>'+esc(x.admin||'admin')+' · '+esc(fmtTime(x.ts))+'</small></div></div>';}).join(''):'No changes logged yet.';}).catch(function(){});
+}
+var PRESETS={
+ relaxed:{restrictionCooldown:0,restrictionPendingLimit:0,restrictionTurnoverMultiplier:0,restrictionTurnoverMultiplierUsdt:0,bonusMaxDepositsDay:0,bonusMaxDepositPerTxn:0,bonusDepositCooldown:0,bonusMaxBetsDay:0,bonusDailyLossLimit:0,bonusMaxWithdrawalsDay:0,bonusWithdrawalWaitHours:0,bonusMaxWithdrawalWeek:0,_first:false},
+ balanced:{restrictionCooldown:30,restrictionPendingLimit:2,restrictionTurnoverMultiplier:1,restrictionTurnoverMultiplierUsdt:1,bonusMaxDepositsDay:10,bonusMaxDepositPerTxn:0,bonusDepositCooldown:0,bonusMaxBetsDay:0,bonusDailyLossLimit:0,bonusMaxWithdrawalsDay:3,bonusWithdrawalWaitHours:0,bonusMaxWithdrawalWeek:0,_first:true},
+ strict:{restrictionCooldown:60,restrictionPendingLimit:1,restrictionTurnoverMultiplier:2,restrictionTurnoverMultiplierUsdt:2,bonusMaxDepositsDay:5,bonusMaxDepositPerTxn:50000,bonusDepositCooldown:5,bonusMaxBetsDay:500,bonusDailyLossLimit:10000,bonusMaxWithdrawalsDay:1,bonusWithdrawalWaitHours:24,bonusMaxWithdrawalWeek:50000,_first:true}
+};
+window.rulesPreset=function(name){
+  var p=PRESETS[name];if(!p)return;
+  if(!confirm('Fill the form with the "'+name+'" preset? (Nothing is saved until you press Save.)'))return;
+  Object.keys(p).forEach(function(k){if(k==='_first'){var c=$('bonusRequireFirstDepositWithdrawal');if(c)c.checked=p._first;}else setv(k,p[k]);});
+  markDirty(true);
+};
+window.rulesAllOff=function(){
+  if(!confirm('Set every withdrawal, bonus, safety and advanced rule to OFF in the form? (Not saved until you press Save.)'))return;
+  document.querySelectorAll('#restrictionsAdminSection .restriction-admin-card input').forEach(function(i){
+    if(!/^(restriction|bonus|ar)/.test(i.id||''))return;
+    if(i.type==='number')i.value=0;else if(i.type==='checkbox')i.checked=false;
+  });
+  markDirty(true);
+};
+window.rulesSaveAll=function(){
+  var old=window.alert,msgs=[];window.alert=function(m){msgs.push(String(m));};
+  try{saveWithdrawalRestrictions();saveBonusRestrictions();saveSafetyRestrictions();saveAdvancedRules(true);}catch(e){msgs.push('Error: '+e.message);}
+  setTimeout(function(){window.alert=old;var bad=msgs.filter(function(m){return /could not|cannot|error|invalid|too high|select/i.test(m);});
+    if(bad.length)alert('Some rules were not saved:\n\n'+bad.join('\n'));else{alert('All rules saved successfully.');markDirty(false);}
+    rulesRefreshOverview();},1600);
+};
+window.rulesExport=function(){
+  Promise.all(['withdrawRestrictions','bonusRestrictions','safetyRestrictions','advancedRules'].map(function(n){return db.ref('control/'+n).once('value');})).then(function(r){
+    var o={exportedAt:new Date().toISOString(),withdrawRestrictions:r[0].val()||{},bonusRestrictions:r[1].val()||{},safetyRestrictions:r[2].val()||{},advancedRules:r[3].val()||{}};
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}));a.download='rules-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();},500);
+  });
+};
+window.rulesImport=function(inp){
+  var f=inp.files&&inp.files[0];inp.value='';if(!f)return;
+  var rd=new FileReader();rd.onload=function(){
+    var o;try{o=JSON.parse(rd.result);}catch(e){return alert('That file is not valid JSON.');}
+    var keys=['withdrawRestrictions','bonusRestrictions','safetyRestrictions','advancedRules'].filter(function(k){return o[k]&&typeof o[k]==='object';});
+    if(!keys.length)return alert('No rule sections found in this file.');
+    if(!confirm('Import and OVERWRITE these rule sections?\n\n'+keys.join('\n')))return;
+    Promise.all(keys.map(function(k){var d=Object.assign({},o[k],{updatedAt:Date.now()});return db.ref('control/'+k).set(d);})).then(function(){
+      audit('control/rulesAudit',{action:'Imported rules backup ('+keys.length+' sections)'});
+      try{loadWithdrawalRestrictions();loadBonusRestrictions();loadSafetyRestrictions();loadAdvancedRules();}catch(e){}
+      rulesRefreshOverview();alert('Rules imported.');}).catch(function(e){alert('Import failed: '+e.message);});
+  };rd.readAsText(f);
+};
+/* audit every individual save */
+[['saveWithdrawalRestrictions','Saved withdrawal rules'],['saveBonusRestrictions','Saved bonus / gift-code rules'],['saveSafetyRestrictions','Saved deposit, betting & withdrawal safety rules'],['saveAdvancedRules','Saved advanced rules']].forEach(function(p){
+  var o=window[p[0]];if(typeof o!=='function')return;
+  window[p[0]]=function(){var r=o.apply(this,arguments);audit('control/rulesAudit',{action:p[1]});setTimeout(function(){rulesLoadAudit();rulesRefreshOverview();},900);return r;};
+});
+var _or=window.openRestrictionsAdminModal;
+window.openRestrictionsAdminModal=function(){
+  if(_or)_or.apply(this,arguments);
+  try{loadBonusRestrictions();}catch(e){}try{loadSafetyRestrictions();}catch(e){}
+  loadAdvancedRules();rulesRefreshOverview();markDirty(false);
+  var sec=$('restrictionsAdminSection');
+  if(sec&&!sec.__gvxDirty){sec.__gvxDirty=true;['input','change'].forEach(function(ev){sec.addEventListener(ev,function(e){var t=e.target;if(t&&t.id&&/^(restriction|bonus|ar|manualRestricted)/.test(t.id)&&!/^manualRestricted/.test(t.id))markDirty(true);});});}
+};
+})();
+</script>
+<script>
+/* ===== GVZ: Dashboard 2.0 extra controls — Maintenance, Profit Guard, Risk Radar, Liability ===== */
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
+var who=function(){try{return firebase.auth().currentUser.email||'admin';}catch(e){return 'admin';}};
+var d20audit=function(a,d){try{db.ref('admin_audit/dashboard20').push({action:a,detail:d||'',at:Date.now(),by:who()});}catch(e){}};
+var inr=function(n){return '₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});};
+var dayStart=function(){var d=new Date();d.setHours(0,0,0,0);return d.getTime();};
+var pad=function(n){return String(n).padStart(2,'0');};
+var toLocal=function(ms){if(!ms)return '';var d=new Date(Number(ms));return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());};
+var setv=function(id,v){var e=$(id);if(e)e.value=(v==null?'':v);};
+
+/* ---------- Scheduled Maintenance (control/maintenance) ---------- */
+var MT=null;
+window.mtLoad=function(){db.ref('control/maintenance').once('value').then(function(s){MT=s.val()||{};
+  setv('mtStart',toLocal(MT.startAt));setv('mtEnd',toLocal(MT.endAt));setv('mtMsg',MT.message||'');setv('mtWarn',MT.warnMinutes!=null?MT.warnMinutes:60);mtRender();});};
+function mtRender(){
+  var e=$('mtStatus');if(!e)return;var d=MT||{},now=Date.now(),t=function(x){return new Date(x).toLocaleString();};
+  if(!d.enabled||!d.startAt){e.textContent='NOT SCHEDULED';e.style.color='#9ca3af';return;}
+  if(d.endAt&&now>=d.endAt){e.textContent='FINISHED '+t(d.endAt);e.style.color='#9ca3af';return;}
+  if(now>=d.startAt){e.textContent='🔴 LIVE'+(d.endAt?' until '+t(d.endAt):' (until cancelled)');e.style.color='#f87171';return;}
+  e.textContent='🟡 Scheduled '+t(d.startAt);e.style.color='#facc15';
+}
+function mtWrite(d,label){return db.ref('control/maintenance').set(d).then(function(){MT=d;mtRender();d20audit('maintenance',label);});}
+window.mtSave=function(){
+  var s=Date.parse($('mtStart').value),e=$('mtEnd').value?Date.parse($('mtEnd').value):0;
+  if(!s)return alert('Choose a start date and time.');
+  if(e&&e<=s)return alert('End time must be after the start time.');
+  if(e&&e<=Date.now())return alert('End time is already in the past.');
+  mtWrite({enabled:true,startAt:s,endAt:e||0,message:($('mtMsg').value||'').trim().slice(0,200),warnMinutes:Number($('mtWarn').value)||0,updatedAt:Date.now()},'Scheduled maintenance '+new Date(s).toLocaleString()).then(function(){alert('Maintenance scheduled.');}).catch(function(x){alert('Failed: '+x.message);});
+};
+window.mtStartNow=function(){
+  if(!confirm('Start maintenance NOW? Every player will immediately see the maintenance screen.'))return;
+  var e=$('mtEnd').value?Date.parse($('mtEnd').value):0;if(e&&e<=Date.now())e=0;
+  mtWrite({enabled:true,startAt:Date.now(),endAt:e||0,message:($('mtMsg').value||'').trim().slice(0,200),warnMinutes:0,updatedAt:Date.now()},'Maintenance started now').then(function(){setv('mtStart',toLocal(Date.now()));}).catch(function(x){alert('Failed: '+x.message);});
+};
+window.mtCancel=function(){
+  if(!confirm('Cancel / end maintenance? Players get access immediately.'))return;
+  mtWrite({enabled:false,startAt:0,endAt:0,message:($('mtMsg').value||'').trim().slice(0,200),warnMinutes:60,updatedAt:Date.now()},'Maintenance cancelled / ended').catch(function(x){alert('Failed: '+x.message);});
+};
+
+/* ---------- Profit Guard (control/profitGuard) ---------- */
+var PG={};
+window.pgLoad=function(){db.ref('control/profitGuard').once('value').then(function(s){PG=s.val()||{};setv('pgMaxLoss',PG.maxHouseLoss||0);setv('pgRtp',PG.rtpAlert||0);if($('pgAutoPause'))$('pgAutoPause').checked=PG.autoPause===true;pgCompute();});};
+window.pgSave=function(){
+  var d={maxHouseLoss:Math.max(0,Number($('pgMaxLoss').value)||0),rtpAlert:Math.max(0,Number($('pgRtp').value)||0),autoPause:$('pgAutoPause').checked,updatedAt:Date.now()};
+  db.ref('control/profitGuard').set(d).then(function(){PG=d;d20audit('profit guard','Max loss '+d.maxHouseLoss+', RTP alert '+d.rtpAlert+', auto-pause '+d.autoPause);pgCompute();alert('Profit Guard saved.');}).catch(function(e){alert('Failed: '+e.message);});
+};
+function todayRows(){
+  var t=dayStart();
+  return Promise.all([db.ref('game_rounds').limitToLast(3000).once('value'),db.ref('colour_clash/entries').limitToLast(3000).once('value')]).then(function(r){
+    var rows=[];
+    r[0].forEach(function(c){var v=c.val()||{};if((Number(v.timestamp)||0)>=t&&String(v.currency||'INR').toUpperCase()!=='USDT')rows.push({u:v.userId||'unknown',cu:v.customUid||'',g:v.gameName||v.gameId||'Game',bet:Number(v.betAmount)||0,win:Number(v.winAmount)||0,res:v.result});});
+    r[1].forEach(function(c){var v=c.val()||{};if((Number(v.timestamp)||0)>=t&&String(v.currency||'INR').toUpperCase()!=='USDT'){var w=Number(v.winAmount!=null?v.winAmount:v.payout)||0;rows.push({u:v.userId||'unknown',cu:v.customUid||'',g:'WINGO',bet:Number(v.amount)||0,win:w,res:w>0?'win':'loss'});}});
+    return rows;
+  });
+}
+var pgBusy=false;
+window.pgCompute=function(){
+  if(pgBusy)return;pgBusy=true;
+  todayRows().then(function(rows){
+    var bet=0,paid=0,by={};rows.forEach(function(r){bet+=r.bet;paid+=r.win;var g=by[r.g]||(by[r.g]={bet:0,paid:0,n:0});g.bet+=r.bet;g.paid+=r.win;g.n++;});
+    var pl=bet-paid,rtp=bet>0?paid/bet*100:0,warn=[];
+    var ml=Number(PG.maxHouseLoss)||0,ra=Number(PG.rtpAlert)||0;
+    var breach=ml>0&&-pl>=ml,rtpHit=ra>0&&bet>=1000&&rtp>=ra;
+    var chips=['<div class="c">🎲 Rounds: <b>'+rows.length+'</b></div>','<div class="c">💰 Wagered: <b>'+inr(bet)+'</b></div>','<div class="c">🏆 Paid out: <b>'+inr(paid)+'</b></div>',
+      '<div class="c '+(pl<0?'warn':'ok')+'">🏦 House P&amp;L: <b style="color:'+(pl<0?'#f87171':'#34d399')+'">'+(pl<0?'-':'+')+inr(Math.abs(pl))+'</b></div>','<div class="c '+(rtpHit?'warn':'')+'">📈 RTP: <b>'+rtp.toFixed(1)+'%</b></div>'];
+    if(breach)chips.push('<div class="c warn">🚨 <b>Loss limit reached</b></div>');
+    if(rtpHit)chips.push('<div class="c warn">⚠️ <b>RTP above alert level</b></div>');
+    $('pgChips').innerHTML=chips.join('');
+    var gl=Object.keys(by).map(function(k){return {k:k,v:by[k],pl:by[k].bet-by[k].paid};}).sort(function(a,b){return a.pl-b.pl;});
+    $('pgGames').innerHTML=gl.length?gl.map(function(x){return '<div class="gvz-item"><div><b>'+esc(x.k)+'</b><small>'+x.v.n+' rounds · wagered '+inr(x.v.bet)+' · paid '+inr(x.v.paid)+'</small></div><b style="color:'+(x.pl<0?'#f87171':'#34d399')+'">'+(x.pl<0?'-':'+')+inr(Math.abs(x.pl))+'</b></div>';}).join(''):'No INR rounds today yet.';
+    if((breach||rtpHit)&&PG.autoPause===true&&breach){
+      db.ref('control/globalGamesStatus').once('value').then(function(s){if(s.val()!=='paused')return db.ref('control/globalGamesStatus').set('paused').then(function(){d20audit('profit guard','Auto-paused all games: house loss '+inr(-pl)+' reached limit '+inr(ml));try{updateGlobalGamesButton(false);}catch(e){}alert('🚨 Profit Guard paused all games — house loss limit reached.');});});
+    }
+  }).catch(function(e){var c=$('pgChips');if(c)c.innerHTML='Could not load: '+esc(e.message);}).then(function(){pgBusy=false;});
+};
+
+/* ---------- Risk Radar ---------- */
+window.rrScan=function(){
+  var box=$('rrList');box.innerHTML='Scanning…';
+  var net=Number($('rrNet').value)||0,rate=Number($('rrRate').value)||80,mn=Number($('rrMin').value)||20,vol=Number($('rrVol').value)||300;
+  todayRows().then(function(rows){
+    var us={};rows.forEach(function(r){var u=us[r.u]||(us[r.u]={id:r.u,cu:r.cu,n:0,w:0,bet:0,paid:0});u.n++;u.bet+=r.bet;u.paid+=r.win;if(r.res==='win'||r.win>r.bet)u.w++;if(r.cu)u.cu=r.cu;});
+    var out=[];Object.keys(us).forEach(function(k){var u=us[k],n=u.paid-u.bet,wr=u.n?u.w/u.n*100:0,f=[];
+      if(net>0&&n>=net)f.push('High net win');if(u.n>=mn&&wr>=rate)f.push('Win rate '+wr.toFixed(0)+'%');if(u.n>=vol)f.push('Heavy volume');
+      if(f.length){u.net=n;u.wr=wr;u.flags=f;out.push(u);}});
+    out.sort(function(a,b){return b.net-a.net;});
+    if(!out.length){box.innerHTML='✅ Nobody matches these thresholds today.';return;}
+    box.innerHTML=out.slice(0,25).map(function(u){var id=encodeURIComponent(u.id);
+      return '<div class="gvz-item" style="align-items:flex-start;"><div><b>'+esc(u.cu||u.id)+'</b><small>'+u.n+' rounds · wagered '+inr(u.bet)+' · won '+inr(u.paid)+' · win rate '+u.wr.toFixed(0)+'%</small><div style="margin-top:3px;">'+u.flags.map(function(f){return '<span class="gvz-pill gvz-off" style="margin-right:4px;">'+esc(f)+'</span>';}).join('')+'</div></div>'+
+        '<div style="display:flex;flex-direction:column;gap:4px;"><b style="color:'+(u.net>=0?'#f87171':'#34d399')+';font-size:12px;text-align:right;">'+(u.net>=0?'+':'-')+inr(Math.abs(u.net))+'</b>'+
+        '<button class="btn-red" onclick="rrBlock(decodeURIComponent(\''+id+'\'))">🚫 Block betting 24h</button><button class="btn-gray" onclick="openUser360Manage(decodeURIComponent(\''+id+'\'))">⚙️ Manage</button></div></div>';}).join('');
+  }).catch(function(e){box.innerHTML='Scan failed: '+esc(e.message);});
+};
+window.rrBlock=function(uid){
+  if(!uid||uid==='unknown')return;
+  if(!confirm('Block betting for this player for 24 hours?\n\nOther permissions on their account stay as they are.'))return;
+  var ref=db.ref('users/'+uid+'/manualRestrictions'),now=Date.now();
+  ref.once('value').then(function(s){var p=s.val()||{};var cur=Object.assign({},p,{blockBetting:true,reason:p.reason||'Flagged by Risk Radar',expiresAt:Math.max(Number(p.expiresAt)||0,now+86400000),updatedAt:now});
+    return ref.set(cur).then(function(){return db.ref('restrictionAudit/'+uid).push({type:'manualRestrictions',action:'update',current:{blockBetting:true},reason:'Risk Radar: betting blocked 24h',expiresAt:cur.expiresAt,adminEmail:who(),timestamp:now});});})
+  .then(function(){d20audit('risk radar','Blocked betting 24h for '+uid);alert('Betting blocked for 24 hours.');}).catch(function(e){alert('Failed: '+e.message);});
+};
+
+/* ---------- Liability Snapshot ---------- */
+window.lbScan=function(){
+  var c=$('lbChips');c.textContent='Reading wallets…';
+  Promise.all([db.ref('users').once('value'),db.ref('withdrawals').orderByChild('status').equalTo('pending').once('value').catch(function(){return null;}),db.ref('deposits').orderByChild('status').equalTo('pending').once('value').catch(function(){return null;})]).then(function(r){
+    var inrT=0,usdT=0,holders=0,list=[];
+    r[0].forEach(function(s){var u=s.val()||{},b=Number(u.balance)||0,x=Number(u.usdtBalance)||0;inrT+=b;usdT+=x;if(b>0||x>0)holders++;list.push({id:u.customUid||s.key,b:b,x:x});});
+    var pw=0,pwU=0,pd=0,pwn=0;
+    if(r[1])r[1].forEach(function(s){var w=s.val()||{};pwn++;if(String(w.currency||'INR').toUpperCase()==='USDT')pwU+=Number(w.amount)||0;else pw+=Number(w.amount)||0;});
+    if(r[2])r[2].forEach(function(s){var d=s.val()||{};if(String(d.currency||'INR').toUpperCase()!=='USDT')pd+=Number(d.amount)||0;});
+    var cov=inrT>0?(pw/inrT*100):0;
+    c.innerHTML=['<div class="c">👥 Wallet holders: <b>'+holders+'</b></div>','<div class="c">₹ Total in wallets: <b>'+inr(inrT)+'</b></div>','<div class="c">₮ USDT in wallets: <b>'+usdT.toFixed(4)+'</b></div>',
+      '<div class="c '+(pw>0?'warn':'ok')+'">💸 Pending payouts: <b>'+inr(pw)+'</b> ('+pwn+')</div>','<div class="c">💳 Pending deposits: <b>'+inr(pd)+'</b></div>','<div class="c">📊 Payouts vs wallets: <b>'+cov.toFixed(1)+'%</b></div>'].join('');
+    list.sort(function(a,b){return b.b-a.b;});var top=$('lbTop');top.style.display='block';
+    top.innerHTML='<div style="font-size:10px;color:#9ed7ff;font-weight:800;padding:2px 4px;">Top 5 wallets</div>'+list.slice(0,5).map(function(u){return '<div class="gvz-item"><div><b>'+esc(u.id)+'</b></div><div>'+inr(u.b)+(u.x?' · ₮'+u.x.toFixed(4):'')+'</div></div>';}).join('');
+  }).catch(function(e){c.textContent='Snapshot failed: '+e.message;});
+};
+
+/* ---------- lifecycle: load when the dashboard opens, then keep refreshing ---------- */
+var was=false;
+setInterval(function(){
+  var s=$('dashboard20Section');var vis=!!s&&!s.classList.contains('hidden');
+  if(vis&&!was){try{mtLoad();pgLoad();}catch(e){}}
+  was=vis;if(vis&&MT)mtRender();
+},1500);
+setInterval(function(){var s=$('dashboard20Section');if(s&&!s.classList.contains('hidden')&&PG&&(PG.maxHouseLoss>0||PG.rtpAlert>0))pgCompute();},60000);
+})();
 </script>
 
 </body></html>
